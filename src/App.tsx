@@ -16,6 +16,7 @@ import Enderecos from "./pages/Enderecos";
 import AddEndereco from "./pages/AddEndereco";
 import EditEndereco from "./pages/EditEndereco";
 import GestaoInsumos from "./pages/GestaoInsumos";
+import AddInsumo from "./pages/AddInsumo";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/add-endereco" element={<AddEndereco />} />
             <Route path="/edit-endereco" element={<EditEndereco />} />
             <Route path="/gestao-insumos" element={<GestaoInsumos />} />
+            <Route path="/add-insumo" element={<AddInsumo />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
