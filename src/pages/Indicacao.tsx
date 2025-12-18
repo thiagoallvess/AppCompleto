@@ -65,7 +65,7 @@ const Indicacao = () => {
             Indique e ganhe sabores exclusivos
           </h1>
           <p className="text-slate-500 dark:text-text-secondary text-base font-normal leading-relaxed max-w-[720px]">
-            Aumente seu nível gourmet. Seus amigos ganham 5% de desconto na primeira compra e você garante 10% no seu próximo pedido.
+            Aumente seu nível gourmet. Seus amigos ganham desconto na primeira compra e você no seu próximo pedido.
           </p>
         </div>
 
