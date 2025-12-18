@@ -1,8 +1,5 @@
 import { Home, Search, Heart, User, DollarSign, Gift, TrendingUp, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 const Cashback = () => {
   const cashbackBalance = 12.50;
@@ -75,115 +72,114 @@ const Cashback = () => {
       {/* Main Content */}
       <main className="max-w-md mx-auto lg:max-w-7xl flex flex-col gap-6 p-4">
         {/* Cashback Balance Card */}
-        <Card className="bg-gradient-to-r from-primary to-primary/80 text-white border-0">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-white/80 text-sm font-medium">Saldo Atual</p>
-                <p className="text-3xl font-bold">R$ {cashbackBalance.toFixed(2)}</p>
-              </div>
-              <div className="bg-white/20 rounded-full p-3">
-                <DollarSign size={32} className="text-white" />
-              </div>
+        <div className="bg-gradient-to-r from-primary to-primary/80 text-white rounded-xl p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white/80 text-sm font-medium">Saldo Atual</p>
+              <p className="text-3xl font-bold">R$ {cashbackBalance.toFixed(2)}</p>
             </div>
-            <div className="mt-4 flex items-center gap-2">
-              <TrendingUp size={16} className="text-white/80" />
-              <p className="text-white/80 text-sm">Ganhe 5% de cashback em cada compra</p>
+            <div className="bg-white/20 rounded-full p-3">
+              <DollarSign size={32} className="text-white" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="mt-4 flex items-center gap-2">
+            <TrendingUp size={16} className="text-white/80" />
+            <p className="text-white/80 text-sm">Ganhe 5% de cashback em cada compra</p>
+          </div>
+        </div>
 
         {/* How to Earn More */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Gift size={20} />
-              Como Ganhar Cashback
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
-              <div className="bg-primary/10 rounded-full p-2">
+        <div className="bg-surface-dark rounded-xl p-6">
+          <h3 className="flex items-center gap-2 text-white text-lg font-bold mb-4">
+            <Gift size={20} />
+            Como Ganhar Cashback
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
+              <div className="bg-primary/20 rounded-full p-2">
                 <DollarSign size={16} className="text-primary" />
               </div>
               <div>
-                <p className="font-medium">Compras</p>
-                <p className="text-sm text-muted-foreground">Ganhe 5% em cada pedido</p>
+                <p className="font-medium text-white">Compras</p>
+                <p className="text-sm text-text-secondary">Ganhe 5% em cada pedido</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
-              <div className="bg-primary/10 rounded-full p-2">
+            <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
+              <div className="bg-primary/20 rounded-full p-2">
                 <Heart size={16} className="text-primary" />
               </div>
               <div>
-                <p className="font-medium">Indicações</p>
-                <p className="text-sm text-muted-foreground">Ganhe R$ 2 por amigo indicado</p>
+                <p className="font-medium text-white">Indicações</p>
+                <p className="text-sm text-text-secondary">Ganhe R$ 2 por amigo indicado</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
-              <div className="bg-primary/10 rounded-full p-2">
+            <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
+              <div className="bg-primary/20 rounded-full p-2">
                 <TrendingUp size={16} className="text-primary" />
               </div>
               <div>
-                <p className="font-medium">Avaliações</p>
-                <p className="text-sm text-muted-foreground">Ganhe R$ 0,50 por avaliação</p>
+                <p className="font-medium text-white">Avaliações</p>
+                <p className="text-sm text-text-secondary">Ganhe R$ 0,50 por avaliação</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Available Rewards */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Gift size={20} />
-              Recompensas Disponíveis
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <div className="bg-surface-dark rounded-xl p-6">
+          <h3 className="flex items-center gap-2 text-white text-lg font-bold mb-4">
+            <Gift size={20} />
+            Recompensas Disponíveis
+          </h3>
+          <div className="space-y-3">
             {rewards.map((reward) => (
-              <div key={reward.id} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={reward.id} className="flex items-center justify-between p-3 border border-gray-700 rounded-lg">
                 <div className="flex-1">
-                  <p className="font-medium">{reward.title}</p>
-                  <p className="text-sm text-muted-foreground">{reward.description}</p>
+                  <p className="font-medium text-white">{reward.title}</p>
+                  <p className="text-sm text-text-secondary">{reward.description}</p>
                   <p className="text-sm font-medium text-primary mt-1">Custa R$ {reward.cost.toFixed(2)}</p>
                 </div>
-                <Button
+                <button
                   disabled={!reward.available || cashbackBalance < reward.cost}
-                  className="ml-3"
-                  size="sm"
+                  className={`ml-3 px-3 py-2 rounded-lg text-sm font-bold transition-all ${
+                    reward.available && cashbackBalance >= reward.cost
+                      ? 'bg-primary hover:bg-primary/90 text-white'
+                      : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  }`}
                 >
                   {reward.available && cashbackBalance >= reward.cost ? "Resgatar" : "Indisponível"}
-                </Button>
+                </button>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Cashback History */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock size={20} />
-              Histórico de Cashback
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <div className="bg-surface-dark rounded-xl p-6">
+          <h3 className="flex items-center gap-2 text-white text-lg font-bold mb-4">
+            <Clock size={20} />
+            Histórico de Cashback
+          </h3>
+          <div className="space-y-3">
             {cashbackHistory.map((item) => (
               <div key={item.id} className="flex items-center justify-between py-2">
                 <div className="flex-1">
-                  <p className="font-medium text-sm">{item.description}</p>
-                  <p className="text-xs text-muted-foreground">{item.date}</p>
+                  <p className="font-medium text-sm text-white">{item.description}</p>
+                  <p className="text-xs text-text-secondary">{item.date}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={item.type === 'earned' ? 'default' : 'secondary'} className="text-xs">
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    item.type === 'earned'
+                      ? 'bg-green-600/20 text-green-400'
+                      : 'bg-red-600/20 text-red-400'
+                  }`}>
                     {item.type === 'earned' ? '+' : ''}R$ {item.amount.toFixed(2)}
-                  </Badge>
+                  </span>
                 </div>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
 
       {/* Bottom Navigation */}
