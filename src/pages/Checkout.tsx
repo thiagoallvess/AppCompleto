@@ -1,44 +1,9 @@
-import { ArrowLeft, CreditCard, MapPin, Edit, Clock, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useCart } from "../contexts/CartContext";
-import { useState } from "react";
-
-const Checkout = () => {
-  const { items, clearCart } = useCart();
-  const [paymentMethod, setPaymentMethod] = useState("card");
-  const [scheduleDelivery, setScheduleDelivery] = useState(false);
-
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const delivery = 5.00;
-  const discount = 0.00;
-  const total = subtotal + delivery - discount;
-
-  const handleSubmit = () => {
-    alert("Pagamento processado com sucesso!");
-    clearCart();
-  };
-
-  return (
-    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-32 min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center p-4 pb-2 justify-between max-w-md mx-auto">
-          <Link
-            to="/cart"
-            className="flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-          >
-            <ArrowLeft className="text-slate-900 dark:text-white" size={24} />
-          </Link>
-          <h2 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-12">Finalizar Compra</h2>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex flex-col w-full max-w-md mx-auto">
+{/* Main Content */}
+      <main className="flex flex-col w-full max-w-md mx-auto lg:max-w-4xl">
         {/* Address Section */}
         <div className="flex flex-col mt-2">
-          <h3 className="text-lg font-bold leading-tight tracking-tight px-4 pb-2 pt-4">Endereço de Entrega</h3>
-          <div className="px-4">
+          <h3 className="text-lg font-bold leading-tight tracking-tight px-4 pb-2 pt-4 lg:px-6">Endereço de Entrega</h3>
+          <div className="px-4 lg:px-6">
             <div className="flex items-center gap-4 bg-white dark:bg-surface-dark rounded-xl px-4 min-h-[72px] py-3 justify-between shadow-sm border border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-4">
                 <div className="flex items-center justify-center rounded-lg bg-slate-800 dark:bg-[#243b47] shrink-0 size-10">
@@ -59,7 +24,7 @@ const Checkout = () => {
         </div>
 
         {/* Schedule Delivery */}
-        <div className="px-4 mt-4">
+        <div className="px-4 mt-4 lg:px-6">
           <div className="flex flex-row items-center justify-between gap-4 rounded-xl border border-gray-200 dark:border-[#345565] bg-white dark:bg-surface-dark p-4 shadow-sm">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
@@ -84,8 +49,8 @@ const Checkout = () => {
 
         {/* Order Summary */}
         <div className="flex flex-col mt-4">
-          <h3 className="text-lg font-bold leading-tight tracking-tight px-4 pb-2 pt-2">Resumo do Pedido</h3>
-          <div className="px-4 flex flex-col gap-3">
+          <h3 className="text-lg font-bold leading-tight tracking-tight px-4 pb-2 pt-2 lg:px-6">Resumo do Pedido</h3>
+          <div className="px-4 flex flex-col gap-3 lg:px-6">
             {items.map((item) => (
               <div key={item.id} className="flex gap-3 bg-white dark:bg-surface-dark p-3 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
                 <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 relative">
@@ -110,8 +75,8 @@ const Checkout = () => {
 
         {/* Payment Method */}
         <div className="flex flex-col mt-6">
-          <h3 className="text-lg font-bold leading-tight tracking-tight px-4 pb-2">Forma de Pagamento</h3>
-          <div className="px-4">
+          <h3 className="text-lg font-bold leading-tight tracking-tight px-4 pb-2 lg:px-6">Forma de Pagamento</h3>
+          <div className="px-4 lg:px-6">
             <div className="no-scrollbar flex gap-3 overflow-x-auto pb-2">
               {/* Card Option */}
               <label className={`cursor-pointer group relative flex flex-col items-start gap-3 rounded-xl p-4 min-w-[140px] ${
@@ -196,7 +161,7 @@ const Checkout = () => {
 
           {/* Card Details Form */}
           {paymentMethod === 'card' && (
-            <div className="px-4 mt-2">
+            <div className="px-4 mt-2 lg:px-6">
               <div className="rounded-xl bg-white dark:bg-surface-dark p-4 border border-gray-200 dark:border-gray-800 space-y-3">
                 <div className="relative">
                   <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
@@ -239,7 +204,7 @@ const Checkout = () => {
         </div>
 
         {/* Price Breakdown */}
-        <div className="px-4 mt-6 mb-4">
+        <div className="px-4 mt-6 mb-4 lg:px-6">
           <div className="flex flex-col gap-2 border-t border-gray-200 dark:border-gray-800 pt-4">
             <div className="flex justify-between items-center text-sm">
               <span className="text-slate-500 dark:text-gray-400">Subtotal</span>
@@ -259,7 +224,7 @@ const Checkout = () => {
 
       {/* Bottom Action Bar */}
       <div className="fixed bottom-0 left-0 w-full bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
-        <div className="max-w-md mx-auto flex items-center justify-between gap-4">
+        <div className="max-w-md mx-auto lg:max-w-4xl flex items-center justify-between gap-4">
           <div className="flex flex-col">
             <p className="text-slate-500 dark:text-gray-400 text-xs font-medium">Total a pagar</p>
             <p className="text-xl font-extrabold">R$ {total.toFixed(2)}</p>
@@ -273,8 +238,3 @@ const Checkout = () => {
           </button>
         </div>
       </div>
-    </div>
-  );
-};
-
-export default Checkout;
