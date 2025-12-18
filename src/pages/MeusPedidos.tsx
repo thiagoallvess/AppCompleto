@@ -1,4 +1,4 @@
-import { ArrowLeft, Receipt, Clock, CheckCircle, XCircle, Star, RotateCcw, HelpCircle } from "lucide-react";
+import { ArrowLeft, Receipt, Clock, CheckCircle, XCircle, Star, RotateCcw, HelpCircle, Home, Search, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const MeusPedidos = () => {
