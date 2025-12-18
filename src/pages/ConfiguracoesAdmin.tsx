@@ -1,4 +1,4 @@
-import { ArrowLeft, Home, IceCream, Receipt, Settings, Storefront, Bolt, Engineering, DollarSign } from "lucide-react";
+import { ArrowLeft, Home, IceCream, Receipt, Settings, Storefront, Bolt, HardHat, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -258,7 +258,7 @@ const ConfiguracoesAdmin = () => {
             </div>
             <div className="flex flex-col">
               <label className="text-slate-900 dark:text-white text-sm font-medium leading-normal pb-1.5 flex items-center gap-2">
-                <Engineering size={18} className="text-primary" />
+                <HardHat size={18} className="text-primary" />
                 Custo Mão de Obra (hora)
               </label>
               <div className="relative">
