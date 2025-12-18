@@ -1,4 +1,4 @@
-import { ArrowLeft, CreditCard, Truck, MapPin, User } from "lucide-react";
+import { ArrowLeft, CreditCard, Truck, MapPin, User, Smartphone, Banknote, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { Button } from "@/components/ui/button";
@@ -6,9 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useState } from "react";
 
 const Checkout = () => {
   const { items, clearCart } = useCart();
+  const [paymentMethod, setPaymentMethod] = useState("credit");
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const delivery = 5.00;
@@ -146,33 +149,57 @@ const Checkout = () => {
             </CardContent>
           </Card>
 
-          {/* Payment Information */}
+          {/* Payment Methods */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard size={20} />
-                Informações de Pagamento
+                Forma de Pagamento
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="cardNumber">Número do Cartão</Label>
-                <Input id="cardNumber" placeholder="1234 5678 9012 3456" required />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="expiry">Validade</Label>
-                  <Input id="expiry" placeholder="MM/AA" required />
+            <CardContent>
+              <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
+                  <RadioGroupItem value="credit" id="credit" />
+                  <label htmlFor="credit" className="flex items-center gap-3 cursor-pointer flex-1">
+                    <CreditCard size={20} className="text-primary" />
+                    <div>
+                      <div className="font-medium">Cartão de Crédito</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Até 12x sem juros</div>
+                    </div>
+                  </label>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cvv">CVV</Label>
-                  <Input id="cvv" placeholder="123" required />
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
+                  <RadioGroupItem value="debit" id="debit" />
+                  <label htmlFor="debit" className="flex items-center gap-3 cursor-pointer flex-1">
+                    <CreditCard size={20} className="text-blue-500" />
+                    <div>
+                      <div className="font-medium">Cartão de Débito</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Pagamento à vista</div>
+                    </div>
+                  </label>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cardName">Nome no Cartão</Label>
-                <Input id="cardName" placeholder="João Silva" required />
-              </div>
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
+                  <RadioGroupItem value="pix" id="pix" />
+                  <label htmlFor="pix" className="flex items-center gap-3 cursor-pointer flex-1">
+                    <Smartphone size={20} className="text-green-500" />
+                    <div>
+                      <div className="font-medium">PIX</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Pagamento instantâneo</div>
+                    </div>
+                  </label>
+                </div>
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
+                  <RadioGroupItem value="cash" id="cash" />
+                  <label htmlFor="cash" className="flex items-center gap-3 cursor-pointer flex-1">
+                    <Banknote size={20} className="text-yellow-500" />
+                    <div>
+                      <div className="font-medium">Dinheiro</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Pagamento na entrega</div>
+                    </div>
+                  </label>
+                </div>
+              </RadioGroup>
             </CardContent>
           </Card>
 
