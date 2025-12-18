@@ -1,4 +1,4 @@
-import { Home, Search, Heart, User, DollarSign, Gift, TrendingUp, Clock } from "lucide-react";
+import { Home, Search, Heart, User, DollarSign, Gift, TrendingUp, Clock, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Cashback = () => {
@@ -62,10 +62,17 @@ const Cashback = () => {
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary pb-24 min-h-screen">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md transition-colors duration-300">
-        <div className="flex items-center p-4 justify-center max-w-md mx-auto lg:max-w-none lg:px-6">
+        <div className="flex items-center p-4 justify-between max-w-md mx-auto lg:max-w-none lg:px-6">
+          <Link
+            to="/"
+            className="flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+          >
+            <ArrowLeft className="text-slate-900 dark:text-text-primary" size={24} />
+          </Link>
           <h1 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight tracking-tight">
             Meu Cashback
           </h1>
+          <div className="w-12"></div> {/* Spacer for centering */}
         </div>
       </header>
 
