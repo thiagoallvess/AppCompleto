@@ -1,4 +1,10 @@
-{/* Top App Bar */}
+import { ArrowLeft, HelpCircle, TrendingUp, Percent, Wallet, Lock, Plus, ArrowDown, Eye, Home, Search, DollarSign, User } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const Cashback = () => {
+  return (
+    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white min-h-screen flex flex-col overflow-x-hidden">
+      {/* Top App Bar */}
       <header className="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md transition-colors">
         <div className="flex items-center justify-between px-4 py-3 h-16">
           <Link
@@ -177,3 +183,8 @@
           </button>
         </div>
       </nav>
+    </div>
+  );
+};
+
+export default Cashback;
