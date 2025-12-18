@@ -13,12 +13,12 @@ const Index = () => {
           <h1 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight tracking-tight flex-1 text-center">
             Geladinhos Gourmet
           </h1>
-          <button className="flex size-10 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors relative">
+          <Link to="/cart" className="flex size-10 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors relative">
             <ShoppingCart className="text-slate-900 dark:text-text-primary" size={24} />
             <span className="absolute top-1 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white shadow-sm ring-2 ring-background-light dark:ring-background-dark">
               2
             </span>
-          </button>
+          </Link>
         </div>
       </header>
       <main className="max-w-md mx-auto lg:max-w-7xl flex flex-col gap-6 p-4">
