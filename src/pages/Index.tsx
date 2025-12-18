@@ -1,7 +1,8 @@
-import { Menu, ShoppingCart, Home, Search, Heart, User, Check } from "lucide-react";
+import { Menu, ShoppingCart, Home, Search, Heart, User, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useState } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Index = () => {
   const { addItem, totalItems } = useCart();
@@ -54,9 +55,54 @@ const Index = () => {
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto lg:max-w-none lg:px-6">
-          <button className="text-slate-900 dark:text-text-primary flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
-            <Menu size={24} />
-          </button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <button className="text-slate-900 dark:text-text-primary flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+                <Menu size={24} />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80">
+              <div className="flex flex-col gap-6 mt-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">G</span>
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-lg">Geladinhos Gourmet</h2>
+                    <p className="text-sm text-muted-foreground">Bem-vindo de volta!</p>
+                  </div>
+                </div>
+                <nav className="flex flex-col gap-2">
+                  <Link
+                    to="/"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <Home size={20} />
+                    <span>Início</span>
+                  </Link>
+                  <Link
+                    to="/cashback"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <DollarSign size={20} />
+                    <span>Meu Cashback</span>
+                  </Link>
+                  <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
+                    <Search size={20} />
+                    <span>Buscar</span>
+                  </button>
+                  <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
+                    <Heart size={20} />
+                    <span>Favoritos</span>
+                  </button>
+                  <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
+                    <User size={20} />
+                    <span>Perfil</span>
+                  </button>
+                </nav>
+              </div>
+            </SheetContent>
+          </Sheet>
           <h1 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight tracking-tight flex-1 text-center">
             Geladinhos Gourmet
           </h1>
@@ -143,7 +189,7 @@ const Index = () => {
                       >
                         {addedProducts.has(product.id) ? (
                           <>
-                            <Check size={16} className="mr-1" />
+                            <span>✓</span>
                             Adicionado
                           </>
                         ) : (
