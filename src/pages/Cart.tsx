@@ -107,10 +107,12 @@ const Cart = () => {
               </div>
             </div>
             {/* Checkout Button */}
-            <button className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg h-14 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-between px-6 transition-all active:scale-[0.98]">
-              <span>Ir para Pagamento</span>
-              <ArrowRight size={24} />
-            </button>
+            <Link to="/checkout">
+              <button className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg h-14 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-between px-6 transition-all active:scale-[0.98]">
+                <span>Ir para Pagamento</span>
+                <ArrowRight size={24} />
+              </button>
+            </Link>
           </div>
           {/* Safe area padding for iOS */}
           <div className="h-4 w-full bg-white dark:bg-surface-dark"></div>
