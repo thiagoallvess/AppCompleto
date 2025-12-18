@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 const EditEndereco = () => {
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen max-w-md mx-auto">
+    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-10 flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-10 flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between border-b border-gray-200 dark:border-gray-800 max-w-7xl mx-auto lg:px-6">
         <Link
           to="/enderecos"
           className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
@@ -40,7 +40,7 @@ const EditEndereco = () => {
       </div>
 
       {/* Main Content Form */}
-      <main className="flex-1 w-full max-w-md mx-auto px-4 py-6 pb-24">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 lg:px-6 py-6 pb-24">
         <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
           {/* CEP Field */}
           <div className="space-y-2">
@@ -146,7 +146,7 @@ const EditEndereco = () => {
       </main>
 
       {/* Floating/Fixed Footer Actions */}
-      <footer className="fixed bottom-0 left-0 w-full bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800 p-4 pb-6 z-20 max-w-md mx-auto">
+      <footer className="fixed bottom-0 left-0 w-full bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800 p-4 pb-6 z-20 max-w-7xl mx-auto">
         <div className="flex flex-col gap-3">
           <button className="w-full bg-primary hover:bg-blue-700 text-white font-bold h-12 sm:h-14 rounded-lg shadow-lg shadow-blue-900/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
             Salvar Alterações
