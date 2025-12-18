@@ -87,6 +87,13 @@ const Index = () => {
                     <DollarSign size={20} />
                     <span>Meu Cashback</span>
                   </Link>
+                  <Link
+                    to="/indicacao"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <Heart size={20} />
+                    <span>Indicação</span>
+                  </Link>
                   <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
                     <Search size={20} />
                     <span>Buscar</span>
