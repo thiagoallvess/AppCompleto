@@ -1,4 +1,4 @@
-import { ArrowLeft, Home, IceCream, Receipt, Settings, Storefront, Bolt, HardHat, DollarSign } from "lucide-react";
+import { ArrowLeft, Home, IceCream, Receipt, Settings, Store, Bolt, HardHat, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -93,7 +93,7 @@ const ConfiguracoesAdmin = () => {
           <div className="flex items-center gap-4 bg-white dark:bg-surface-dark px-4 py-4 justify-between border-y border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary">
-                <Storefront size={20} />
+                <Store size={20} />
               </div>
               <div className="flex flex-col">
                 <p className="text-slate-900 dark:text-white text-base font-medium leading-normal">Loja Aberta</p>
