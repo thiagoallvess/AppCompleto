@@ -105,9 +105,11 @@ const Enderecos = () => {
                     )}
                   </div>
                 </div>
-                <button className="text-gray-400 hover:text-primary transition-colors p-1">
-                  <Edit size={20} />
-                </button>
+                <Link to={`/edit-endereco?id=${address.id}`}>
+                  <button className="text-gray-400 hover:text-primary transition-colors p-1">
+                    <Edit size={20} />
+                  </button>
+                </Link>
               </div>
 
               {/* Actions for non-primary addresses */}
