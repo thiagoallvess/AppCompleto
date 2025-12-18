@@ -13,6 +13,7 @@ import MeusPedidos from "./pages/MeusPedidos";
 import DetalhesPedido from "./pages/DetalhesPedido";
 import Perfil from "./pages/Perfil";
 import Enderecos from "./pages/Enderecos";
+import AddEndereco from "./pages/AddEndereco";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/enderecos" element={<Enderecos />} />
+            <Route path="/add-endereco" element={<AddEndereco />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
