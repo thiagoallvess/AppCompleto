@@ -1,4 +1,4 @@
-import { ArrowLeft, Search, Home, Work, LocationOn, Edit, RadioButtonUnchecked, Delete, Plus, History } from "lucide-react";
+import { ArrowLeft, Search, Home, Work, MapPin, Edit, RadioButtonUnchecked, Delete, Plus, History } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Enderecos = () => {
@@ -39,7 +39,7 @@ const Enderecos = () => {
       case "work":
         return Work;
       default:
-        return LocationOn;
+        return MapPin;
     }
   };
 
