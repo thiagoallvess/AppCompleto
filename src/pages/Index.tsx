@@ -21,7 +21,7 @@ const Index = () => {
           </button>
         </div>
       </header>
-      <main className="max-w-md mx-auto flex flex-col gap-6 p-4">
+      <main className="max-w-md mx-auto lg:max-w-7xl flex flex-col gap-6 p-4">
         {/* Hero / Featured Section */}
         <section>
           <div className="flex justify-between items-end mb-3 px-1">
@@ -69,7 +69,7 @@ const Index = () => {
           </div>
         </section>
         {/* Product List */}
-        <section className="flex flex-col gap-4">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Item 1 */}
           <Link to="/product-details" className="block">
             <div className="@container">
