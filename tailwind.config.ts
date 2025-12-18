@@ -28,6 +28,8 @@ export default {
         "background-light": "#f6f7f8",
         "background-dark": "#1e252c",
         "surface-dark": "#2b323c",
+        "text-primary": "#FFFFFF",
+        "text-secondary": "#A0A0A0",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",

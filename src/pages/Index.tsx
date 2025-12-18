@@ -3,18 +3,18 @@ import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
+    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary pb-24 min-h-screen">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto">
-          <button className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+          <button className="text-slate-900 dark:text-text-primary flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
             <Menu size={24} />
           </button>
-          <h1 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">
+          <h1 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight tracking-tight flex-1 text-center">
             Geladinhos Gourmet
           </h1>
           <button className="flex size-10 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors relative">
-            <ShoppingCart className="text-slate-900 dark:text-white" size={24} />
+            <ShoppingCart className="text-slate-900 dark:text-text-primary" size={24} />
             <span className="absolute top-1 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white shadow-sm ring-2 ring-background-light dark:ring-background-dark">
               2
             </span>
@@ -25,7 +25,7 @@ const Index = () => {
         {/* Hero / Featured Section */}
         <section>
           <div className="flex justify-between items-end mb-3 px-1">
-            <h2 className="text-slate-900 dark:text-white text-xl font-bold">Destaque da Semana</h2>
+            <h2 className="text-slate-900 dark:text-text-primary text-xl font-bold">Destaque da Semana</h2>
           </div>
           <Link to="/product-details" className="block">
             <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
@@ -55,16 +55,16 @@ const Index = () => {
             </button>
             {/* Inactive Chips */}
             <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
-              <span className="text-slate-600 dark:text-gray-300 text-sm font-medium">Cremosos</span>
+              <span className="text-slate-600 dark:text-text-secondary text-sm font-medium">Cremosos</span>
             </button>
             <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
-              <span className="text-slate-600 dark:text-gray-300 text-sm font-medium">Frutas</span>
+              <span className="text-slate-600 dark:text-text-secondary text-sm font-medium">Frutas</span>
             </button>
             <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
-              <span className="text-slate-600 dark:text-gray-300 text-sm font-medium">Detox</span>
+              <span className="text-slate-600 dark:text-text-secondary text-sm font-medium">Detox</span>
             </button>
             <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
-              <span className="text-slate-600 dark:text-gray-300 text-sm font-medium">Alcoólicos</span>
+              <span className="text-slate-600 dark:text-text-secondary text-sm font-medium">Alcoólicos</span>
             </button>
           </div>
         </section>
@@ -88,14 +88,14 @@ const Index = () => {
                 <div className="flex flex-col justify-between p-4 grow">
                   <div>
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Morango do Nordeste</h3>
+                      <h3 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight">Morango do Nordeste</h3>
                     </div>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm font-medium leading-relaxed line-clamp-2">
+                    <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-relaxed line-clamp-2">
                       Feito com pedaços reais da fruta e água de coco. Refrescante e natural.
                     </p>
                   </div>
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-slate-900 dark:text-white text-lg font-bold">R$ 5,00</span>
+                    <span className="text-slate-900 dark:text-text-primary text-lg font-bold">R$ 5,00</span>
                     <button className="flex items-center justify-center h-9 px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-sm shadow-primary/30 transition-transform active:scale-95">
                       Adicionar
                     </button>
@@ -117,14 +117,14 @@ const Index = () => {
                 <div className="flex flex-col justify-between p-4 grow">
                   <div>
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Trufa Belga</h3>
+                      <h3 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight">Trufa Belga</h3>
                     </div>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm font-medium leading-relaxed line-clamp-2">
+                    <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-relaxed line-clamp-2">
                       Chocolate 70% cacau com um recheio de ganache cremoso. Intenso e sofisticado.
                     </p>
                   </div>
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-slate-900 dark:text-white text-lg font-bold">R$ 7,50</span>
+                    <span className="text-slate-900 dark:text-text-primary text-lg font-bold">R$ 7,50</span>
                     <button className="flex items-center justify-center h-9 px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-sm shadow-primary/30 transition-transform active:scale-95">
                       Adicionar
                     </button>
@@ -146,14 +146,14 @@ const Index = () => {
                 <div className="flex flex-col justify-between p-4 grow">
                   <div>
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Coco Puro</h3>
+                      <h3 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight">Coco Puro</h3>
                     </div>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm font-medium leading-relaxed line-clamp-2">
+                    <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-relaxed line-clamp-2">
                       Receita tradicional cremosa feita com leite de coco fresco artesanal.
                     </p>
                   </div>
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-slate-900 dark:text-white text-lg font-bold">R$ 6,00</span>
+                    <span className="text-slate-900 dark:text-text-primary text-lg font-bold">R$ 6,00</span>
                     <button className="flex items-center justify-center h-9 px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-sm shadow-primary/30 transition-transform active:scale-95">
                       Adicionar
                     </button>
@@ -179,14 +179,14 @@ const Index = () => {
                 <div className="flex flex-col justify-between p-4 grow">
                   <div>
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Caipirinha de Limão</h3>
+                      <h3 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight">Caipirinha de Limão</h3>
                     </div>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm font-medium leading-relaxed line-clamp-2">
+                    <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-relaxed line-clamp-2">
                       O clássico brasileiro em forma de geladinho. Cachaça, limão taiti e açúcar na medida.
                     </p>
                   </div>
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-slate-900 dark:text-white text-lg font-bold">R$ 8,00</span>
+                    <span className="text-slate-900 dark:text-text-primary text-lg font-bold">R$ 8,00</span>
                     <button className="flex items-center justify-center h-9 px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-sm shadow-primary/30 transition-transform active:scale-95">
                       Adicionar
                     </button>
@@ -204,15 +204,15 @@ const Index = () => {
             <Home size={24} />
             <span className="text-[10px] font-medium">Início</span>
           </button>
-          <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors space-y-1">
+          <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <Search size={24} />
             <span className="text-[10px] font-medium">Buscar</span>
           </button>
-          <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors space-y-1">
+          <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <Heart size={24} />
             <span className="text-[10px] font-medium">Favoritos</span>
           </button>
-          <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors space-y-1">
+          <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <User size={24} />
             <span className="text-[10px] font-medium">Perfil</span>
           </button>

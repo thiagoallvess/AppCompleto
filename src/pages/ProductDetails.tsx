@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const ProductDetails = () => {
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased">
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-text-primary antialiased">
       {/* Hero Section with Transparent Header Overlay */}
       <div className="relative w-full h-[45vh] shrink-0">
         {/* Header Overlay */}
@@ -35,7 +35,7 @@ const ProductDetails = () => {
         {/* Header Info */}
         <div className="flex flex-col gap-1 pb-4">
           <div className="flex items-start justify-between gap-4">
-            <h1 className="text-[28px] font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-[28px] font-bold leading-tight tracking-tight text-slate-900 dark:text-text-primary">
               Ninho com Nutella
             </h1>
             <div className="flex shrink-0 items-center rounded-lg bg-primary/10 px-3 py-1">
@@ -45,13 +45,13 @@ const ProductDetails = () => {
           {/* Ratings */}
           <div className="flex items-center gap-1.5 pt-1">
             <Star className="text-yellow-500 fill-current" size={20} />
-            <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">4.8</span>
-            <span className="text-sm text-slate-500 dark:text-slate-400">(120 avaliações)</span>
+            <span className="text-sm font-semibold text-slate-800 dark:text-text-secondary">4.8</span>
+            <span className="text-sm text-slate-500 dark:text-text-secondary">(120 avaliações)</span>
           </div>
         </div>
         {/* Description */}
         <div className="py-2">
-          <p className="text-base leading-relaxed text-slate-600 dark:text-slate-400">
+          <p className="text-base leading-relaxed text-slate-600 dark:text-text-secondary">
             Uma combinação cremosa de leite ninho trufado com o autêntico creme de avelã. O equilíbrio perfeito entre o doce e o sabor marcante para refrescar seu dia.
           </p>
         </div>
@@ -59,40 +59,40 @@ const ProductDetails = () => {
         <div className="my-6 h-px w-full bg-slate-200 dark:bg-slate-800"></div>
         {/* Ingredients */}
         <div className="mb-6">
-          <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Ingredientes</h3>
+          <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-text-secondary">Ingredientes</h3>
           <div className="flex flex-wrap gap-2">
-            <div className="flex items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700">
+            <div className="flex items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 dark:bg-surface-dark dark:text-text-primary dark:ring-slate-700">
               Leite Ninho
             </div>
-            <div className="flex items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700">
+            <div className="flex items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 dark:bg-surface-dark dark:text-text-primary dark:ring-slate-700">
               Nutella
             </div>
-            <div className="flex items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700">
+            <div className="flex items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 dark:bg-surface-dark dark:text-text-primary dark:ring-slate-700">
               Leite Condensado
             </div>
-            <div className="flex items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700">
+            <div className="flex items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 dark:bg-surface-dark dark:text-text-primary dark:ring-slate-700">
               Creme de Leite
             </div>
           </div>
         </div>
         {/* Quantity Stepper */}
-        <div className="mb-6 flex items-center justify-between rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-800/50 dark:ring-slate-800">
-          <span className="font-bold text-slate-900 dark:text-white">Quantidade</span>
+        <div className="mb-6 flex items-center justify-between rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-900/5 dark:bg-surface-dark/50 dark:ring-slate-800">
+          <span className="font-bold text-slate-900 dark:text-text-primary">Quantidade</span>
           <div className="flex items-center gap-4">
-            <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600">
+            <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200 dark:bg-slate-700 dark:text-text-secondary dark:hover:bg-slate-600">
               <Minus size={20} />
             </button>
-            <span className="min-w-[20px] text-center text-lg font-bold text-slate-900 dark:text-white">1</span>
+            <span className="min-w-[20px] text-center text-lg font-bold text-slate-900 dark:text-text-primary">1</span>
             <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white transition hover:bg-primary/90">
               <Plus size={20} />
             </button>
           </div>
         </div>
         {/* Additional Details */}
-        <div className="mb-8 rounded-xl bg-slate-50 p-4 dark:bg-slate-800/30">
+        <div className="mb-8 rounded-xl bg-slate-50 p-4 dark:bg-surface-dark/30">
           <div className="flex items-center gap-3">
             <Info className="text-slate-400" size={20} />
-            <p className="text-sm text-slate-500 dark:text-slate-400">Contém lactose e avelã. Pode conter traços de amendoim.</p>
+            <p className="text-sm text-slate-500 dark:text-text-secondary">Contém lactose e avelã. Pode conter traços de amendoim.</p>
           </div>
         </div>
         {/* Spacer */}
