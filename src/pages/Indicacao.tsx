@@ -1,4 +1,4 @@
-import { ArrowLeft, Gift, Tag, Users, Copy, Share } from "lucide-react";
+import { ArrowLeft, Gift, Tag, Users, Copy, Share, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -39,6 +39,24 @@ const Indicacao = () => {
       }
     }
   };
+
+  const usedReferrals = [
+    {
+      name: "Beatriz Souza",
+      date: "24 Out, 2023",
+      status: "Usado"
+    },
+    {
+      name: "Lucas Ferreira",
+      date: "22 Out, 2023",
+      status: "Usado"
+    },
+    {
+      name: "Mariana Costa",
+      date: "18 Out, 2023",
+      status: "Usado"
+    }
+  ];
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary pb-24 min-h-screen">
@@ -128,6 +146,29 @@ const Indicacao = () => {
               {copied ? "Código copiado!" : "Toque no ícone para copiar seu código."}
             </p>
           </label>
+        </div>
+
+        {/* Quem usou seu código */}
+        <div className="flex flex-col gap-4 pt-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-slate-900 dark:text-text-primary text-base font-bold leading-normal">Quem usou seu código</h3>
+          </div>
+          <div className="flex flex-col border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-surface-dark overflow-hidden shadow-sm">
+            {usedReferrals.map((referral, index) => (
+              <div key={index} className={`flex items-center gap-4 p-4 ${index < usedReferrals.length - 1 ? 'border-b border-gray-100 dark:border-gray-700/50' : ''}`}>
+                <div className="bg-gray-100 dark:bg-gray-700 h-10 w-10 rounded-full flex items-center justify-center shrink-0">
+                  <User className="text-gray-500 dark:text-text-secondary" size={20} />
+                </div>
+                <div className="flex flex-1 flex-col">
+                  <p className="text-slate-900 dark:text-text-primary text-sm font-bold leading-tight">{referral.name}</p>
+                  <p className="text-slate-500 dark:text-text-secondary text-xs font-medium mt-0.5">{referral.date}</p>
+                </div>
+                <div className="text-xs font-bold text-slate-400 dark:text-slate-600 bg-slate-100 dark:bg-gray-700 px-2 py-1 rounded">
+                  {referral.status}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
 
