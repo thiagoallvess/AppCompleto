@@ -1,7 +1,17 @@
-import { ArrowLeft, Package, MapPin, Users, User, LogOut, Store, Search, ShoppingCart, Heart, PersonStanding } from "lucide-react";
+import { ArrowLeft, Package, MapPin, Users, User, LogOut, Store, Search, ShoppingCart, Heart, PersonStanding, Eye, EyeOff, Camera } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const Perfil = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "Mariana Silva",
+    email: "mariana.silva@email.com",
+    password: "password123"
+  });
+
   const user = {
     name: "Mariana Silva",
     email: "mariana.silva@email.com",
@@ -12,6 +22,18 @@ const Perfil = () => {
     cashback: 15.50,
     cashbackIncrease: 2.50,
     rewards: 32.00
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveChanges = () => {
+    // Implement save logic here
+    alert("Alterações salvas com sucesso!");
   };
 
   const handleLogout = () => {
@@ -40,7 +62,7 @@ const Perfil = () => {
             style={{ backgroundImage: `url("${user.avatar}")` }}
           ></div>
           <button className="absolute bottom-0 right-0 bg-primary hover:bg-blue-700 text-white p-1.5 rounded-full border-4 border-background-light dark:border-background-dark transition-colors shadow-sm">
-            <User size={18} />
+            <Camera size={18} />
           </button>
         </div>
         <div className="flex flex-col items-center justify-center gap-1">
@@ -85,8 +107,86 @@ const Perfil = () => {
         </div>
       </section>
 
+      {/* Dados Pessoais Section */}
+      <section className="px-4 py-2 mt-2">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-text-secondary mb-3 pl-2">Dados Pessoais</h3>
+        <form className="flex flex-col gap-5 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold uppercase text-gray-400 dark:text-text-secondary tracking-wider" htmlFor="name">
+              Nome Completo
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <User className="text-gray-400 dark:text-text-secondary" size={20} />
+              </div>
+              <Input
+                className="block w-full pl-10 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-highlight text-sm text-slate-900 dark:text-text-primary focus:border-gray-400 focus:ring-gray-400 transition-colors"
+                id="name"
+                placeholder="Seu nome"
+                type="text"
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold uppercase text-gray-400 dark:text-text-secondary tracking-wider" htmlFor="email">
+              E-mail
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="text-gray-400 dark:text-text-secondary" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <Input
+                className="block w-full pl-10 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-highlight text-sm text-slate-900 dark:text-text-primary focus:border-gray-400 focus:ring-gray-400 transition-colors"
+                id="email"
+                placeholder="seu.email@exemplo.com"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold uppercase text-gray-400 dark:text-text-secondary tracking-wider" htmlFor="password">
+              Senha
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="text-gray-400 dark:text-text-secondary" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <Input
+                className="block w-full pl-10 pr-10 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-highlight text-sm text-slate-900 dark:text-text-primary focus:border-gray-400 focus:ring-gray-400 transition-colors"
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+              />
+              <button
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-text-secondary"
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </div>
+          <Button
+            className="mt-2 w-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-slate-900 font-bold rounded-xl py-3.5 shadow-lg shadow-slate-900/10 dark:shadow-black/20 active:scale-95 transition-all text-sm uppercase tracking-wide"
+            type="button"
+            onClick={handleSaveChanges}
+          >
+            Salvar Alterações
+          </Button>
+        </form>
+      </section>
+
       {/* Menu List */}
-      <section className="flex flex-col gap-2 p-4 mt-2">
+      <section className="flex flex-col gap-2 p-4 pt-2">
         <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-text-secondary mb-2 pl-2">Minha Conta</h3>
 
         {/* Item: Pedidos */}
@@ -143,21 +243,6 @@ const Perfil = () => {
           </div>
         </Link>
 
-        {/* Item: Editar Perfil */}
-        <button className="flex items-center gap-4 bg-white dark:bg-surface-dark hover:bg-gray-50 dark:hover:bg-surface-highlight p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 transition-colors group">
-          <div className="flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-text-secondary shrink-0 size-10 group-hover:scale-110 transition-transform">
-            <PersonStanding size={20} />
-          </div>
-          <div className="flex flex-col items-start flex-1">
-            <p className="text-base font-semibold leading-normal">Editar Dados</p>
-          </div>
-          <div className="text-gray-400">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </button>
-
         {/* Item: Sair */}
         <button
           onClick={handleLogout}
@@ -181,9 +266,9 @@ const Perfil = () => {
             <Search size={20} />
             <span className="text-[10px] font-medium">Busca</span>
           </button>
-          <Link to="/cart" className="flex flex-col items-center justify-center -mt-8 size-14 rounded-full bg-primary text-white shadow-lg shadow-primary/40 hover:scale-105 transition-transform">
+          <button className="flex flex-col items-center justify-center -mt-8 size-14 rounded-full bg-primary text-white shadow-lg shadow-primary/40 hover:scale-105 transition-transform">
             <ShoppingCart size={24} />
-          </Link>
+          </button>
           <button className="flex flex-col items-center gap-1 w-12 text-gray-400 hover:text-primary transition-colors">
             <Heart size={20} />
             <span className="text-[10px] font-medium">Favoritos</span>
