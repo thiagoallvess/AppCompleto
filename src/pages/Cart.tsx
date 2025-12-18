@@ -6,7 +6,7 @@ const Cart = () => {
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary min-h-screen flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center p-4 justify-between max-w-md mx-auto w-full">
+        <div className="flex items-center p-4 justify-between max-w-md mx-auto lg:max-w-7xl lg:px-6 w-full">
           <div className="flex items-center gap-3">
             <Link
               to="/"
@@ -22,7 +22,7 @@ const Cart = () => {
         </div>
       </header>
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-md mx-auto p-4 pb-32 space-y-4">
+      <main className="flex-1 w-full max-w-md mx-auto lg:max-w-7xl p-4 lg:px-6 pb-32 space-y-4">
         {/* Cart Items List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Item 1 */}
@@ -121,7 +121,7 @@ const Cart = () => {
       </main>
       {/* Bottom Sheet / Summary */}
       <div className="fixed bottom-0 left-0 right-0 w-full bg-white dark:bg-surface-dark rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-40 border-t border-gray-100 dark:border-gray-800">
-        <div className="max-w-md mx-auto p-5 pb-8 space-y-4">
+        <div className="max-w-md mx-auto lg:max-w-7xl p-5 pb-8 space-y-4">
           {/* Price Breakdown */}
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm">
