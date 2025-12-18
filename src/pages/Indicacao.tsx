@@ -62,7 +62,7 @@ const Indicacao = () => {
         {/* Hero Section */}
         <div className="flex flex-col gap-3">
           <h1 className="text-slate-900 dark:text-text-primary tracking-tight text-[28px] font-extrabold leading-tight max-w-[720px]">
-            Indique e ganhe sabores exclusivos
+            Indique e Ganhe
           </h1>
           <p className="text-slate-500 dark:text-text-secondary text-base font-normal leading-relaxed max-w-[720px]">
             Aumente seu nível gourmet. Seus amigos ganham desconto na primeira compra e você no seu próximo pedido.
