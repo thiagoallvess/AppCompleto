@@ -114,14 +114,14 @@ const GestaoPedidos = () => {
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-20 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 justify-between border-b border-border-light dark:border-border-dark">
+      <header className="sticky top-0 z-20 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 justify-between border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-3">
           <button className="text-slate-900 dark:text-white flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
             <Menu size={24} />
           </button>
           <div>
             <h1 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Gestão de Pedidos</h1>
-            <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs font-medium">Gourmet Ice</p>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">Gourmet Ice</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -142,33 +142,33 @@ const GestaoPedidos = () => {
       {/* Stats Section */}
       <div className="px-4 pt-6 pb-2">
         <div className="flex flex-wrap gap-3">
-          <div className="flex flex-1 flex-col gap-1 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-sm">
+          <div className="flex flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex items-center justify-between">
-              <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs font-bold uppercase tracking-wider">Hoje</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Hoje</p>
               <TrendingUp className="text-primary text-lg" />
             </div>
             <p className="text-slate-900 dark:text-white tracking-tight text-2xl font-bold">24</p>
-            <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs font-medium">Pedidos novos</p>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">Pedidos novos</p>
           </div>
-          <div className="flex flex-1 flex-col gap-1 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-sm">
+          <div className="flex flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex items-center justify-between">
-              <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs font-bold uppercase tracking-wider">Receita</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Receita</p>
               <DollarSign className="text-green-500 text-lg" />
             </div>
             <p className="text-slate-900 dark:text-white tracking-tight text-2xl font-bold">R$ 350</p>
-            <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs font-medium">+12% vs ontem</p>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">+12% vs ontem</p>
           </div>
         </div>
       </div>
 
       {/* Search Bar */}
       <div className="px-4 py-3">
-        <div className="relative flex items-center w-full h-12 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-sm">
-          <div className="grid place-items-center h-full w-12 text-text-secondary-light dark:text-text-secondary-dark">
+        <div className="relative flex items-center w-full h-12 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-sm">
+          <div className="grid place-items-center h-full w-12 text-slate-400 dark:text-slate-500">
             <Search size={20} />
           </div>
           <Input
-            className="peer h-full w-full outline-none bg-transparent text-sm text-slate-900 dark:text-white placeholder-text-secondary-light dark:placeholder-text-secondary-dark pr-4 font-medium border-none focus:ring-0"
+            className="peer h-full w-full outline-none bg-transparent text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 pr-4 font-medium border-none focus:ring-0"
             placeholder="Buscar por cliente ou pedido..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -177,7 +177,7 @@ const GestaoPedidos = () => {
       </div>
 
       {/* Filter Chips */}
-      <div className="sticky top-[73px] z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-border-light dark:border-border-dark">
+      <div className="sticky top-[73px] z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800">
         <div className="flex gap-2 px-4 py-3 overflow-x-auto no-scrollbar">
           {filters.map((filter) => (
             <Button
@@ -187,7 +187,7 @@ const GestaoPedidos = () => {
               className={`h-9 shrink-0 px-4 rounded-full ${
                 activeFilter === filter.label
                   ? "bg-primary text-white shadow-lg shadow-primary/20"
-                  : "bg-surface-light dark:bg-surface-dark border-border-light dark:border-border-dark text-text-secondary-light dark:text-text-secondary-dark hover:bg-slate-200 dark:hover:bg-slate-800"
+                  : "bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
               } transition-transform active:scale-95`}
               onClick={() => setActiveFilter(filter.label)}
             >
@@ -208,16 +208,16 @@ const GestaoPedidos = () => {
         {openOrders.length > 0 && (
           <>
             <div className="flex items-center justify-between pt-2">
-              <h3 className="text-text-secondary-light dark:text-text-secondary-dark text-xs font-bold uppercase tracking-widest">Em Aberto</h3>
+              <h3 className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">Em Aberto</h3>
               <button className="text-primary text-xs font-semibold hover:underline">Ver tudo</button>
             </div>
             {openOrders.map((order) => (
               <div
                 key={order.id}
-                className={`group relative flex flex-col gap-3 rounded-2xl bg-surface-light dark:bg-surface-dark p-4 border shadow-sm transition-all hover:shadow-md active:scale-[0.99] ${
+                className={`group relative flex flex-col gap-3 rounded-2xl bg-white dark:bg-surface-dark p-4 border shadow-sm transition-all hover:shadow-md active:scale-[0.99] ${
                   order.isNew
                     ? "border-primary/30 dark:border-primary/30"
-                    : "border-border-light dark:border-border-dark"
+                    : "border-slate-200 dark:border-slate-800"
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -227,7 +227,7 @@ const GestaoPedidos = () => {
                     }`}>
                       {getStatusIcon(order.statusIcon)}
                       {order.isNew && (
-                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 ring-2 ring-surface-light dark:ring-surface-dark"></span>
+                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 ring-2 ring-white dark:ring-surface-dark"></span>
                       )}
                     </div>
                     <div>
@@ -242,18 +242,18 @@ const GestaoPedidos = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-slate-900 dark:text-white text-base font-bold">R$ {order.total.toFixed(2)}</p>
-                    <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs">{order.time}</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs">{order.time}</p>
                   </div>
                 </div>
-                <div className="w-full h-px bg-border-light dark:bg-border-dark"></div>
+                <div className="w-full h-px bg-slate-200 dark:bg-slate-800"></div>
                 <div className="flex items-center justify-between gap-4">
                   {order.eta ? (
-                    <div className="flex items-center gap-1.5 text-xs text-text-secondary-light dark:text-text-secondary-dark">
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                       <div className="material-symbols-outlined text-sm">schedule</div>
                       <span>{order.eta}</span>
                     </div>
                   ) : (
-                    <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs leading-normal line-clamp-1 flex-1">
+                    <p className="text-slate-500 dark:text-slate-400 text-xs leading-normal line-clamp-1 flex-1">
                       {order.items}
                     </p>
                   )}
@@ -287,12 +287,12 @@ const GestaoPedidos = () => {
         {finishedOrders.length > 0 && (
           <>
             <div className="flex items-center justify-between pt-4">
-              <h3 className="text-text-secondary-light dark:text-text-secondary-dark text-xs font-bold uppercase tracking-widest">Finalizados Hoje</h3>
+              <h3 className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">Finalizados Hoje</h3>
             </div>
             {finishedOrders.map((order) => (
               <div
                 key={order.id}
-                className="group relative flex items-center justify-between rounded-xl bg-surface-light/50 dark:bg-surface-dark/50 p-4 border border-transparent shadow-none opacity-70"
+                className="group relative flex items-center justify-between rounded-xl bg-white/50 dark:bg-surface-dark/50 p-4 border border-transparent shadow-none opacity-70"
               >
                 <div className="flex items-center gap-3">
                   <div className={`flex items-center justify-center rounded-lg shrink-0 size-10 ${getStatusColor(order.statusColor)}`}>
@@ -302,7 +302,7 @@ const GestaoPedidos = () => {
                     <p className={`text-slate-900 dark:text-white text-sm font-bold leading-tight ${order.cancelled ? 'line-through decoration-slate-400' : ''}`}>
                       {order.id} - {order.customer}
                     </p>
-                    <p className="text-text-secondary-light dark:text-text-secondary-dark text-xs font-medium">
+                    <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
                       {order.status === "Entregue" ? `Entregue às ${order.time}` : "Cancelado pelo cliente"}
                     </p>
                   </div>
@@ -324,21 +324,21 @@ const GestaoPedidos = () => {
       </button>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 z-20 w-full max-w-md border-t border-border-light dark:border-border-dark bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pb-safe">
+      <nav className="fixed bottom-0 z-20 w-full max-w-md border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pb-safe">
         <div className="flex h-16 items-center justify-around px-2">
           <Link to="/gestao-pedidos" className="flex flex-col items-center justify-center gap-1 w-16 text-primary">
             <div className="material-symbols-outlined fill">list_alt</div>
             <span className="text-[10px] font-bold">Pedidos</span>
           </Link>
-          <Link to="/gestao-insumos" className="flex flex-col items-center justify-center gap-1 w-16 text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white transition-colors">
+          <Link to="/gestao-insumos" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
             <div className="material-symbols-outlined">inventory</div>
             <span className="text-[10px] font-medium">Estoque</span>
           </Link>
-          <button className="flex flex-col items-center justify-center gap-1 w-16 text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white transition-colors">
+          <button className="flex flex-col items-center justify-center gap-1 w-16 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
             <div className="material-symbols-outlined">bar_chart</div>
             <span className="text-[10px] font-medium">Vendas</span>
           </button>
-          <Link to="/configuracoes-admin" className="flex flex-col items-center justify-center gap-1 w-16 text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white transition-colors">
+          <Link to="/configuracoes-admin" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
             <div className="material-symbols-outlined">settings</div>
             <span className="text-[10px] font-medium">Ajustes</span>
           </Link>
