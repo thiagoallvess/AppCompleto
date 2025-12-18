@@ -1,4 +1,4 @@
-import { ArrowLeft, Search, Home, Work, LocationOn, Edit, RadioButtonUnchecked, Delete, Add, History } from "lucide-react";
+import { ArrowLeft, Search, Home, Work, LocationOn, Edit, RadioButtonUnchecked, Delete, Plus, History } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Enderecos = () => {
@@ -140,7 +140,7 @@ const Enderecos = () => {
       {/* Add New Address Button */}
       <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark pt-8">
         <button className="flex w-full cursor-pointer items-center justify-center rounded-xl h-14 bg-primary hover:bg-blue-700 active:scale-[0.98] transition-all text-white gap-2 shadow-lg shadow-primary/25">
-          <Add size={24} />
+          <Plus size={24} />
           <span className="text-base font-bold tracking-wide">Adicionar novo endereço</span>
         </button>
       </div>
