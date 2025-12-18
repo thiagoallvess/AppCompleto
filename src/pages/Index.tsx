@@ -22,30 +22,6 @@ const Index = () => {
         </div>
       </header>
       <main className="max-w-md mx-auto lg:max-w-7xl flex flex-col gap-6 p-4">
-        {/* Hero / Featured Section */}
-        <section>
-          <div className="flex justify-between items-end mb-3 px-1">
-            <h2 className="text-slate-900 dark:text-text-primary text-xl font-bold">Destaque da Semana</h2>
-          </div>
-          <Link to="/product-details" className="block">
-            <div className="relative w-full aspect-[4:3] rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                style={{
-                  backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuC8xLdHh8o1pcib7E6RzpmF3XeFF__7JDmT_XGETuf9LJGGuaLVo5vOj1J3CJox3ZSdV8RA4MPNgF5GBfziazn0p8iKqMyVyPEblgLSp6RyQE9tW8LJrnQWSd2CqTYu5V0y6tR2soiiAMcrzFJuGP8RWncMRMFjR0iLcTuUPE2hLv1NSmzSNbz6W_Sb4N6CugHviK8L_QwVZEgvuflC805pFl-U2ByOhiMrB0aDXbToEztHUB_mfYO1BCmPNK-N2vfYcPxPREwaZg')`,
-                }}
-              ></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-5 w-full">
-                <span className="inline-block px-2 py-1 mb-2 text-xs font-bold text-white bg-primary rounded-md uppercase tracking-wider">
-                  20% OFF
-                </span>
-                <h3 className="text-white text-2xl font-bold leading-tight">Ninho com Nutella</h3>
-                <p className="text-gray-300 text-sm mt-1 line-clamp-1">O queridinho da galera com recheio extra.</p>
-              </div>
-            </div>
-          </Link>
-        </section>
         {/* Categories (Chips) */}
         <section className="w-full overflow-hidden">
           <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
