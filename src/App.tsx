@@ -11,6 +11,7 @@ import Cashback from "./pages/Cashback";
 import Indicacao from "./pages/Indicacao";
 import MeusPedidos from "./pages/MeusPedidos";
 import DetalhesPedido from "./pages/DetalhesPedido";
+import Perfil from "./pages/Perfil";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/indicacao" element={<Indicacao />} />
             <Route path="/meus-pedidos" element={<MeusPedidos />} />
             <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
+            <Route path="/perfil" element={<Perfil />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
