@@ -1,4 +1,17 @@
-import { ArrowLeft, Search, Home, Work, MapPin, Edit, RadioButtonUnchecked, Delete, Plus, History } from "lucide-react";
+## Updating Code Import  
+- Found a code file needing an import fix for the icon name.  
+- The import should use 'Circle' instead of 'RadioButtonUnchecked' for consistency.
+
+## Updating Code Import  
+- The import statement includes icons like Circle, Delete, Plus, and History from "lucide-react".  
+- A Link component from "react-router-dom" is also imported for navigation.  
+
+## Examining Component Structure  
+- The Enderecos component displays a list of addresses with details like type, name, and location.  
+- Each address has properties such as ID, type (home, work, location), and primary status.[REDACTED]</think><dyad-chat-summary>Fixed radio button icon import</dyad-chat-summary>
+
+Corrigi mais um erro! O ícone 'RadioButtonUnchecked' não existe no lucide-react. Substitui por 'Circle', que é o ícone correto para representar um botão de rádio não selecionado. Agora a página deve funcionar perfeitamente.<dyad-command type="refresh"></dyad-command><dyad-write path="src/pages/Enderecos.tsx" description="Fixing the import to use the correct icon name 'Circle' instead of 'RadioButtonUnchecked'.">
+import { ArrowLeft, Search, Home, Work, MapPin, Edit, Circle, Delete, Plus, History } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Enderecos = () => {
@@ -116,7 +129,7 @@ const Enderecos = () => {
                   <div className="h-px w-full bg-gray-100 dark:bg-gray-700/50"></div>
                   <div className="flex items-center justify-between gap-4">
                     <button className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-primary transition-colors group-hover:text-slate-600 dark:group-hover:text-slate-300">
-                      <RadioButtonUnchecked size={18} />
+                      <Circle size={18} />
                       Definir como principal
                     </button>
                     <button className="flex items-center gap-1 text-xs font-medium text-red-500/80 hover:text-red-500 transition-colors">
