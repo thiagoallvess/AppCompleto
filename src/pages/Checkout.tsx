@@ -25,18 +25,18 @@ const Checkout = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary min-h-screen flex flex-col">
+    <div className="checkout-page font-display antialiased min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-50 bg-[#161F2A]/95 backdrop-blur-md border-b border-[#2B323C]">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto lg:max-w-7xl lg:px-6 w-full">
           <div className="flex items-center gap-3">
             <Link
               to="/cart"
-              className="p-1 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-surface-dark transition-colors"
+              className="p-1 -ml-2 rounded-full hover:bg-[#2B323C] transition-colors"
             >
-              <ArrowLeft className="text-gray-500 dark:text-gray-400" size={24} />
+              <ArrowLeft className="text-[#A0A0A0]" size={24} />
             </Link>
-            <h2 className="text-xl font-bold leading-tight tracking-tight">Pagamento</h2>
+            <h2 className="text-xl font-bold leading-tight tracking-tight text-[#FFFFFF]">Pagamento</h2>
           </div>
         </div>
       </header>
@@ -45,10 +45,10 @@ const Checkout = () => {
       <main className="flex-1 w-full max-w-md mx-auto lg:max-w-7xl p-4 lg:px-6 pb-32 space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Order Summary */}
-          <Card>
+          <Card className="card-background border-[#2B323C]">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Truck size={20} />
+              <CardTitle className="flex items-center gap-2 text-[#FFFFFF]">
+                <Truck size={20} className="text-[#A0A0A0]" />
                 Resumo do Pedido
               </CardTitle>
             </CardHeader>
@@ -62,140 +62,140 @@ const Checkout = () => {
                     }}
                   ></div>
                   <div className="flex-1">
-                    <h3 className="font-medium">{item.name}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <h3 className="font-medium text-[#FFFFFF]">{item.name}</h3>
+                    <p className="text-sm text-[#A0A0A0]">
                       Quantidade: {item.quantity} × R$ {item.price.toFixed(2)}
                     </p>
                   </div>
-                  <span className="font-bold">R$ {(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="font-bold text-[#FFFFFF]">R$ {(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
-              <Separator />
+              <Separator className="bg-[#2B323C]" />
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>R$ {subtotal.toFixed(2)}</span>
+                  <span className="text-[#A0A0A0]">Subtotal</span>
+                  <span className="text-[#FFFFFF]">R$ {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Entrega</span>
+                  <span className="text-[#A0A0A0]">Entrega</span>
                   <span className="text-green-500">R$ {delivery.toFixed(2)}</span>
                 </div>
-                <Separator />
+                <Separator className="bg-[#2B323C]" />
                 <div className="flex justify-between text-lg font-bold">
-                  <span>Total</span>
-                  <span>R$ {total.toFixed(2)}</span>
+                  <span className="text-[#FFFFFF]">Total</span>
+                  <span className="text-[#FFFFFF]">R$ {total.toFixed(2)}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Customer Information */}
-          <Card>
+          <Card className="card-background border-[#2B323C]">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User size={20} />
+              <CardTitle className="flex items-center gap-2 text-[#FFFFFF]">
+                <User size={20} className="text-[#A0A0A0]" />
                 Informações do Cliente
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">Nome</Label>
-                  <Input id="firstName" placeholder="João" required />
+                  <Label htmlFor="firstName" className="text-[#FFFFFF]">Nome</Label>
+                  <Input id="firstName" placeholder="João" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Sobrenome</Label>
-                  <Input id="lastName" placeholder="Silva" required />
+                  <Label htmlFor="lastName" className="text-[#FFFFFF]">Sobrenome</Label>
+                  <Input id="lastName" placeholder="Silva" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">E-mail</Label>
-                <Input id="email" type="email" placeholder="joao@email.com" required />
+                <Label htmlFor="email" className="text-[#FFFFFF]">E-mail</Label>
+                <Input id="email" type="email" placeholder="joao@email.com" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefone</Label>
-                <Input id="phone" placeholder="(11) 99999-9999" required />
+                <Label htmlFor="phone" className="text-[#FFFFFF]">Telefone</Label>
+                <Input id="phone" placeholder="(11) 99999-9999" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
               </div>
             </CardContent>
           </Card>
 
           {/* Delivery Address */}
-          <Card>
+          <Card className="card-background border-[#2B323C]">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin size={20} />
+              <CardTitle className="flex items-center gap-2 text-[#FFFFFF]">
+                <MapPin size={20} className="text-[#A0A0A0]" />
                 Endereço de Entrega
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="address">Endereço</Label>
-                <Input id="address" placeholder="Rua das Flores, 123" required />
+                <Label htmlFor="address" className="text-[#FFFFFF]">Endereço</Label>
+                <Input id="address" placeholder="Rua das Flores, 123" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">Cidade</Label>
-                  <Input id="city" placeholder="São Paulo" required />
+                  <Label htmlFor="city" className="text-[#FFFFFF]">Cidade</Label>
+                  <Input id="city" placeholder="São Paulo" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="zipCode">CEP</Label>
-                  <Input id="zipCode" placeholder="01234-567" required />
+                  <Label htmlFor="zipCode" className="text-[#FFFFFF]">CEP</Label>
+                  <Input id="zipCode" placeholder="01234-567" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="complement">Complemento (opcional)</Label>
-                <Input id="complement" placeholder="Apto 45, bloco B" />
+                <Label htmlFor="complement" className="text-[#FFFFFF]">Complemento (opcional)</Label>
+                <Input id="complement" placeholder="Apto 45, bloco B" className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
               </div>
             </CardContent>
           </Card>
 
           {/* Payment Methods */}
-          <Card>
+          <Card className="card-background border-[#2B323C]">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard size={20} />
+              <CardTitle className="flex items-center gap-2 text-[#FFFFFF]">
+                <CreditCard size={20} className="text-[#A0A0A0]" />
                 Forma de Pagamento
               </CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
-                  <RadioGroupItem value="credit" id="credit" />
+                <div className="flex items-center space-x-3 p-4 border border-[#2B323C] rounded-lg hover:bg-[#283645] transition-colors bg-[#2B323C]">
+                  <RadioGroupItem value="credit" id="credit" className="border-[#A0A0A0]" />
                   <label htmlFor="credit" className="flex items-center gap-3 cursor-pointer flex-1">
                     <CreditCard size={20} className="text-primary" />
                     <div>
-                      <div className="font-medium">Cartão de Crédito</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Até 12x sem juros</div>
+                      <div className="font-medium text-[#FFFFFF]">Cartão de Crédito</div>
+                      <div className="text-sm text-[#A0A0A0]">Até 12x sem juros</div>
                     </div>
                   </label>
                 </div>
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
-                  <RadioGroupItem value="debit" id="debit" />
+                <div className="flex items-center space-x-3 p-4 border border-[#2B323C] rounded-lg hover:bg-[#283645] transition-colors bg-[#2B323C]">
+                  <RadioGroupItem value="debit" id="debit" className="border-[#A0A0A0]" />
                   <label htmlFor="debit" className="flex items-center gap-3 cursor-pointer flex-1">
                     <CreditCard size={20} className="text-blue-500" />
                     <div>
-                      <div className="font-medium">Cartão de Débito</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Pagamento à vista</div>
+                      <div className="font-medium text-[#FFFFFF]">Cartão de Débito</div>
+                      <div className="text-sm text-[#A0A0A0]">Pagamento à vista</div>
                     </div>
                   </label>
                 </div>
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
-                  <RadioGroupItem value="pix" id="pix" />
+                <div className="flex items-center space-x-3 p-4 border border-[#2B323C] rounded-lg hover:bg-[#283645] transition-colors bg-[#2B323C]">
+                  <RadioGroupItem value="pix" id="pix" className="border-[#A0A0A0]" />
                   <label htmlFor="pix" className="flex items-center gap-3 cursor-pointer flex-1">
                     <Smartphone size={20} className="text-green-500" />
                     <div>
-                      <div className="font-medium">PIX</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Pagamento instantâneo</div>
+                      <div className="font-medium text-[#FFFFFF]">PIX</div>
+                      <div className="text-sm text-[#A0A0A0]">Pagamento instantâneo</div>
                     </div>
                   </label>
                 </div>
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
-                  <RadioGroupItem value="cash" id="cash" />
+                <div className="flex items-center space-x-3 p-4 border border-[#2B323C] rounded-lg hover:bg-[#283645] transition-colors bg-[#2B323C]">
+                  <RadioGroupItem value="cash" id="cash" className="border-[#A0A0A0]" />
                   <label htmlFor="cash" className="flex items-center gap-3 cursor-pointer flex-1">
                     <Banknote size={20} className="text-yellow-500" />
                     <div>
-                      <div className="font-medium">Dinheiro</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Pagamento na entrega</div>
+                      <div className="font-medium text-[#FFFFFF]">Dinheiro</div>
+                      <div className="text-sm text-[#A0A0A0]">Pagamento na entrega</div>
                     </div>
                   </label>
                 </div>
@@ -204,7 +204,7 @@ const Checkout = () => {
           </Card>
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full h-14 text-lg font-bold">
+          <Button type="submit" className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90">
             Finalizar Pedido - R$ {total.toFixed(2)}
           </Button>
         </form>

@@ -100,6 +100,28 @@
   }
 }
 
+/* Checkout page specific colors */
+.checkout-page {
+  background-color: #161F2A;
+  color: #FFFFFF;
+}
+
+.checkout-page .card-background {
+  background-color: #2B323C;
+}
+
+.checkout-page .text-secondary {
+  color: #A0A0A0;
+}
+
+.checkout-page .text-primary {
+  color: #FFFFFF;
+}
+
+.checkout-page .border-color {
+  border-color: #2B323C;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -112,3 +134,4 @@
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+</style>
