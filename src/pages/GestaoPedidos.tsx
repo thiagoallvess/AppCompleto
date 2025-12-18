@@ -323,8 +323,8 @@ const GestaoPedidos = () => {
         <Plus size={28} />
       </button>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 z-20 w-full max-w-md border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pb-safe">
+      {/* Bottom Navigation - Mobile */}
+      <nav className="fixed bottom-0 z-20 w-full max-w-md border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pb-safe md:hidden">
         <div className="flex h-16 items-center justify-around px-2">
           <Link to="/gestao-pedidos" className="flex flex-col items-center justify-center gap-1 w-16 text-primary">
             <div className="material-symbols-outlined fill">list_alt</div>
@@ -342,6 +342,30 @@ const GestaoPedidos = () => {
             <div className="material-symbols-outlined">settings</div>
             <span className="text-[10px] font-medium">Ajustes</span>
           </Link>
+        </div>
+      </nav>
+
+      {/* Desktop Navigation - Horizontal */}
+      <nav className="hidden md:flex fixed bottom-0 left-0 right-0 z-20 w-full border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md">
+        <div className="flex h-16 items-center justify-center w-full max-w-4xl mx-auto px-4">
+          <div className="flex items-center justify-around w-full max-w-md">
+            <Link to="/gestao-pedidos" className="flex flex-col items-center justify-center gap-1 text-primary">
+              <div className="material-symbols-outlined fill">list_alt</div>
+              <span className="text-xs font-bold">Pedidos</span>
+            </Link>
+            <Link to="/gestao-insumos" className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+              <div className="material-symbols-outlined">inventory</div>
+              <span className="text-xs font-medium">Estoque</span>
+            </Link>
+            <button className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+              <div className="material-symbols-outlined">bar_chart</div>
+              <span className="text-xs font-medium">Vendas</span>
+            </button>
+            <Link to="/configuracoes-admin" className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+              <div className="material-symbols-outlined">settings</div>
+              <span className="text-xs font-medium">Ajustes</span>
+            </Link>
+          </div>
         </div>
       </nav>
     </div>
