@@ -101,20 +101,20 @@ const Checkout = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-[#FFFFFF]">Nome</Label>
-                  <Input id="firstName" placeholder="João" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
+                  <Input id="firstName" placeholder="João" required className="bg-[#F3F4F6] border-[#D1D5DB] text-[#111827] placeholder-[#6B7280]" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName" className="text-[#FFFFFF]">Sobrenome</Label>
-                  <Input id="lastName" placeholder="Silva" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
+                  <Input id="lastName" placeholder="Silva" required className="bg-[#F3F4F6] border-[#D1D5DB] text-[#111827] placeholder-[#6B7280]" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-[#FFFFFF]">E-mail</Label>
-                <Input id="email" type="email" placeholder="joao@email.com" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
+                <Input id="email" type="email" placeholder="joao@email.com" required className="bg-[#F3F4F6] border-[#D1D5DB] text-[#111827] placeholder-[#6B7280]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone" className="text-[#FFFFFF]">Telefone</Label>
-                <Input id="phone" placeholder="(11) 99999-9999" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
+                <Input id="phone" placeholder="(11) 99999-9999" required className="bg-[#F3F4F6] border-[#D1D5DB] text-[#111827] placeholder-[#6B7280]" />
               </div>
             </CardContent>
           </Card>
@@ -130,21 +130,21 @@ const Checkout = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="address" className="text-[#FFFFFF]">Endereço</Label>
-                <Input id="address" placeholder="Rua das Flores, 123" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
+                <Input id="address" placeholder="Rua das Flores, 123" required className="bg-[#F3F4F6] border-[#D1D5DB] text-[#111827] placeholder-[#6B7280]" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="city" className="text-[#FFFFFF]">Cidade</Label>
-                  <Input id="city" placeholder="São Paulo" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
+                  <Input id="city" placeholder="São Paulo" required className="bg-[#F3F4F6] border-[#D1D5DB] text-[#111827] placeholder-[#6B7280]" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="zipCode" className="text-[#FFFFFF]">CEP</Label>
-                  <Input id="zipCode" placeholder="01234-567" required className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
+                  <Input id="zipCode" placeholder="01234-567" required className="bg-[#F3F4F6] border-[#D1D5DB] text-[#111827] placeholder-[#6B7280]" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="complement" className="text-[#FFFFFF]">Complemento (opcional)</Label>
-                <Input id="complement" placeholder="Apto 45, bloco B" className="bg-[#2B323C] border-[#2B323C] text-[#FFFFFF] placeholder-[#A0A0A0]" />
+                <Input id="complement" placeholder="Apto 45, bloco B" className="bg-[#F3F4F6] border-[#D1D5DB] text-[#111827] placeholder-[#6B7280]" />
               </div>
             </CardContent>
           </Card>
