@@ -1,4 +1,4 @@
-import { Menu, ShoppingCart, Home, Search, Heart, User, DollarSign } from "lucide-react";
+import { Menu, ShoppingCart, Home, Search, Heart, User, DollarSign, Receipt } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useState } from "react";
@@ -79,6 +79,13 @@ const Index = () => {
                   >
                     <Home size={20} />
                     <span>Início</span>
+                  </Link>
+                  <Link
+                    to="/meus-pedidos"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <Receipt size={20} />
+                    <span>Meus Pedidos</span>
                   </Link>
                   <Link
                     to="/cashback"

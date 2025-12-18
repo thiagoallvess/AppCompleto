@@ -9,6 +9,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Cashback from "./pages/Cashback";
 import Indicacao from "./pages/Indicacao";
+import MeusPedidos from "./pages/MeusPedidos";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/cashback" element={<Cashback />} />
             <Route path="/indicacao" element={<Indicacao />} />
+            <Route path="/meus-pedidos" element={<MeusPedidos />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
