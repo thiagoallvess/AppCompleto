@@ -96,7 +96,7 @@
   }
 
   body {
-    @apply text-foreground;
+    @apply bg-background-light dark:bg-background-dark text-foreground;
   }
 }
 
