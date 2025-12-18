@@ -101,10 +101,10 @@ const Indicacao = () => {
           </div>
           {/* Card 2 */}
           <div className="flex flex-1 gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark p-4 flex-col shadow-sm">
-            <div className="text-slate-500 dark:text-text-primary flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700">
+            <div className="text-primary flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
               <Tag size={20} />
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col items-start flex-1">
               <h2 className="text-slate-900 dark:text-text-primary text-base font-bold leading-tight">Para eles</h2>
               <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-normal">5% OFF</p>
             </div>

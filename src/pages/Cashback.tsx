@@ -69,7 +69,7 @@ const Cashback = () => {
           >
             <ArrowLeft className="text-slate-900 dark:text-text-primary" size={24} />
           </Link>
-          <h1 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight tracking-tight">
+          <h1 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight tracking-tight flex-1 text-center">
             Meu Cashback
           </h1>
           <div className="w-12"></div> {/* Spacer for centering */}
@@ -196,14 +196,18 @@ const Cashback = () => {
             <Search size={24} />
             <span className="text-[10px] font-medium">Buscar</span>
           </button>
+          <button className="flex flex-col items-center justify-center w-full h-full text-primary space-y-1">
+            <DollarSign size={24} />
+            <span className="text-[10px] font-medium">Cashback</span>
+          </button>
           <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <Heart size={24} />
             <span className="text-[10px] font-medium">Favoritos</span>
           </button>
-          <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
+          <Link to="/perfil" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <User size={24} />
             <span className="text-[10px] font-medium">Perfil</span>
-          </button>
+          </Link>
         </div>
       </nav>
     </div>

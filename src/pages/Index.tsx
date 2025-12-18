@@ -101,6 +101,13 @@ const Index = () => {
                     <Heart size={20} />
                     <span>Indicação</span>
                   </Link>
+                  <Link
+                    to="/perfil"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <User size={20} />
+                    <span>Meu Perfil</span>
+                  </Link>
                   <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
                     <Search size={20} />
                     <span>Buscar</span>
@@ -108,10 +115,6 @@ const Index = () => {
                   <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
                     <Heart size={20} />
                     <span>Favoritos</span>
-                  </button>
-                  <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
-                    <User size={20} />
-                    <span>Perfil</span>
                   </button>
                 </nav>
               </div>
@@ -233,10 +236,10 @@ const Index = () => {
             <Heart size={24} />
             <span className="text-[10px] font-medium">Favoritos</span>
           </button>
-          <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
+          <Link to="/perfil" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <User size={24} />
             <span className="text-[10px] font-medium">Perfil</span>
-          </button>
+          </Link>
         </div>
       </nav>
     </div>

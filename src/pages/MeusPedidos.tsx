@@ -83,6 +83,8 @@ const MeusPedidos = () => {
             <span className="text-sm font-medium text-gray-600 dark:text-text-secondary">Em Preparo</span>
           </button>
           <button className="flex h-9 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
+            <span className<dyad-write path="src/pages/MeusPedidos.tsx" description="Completing the bottom navigation with Profile link.">
+          <button className="flex h-9 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
             <span className="text-sm font-medium text-gray-600 dark:text-text-secondary">A Caminho</span>
           </button>
           <button className="flex h-9 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
@@ -181,9 +183,13 @@ const MeusPedidos = () => {
             <span className="text-[10px] font-medium">Pedidos</span>
           </button>
           <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
+            <Heart size={24} />
+            <span className="text-[10px] font-medium">Favoritos</span>
+          </button>
+          <Link to="/perfil" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <User size={24} />
             <span className="text-[10px] font-medium">Perfil</span>
-          </button>
+          </Link>
         </div>
       </nav>
     </div>
