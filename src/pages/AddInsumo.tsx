@@ -8,10 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const AddInsumo = () => {
   const [insumoName, setInsumoName] = useState("");
   const [category, setCategory] = useState("");
+  const [unit, setUnit] = useState("");
 
   const handleSave = () => {
     // TODO: Implement save logic
-    console.log("Saving insumo:", { insumoName, category });
+    console.log("Saving insumo:", { insumoName, category, unit });
   };
 
   return (
@@ -59,6 +60,26 @@ const AddInsumo = () => {
             <SelectContent>
               <SelectItem value="ingredientes">Ingredientes</SelectItem>
               <SelectItem value="embalagens">Embalagens</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="unit">
+            Unidade
+          </label>
+          <Select value={unit} onValueChange={setUnit}>
+            <SelectTrigger className="h-12 bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-700">
+              <SelectValue placeholder="Selecione uma unidade" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="kg">Kg</SelectItem>
+              <SelectItem value="g">Grama</SelectItem>
+              <SelectItem value="l">Litro</SelectItem>
+              <SelectItem value="ml">Mililitro</SelectItem>
+              <SelectItem value="un">Unidade</SelectItem>
+              <SelectItem value="cx">Caixa</SelectItem>
+              <SelectItem value="rolo">Rolo</SelectItem>
+              <SelectItem value="pacote">Pacote</SelectItem>
             </SelectContent>
           </Select>
         </div>
