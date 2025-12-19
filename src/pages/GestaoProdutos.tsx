@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import AddProdutoModal from "@/components/AddProdutoModal";
 
 const GestaoProdutos = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filters = ["Todos", "Em estoque", "Esgotado", "Rascunhos"];
 
@@ -114,17 +116,19 @@ const GestaoProdutos = () => {
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Administração</span>
             <h1 className="text-xl font-bold leading-tight tracking-tight">Produtos</h1>
           </div>
-          <Button size="sm" className="size-10 rounded-full p-0 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30" asChild>
-            <Link to="/add-produto">
-              <Plus size={24} />
-            </Link>
+          <Button
+            size="sm"
+            className="size-10 rounded-full p-0 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <Plus size={24} />
           </Button>
         </div>
       </header>
 
       {/* Search Bar */}
       <div className="px-4 py-4 w-full">
-        <div className="relative flex items-center w-full h-12 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden group focus-within:ring-2 focus-within:ring-primary/50 transition-all">
+        <div className="relative flex items-center w-full h-12 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-slate-200 dark:border-slate-800 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
           <div className="grid place-items-center h-full w-12 text-slate-400 dark:text-slate-500">
             <Search size={20} />
           </div>
@@ -148,7 +152,7 @@ const GestaoProdutos = () => {
               className={`h-9 px-4 rounded-full ${
                 activeFilter === filter
                   ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900"
-                  : "bg-slate-200 dark:bg-surface-dark border-transparent dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700"
+                  : "bg-slate-200 dark:bg-surface-dark border-transparent dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-800"
               } transition-transform active:scale-95`}
               onClick={() => setActiveFilter(filter)}
             >
@@ -176,7 +180,7 @@ const GestaoProdutos = () => {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className={`group relative flex flex-col sm:flex-row gap-3 bg-white dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-primary/50 dark:hover:border-primary/50 transition-all ${
+              className={`group relative flex flex-col gap-3 bg-white dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-primary/50 dark:hover:border-primary/50 transition-all ${
                 product.status === "Esgotado" ? "opacity-75 grayscale-[50%]" : ""
               }`}
             >
@@ -228,21 +232,21 @@ const GestaoProdutos = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-background-dark/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 pb-safe z-40">
-        <div className="flex justify-around items-center h-16 max-w-md mx-auto px-4 lg:max-w-none lg:px-6 lg:justify-between">
-          <Link to="/" className="flex flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-background-dark/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 pb-safe z-40 max-w-md mx-auto">
+        <div className="flex justify-around items-center h-16">
+          <Link to="/" className="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
             <Home size={24} />
             <span className="text-[10px] font-medium">Início</span>
           </Link>
-          <button className="flex flex-col items-center justify-center gap-1 text-primary dark:text-primary transition-colors">
+          <button className="flex flex-col items-center justify-center gap-1 w-full h-full text-primary dark:text-primary transition-colors">
             <IceCream size={24} />
             <span className="text-[10px] font-bold">Produtos</span>
           </button>
-          <button className="flex flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+          <button className="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
             <Receipt size={24} />
             <span className="text-[10px] font-medium">Pedidos</span>
           </button>
-          <button className="flex flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+          <button className="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
             <Settings size={24} />
             <span className="text-[10px] font-medium">Ajustes</span>
           </button>
@@ -250,6 +254,9 @@ const GestaoProdutos = () => {
       </nav>
       {/* Safe area spacer for bottom nav */}
       <div className="h-6 w-full bg-white dark:bg-background-dark"></div>
+
+      {/* Add Product Modal */}
+      <AddProdutoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };
