@@ -61,19 +61,10 @@ const Clientes = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const getStatusColor = (color: string) => {
-    switch (color) {
-      case "yellow": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
-      case "red": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-      case "blue": return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
-      default: return "";
-    }
-  };
-
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="flex-none bg-background-light dark:bg-background-dark px-4 pt-4 pb-2 z-10">
+      <header className="flex-none bg-background-light dark:bg-background-dark px-4 pt-4 pb-2 z-10 border-b border-slate-200 dark:border-white/5">
         <div className="flex items-center justify-between h-14 mb-2">
           <Link
             to="/"
@@ -132,76 +123,88 @@ const Clientes = () => {
       {/* Customer List */}
       <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-4 space-y-3 pb-24">
         {filteredCustomers.map((customer) => (
-          <div
+          <Link
             key={customer.id}
-            className="group relative flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-100 dark:border-white/5 shadow-sm active:scale-[0.99] transition-transform"
+            to={`/detalhes-cliente?id=${customer.id}`}
+            className="block"
           >
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  {customer.avatar ? (
-                    <img
-                      className="size-12 rounded-full object-cover border-2 border-primary/20"
-                      src={customer.avatar}
-                      alt={customer.name}
-                    />
-                  ) : (
-                    <div className="size-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-bold text-lg flex items-center justify-center">
-                      {customer.initials}
-                    </div>
-                  )}
-                  {customer.isOnline && (
-                    <div className="absolute -bottom-1 -right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
-                  )}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-semibold text-slate-900 dark:text-white">{customer.name}</h3>
-                    {customer.status && (
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusColor(customer.statusColor)}`}>
-                        {customer.status}
-                      </span>
+            <article
+              className={`group relative flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-100 dark:border-white/5 shadow-sm active:scale-[0.99] transition-transform ${
+                customer.debt ? 'opacity-75 hover:opacity-100' : ''
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    {customer.avatar ? (
+                      <img
+                        className="size-12 rounded-full object-cover border-2 border-primary/20"
+                        src={customer.avatar}
+                        alt={customer.name}
+                      />
+                    ) : (
+                      <div className="size-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-bold text-lg flex items-center justify-center">
+                        {customer.initials}
+                      </div>
+                    )}
+                    {customer.isOnline && (
+                      <div className="absolute -bottom-1 -right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-                    {customer.lastOrder ? (
-                      <>
-                        <span className="material-symbols-outlined text-[14px]">history</span>
-                        Último pedido: {customer.lastOrder}
-                      </>
-                    ) : customer.registered ? (
-                      <>
-                        <span className="material-symbols-outlined text-[14px]">calendar_today</span>
-                        Cadastrado: {customer.registered}
-                      </>
-                    ) : null}
-                  </p>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-semibold text-slate-900 dark:text-white">{customer.name}</h3>
+                      {customer.status && (
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
+                          customer.statusColor === 'yellow' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                          customer.statusColor === 'red' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
+                          customer.statusColor === 'blue' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                          ''
+                        }`}>
+                          {customer.status}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                      {customer.lastOrder ? (
+                        <>
+                          <span className="material-symbols-outlined text-[14px]">history</span>
+                          Último pedido: {customer.lastOrder}
+                        </>
+                      ) : customer.registered ? (
+                        <>
+                          <span className="material-symbols-outlined text-[14px]">calendar_month</span>
+                          Cadastrado: {customer.registered}
+                        </>
+                      ) : null}
+                    </p>
+                  </div>
+                </div>
+                <button className="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary">
+                  <MoreVertical size={20} />
+                </button>
+              </div>
+              <div className="w-full h-px bg-slate-100 dark:bg-white/5"></div>
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-wider">
+                    {customer.debt ? "Débito" : customer.preference ? "Preferência" : "Total Gasto"}
+                  </span>
+                  <span className={`text-sm font-medium ${customer.debt ? "text-red-600 dark:text-red-400" : "text-slate-700 dark:text-slate-200"}`}>
+                    {customer.debt ? `R$ ${customer.debt.toFixed(2)}` : customer.preference ? customer.preference : `R$ ${customer.totalSpent?.toFixed(2)}`}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400 transition-colors">
+                    <Phone size={20} />
+                  </button>
+                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400 transition-colors">
+                    <MessageCircle size={20} />
+                  </button>
                 </div>
               </div>
-              <button className="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary">
-                <MoreVertical size={20} />
-              </button>
-            </div>
-            <div className="w-full h-px bg-slate-100 dark:bg-white/5"></div>
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-wider">
-                  {customer.debt ? "Débito" : customer.preference ? "Preferência" : "Total Gasto"}
-                </span>
-                <span className={`text-sm font-medium ${customer.debt ? "text-red-600 dark:text-red-400" : "text-slate-700 dark:text-slate-200"}`}>
-                  {customer.debt ? `R$ ${customer.debt.toFixed(2)}` : customer.preference ? customer.preference : `R$ ${customer.totalSpent?.toFixed(2)}`}
-                </span>
-              </div>
-              <div className="flex gap-2">
-                <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400 transition-colors">
-                  <Phone size={20} />
-                </button>
-                <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-primary/20 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-primary transition-colors">
-                  <MessageCircle size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
+            </article>
+          </Link>
         ))}
       </main>
 
