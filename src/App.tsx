@@ -29,6 +29,7 @@ import VisaoGeral from "./pages/VisaoGeral";
 import GestaoReceitas from "./pages/GestaoReceitas";
 import AddReceita from "./pages/AddReceita";
 import DetalhesReceita from "./pages/DetalhesReceita";
+import GestaoProducao from "./pages/GestaoProducao";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/gestao-receitas" element={<GestaoReceitas />} />
             <Route path="/add-receita" element={<AddReceita />} />
             <Route path="/detalhes-receita" element={<DetalhesReceita />} />
+            <Route path="/gestao-producao" element={<GestaoProducao />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
