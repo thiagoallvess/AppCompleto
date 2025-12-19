@@ -127,7 +127,7 @@ const DetalhesCliente = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
+    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-6 min-h-screen">
       {/* Header */}
       <header className="flex-none bg-background-light dark:bg-background-dark px-4 pt-4 pb-2 z-10 border-b border-slate-200 dark:border-white/5">
         <div className="flex items-center justify-between h-14">
@@ -145,7 +145,7 @@ const DetalhesCliente = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark scroll-smooth pb-24">
+      <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark scroll-smooth pb-6">
         {/* Profile Header */}
         <div className="flex flex-col items-center justify-center pt-8 pb-6 bg-white dark:bg-surface-dark border-b border-slate-100 dark:border-white/5 shadow-sm">
           <div className="relative">
@@ -184,10 +184,12 @@ const DetalhesCliente = () => {
               <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Ligar</span>
             </button>
             <button className="flex flex-col items-center gap-1.5 group">
-              <div className="flex items-center justify-center size-12 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 group-hover:bg-green-100 group-hover:text-green-600 dark:group-hover:bg-green-900/30 dark:group-hover:text-green-400 transition-colors shadow-sm">
-                <MessageCircle size={18} />
+              <div className="flex flex-col items-center gap-1.5 group">
+                <div className="flex items-center justify-center size-12 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 group-hover:bg-green-100 group-hover:text-green-600 dark:group-hover:bg-green-900/30 dark:group-hover:text-green-400 transition-colors shadow-sm">
+                  <MessageCircle size={18} />
+                </div>
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">WhatsApp</span>
               </div>
-              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">WhatsApp</span>
             </button>
             <button className="flex flex-col items-center gap-1.5 group">
               <div className="flex items-center justify-center size-12 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 group-hover:bg-primary/10 group-hover:text-primary dark:group-hover:bg-primary/20 dark:group-hover:text-primary transition-colors shadow-sm">
@@ -305,26 +307,6 @@ const DetalhesCliente = () => {
           <ShoppingCart size={28} />
         </button>
       </div>
-
-      {/* Bottom Navigation */}
-      <nav className="flex-none bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/5 pb-6 pt-2 px-6 flex justify-between items-center z-10">
-        <Link to="/" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">dashboard</span>
-          <span className="text-[10px] font-medium">Início</span>
-        </Link>
-        <button className="flex flex-col items-center gap-1 p-2 text-primary dark:text-primary transition-colors">
-          <span className="material-symbols-filled">group</span>
-          <span className="text-[10px] font-medium">Clientes</span>
-        </button>
-        <Link to="/gestao-insumos" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">inventory_2</span>
-          <span className="text-[10px] font-medium">Estoque</span>
-        </Link>
-        <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">settings</span>
-          <span className="text-[10px] font-medium">Ajustes</span>
-        </Link>
-      </nav>
     </div>
   );
 };
