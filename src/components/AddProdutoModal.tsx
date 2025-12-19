@@ -80,7 +80,7 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
         </DialogHeader>
 
         {/* Form */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-32">
+        <div className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-5">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
