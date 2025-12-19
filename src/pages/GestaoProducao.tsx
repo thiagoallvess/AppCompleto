@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Filter, MoreVertical, Edit, Trash2, Eye, Calendar, Package, DollarSign } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Plus, Search, Filter, MoreVertical, Trash2 } from "lucide-react";
 
 const GestaoProducao = () => {
   const [activeFilter, setActiveFilter] = useState("Todos");
@@ -206,7 +207,7 @@ const GestaoProducao = () => {
       <div className="px-4 py-4 grid grid-cols-3 gap-3">
         <div className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <Package className="text-primary" size={20} />
+            <span className="material-symbols-outlined text-primary text-[20px]">factory</span>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Produzido</span>
           </div>
           <p className="text-xl font-bold text-slate-900 dark:text-white">{totalProduced}</p>
@@ -214,7 +215,7 @@ const GestaoProducao = () => {
         </div>
         <div className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="text-green-500" size={20} />
+            <span className="material-symbols-outlined text-green-500 text-[20px]">attach_money</span>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Custo Total</span>
           </div>
           <p className="text-xl font-bold text-slate-900 dark:text-white">R$ {totalCost.toFixed(2)}</p>
@@ -262,42 +263,33 @@ const GestaoProducao = () => {
                     <Badge className={`text-[10px] ${getStatusColor(lot.statusColor)}`}>
                       {lot.status}
                     </Badge>
-                    <div className="relative">
-                      <button className="text-slate-400 hover:text-primary transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
-                        <MoreVertical size={20} />
-                      </button>
-                      {/* Dropdown Menu - Simplified for now */}
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-surface-dark rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-10 hidden group-hover:block">
-                        <button
-                          onClick={() => handleStatusChange(lot.id, "Finalizado")}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
-                        >
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="text-slate-400 hover:text-primary transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                          <MoreVertical size={20} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleStatusChange(lot.id, "Finalizado")}>
                           <span className="material-symbols-outlined text-green-500 text-[16px]">check_circle</span>
                           Marcar como Finalizado
-                        </button>
-                        <button
-                          onClick={() => handleStatusChange(lot.id, "Em Estoque")}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
-                        >
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusChange(lot.id, "Em Estoque")}>
                           <span className="material-symbols-outlined text-yellow-500 text-[16px]">inventory</span>
                           Mover para Estoque
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLot(lot.id)}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center gap-2"
-                        >
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleDeleteLot(lot.id)} className="text-red-600 dark:text-red-400">
                           <Trash2 size={16} />
                           Excluir Lote
-                        </button>
-                      </div>
-                    </div>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
-                    <Calendar size={14} />
-                    <span className="text-xs font-medium">{lot.date}</span>
-                  </div>
+                  <span className="material-symbols-outlined text-slate-500 dark:text-slate-400 text-[14px]">calendar_month</span>
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{lot.date}</span>
                 </div>
               </div>
             </div>
@@ -409,7 +401,7 @@ const GestaoProducao = () => {
       {/* FAB */}
       <button
         onClick={() => setIsCreateModalOpen(true)}
-        className="fixed bottom-24 right-5 z-20 flex size-14 items-center justify-center rounded-full bg-primary shadow-lg shadow-primary/30 hover:bg-blue-600 transition-all active:scale-95"
+        className="fixed bottom-24 right-5 z-20 flex size-14 items-center justify-center rounded-full bg-primary shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95"
       >
         <Plus className="text-white" size={28} />
       </button>
