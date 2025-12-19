@@ -1,4 +1,4 @@
-import { ArrowLeft, Phone, MessageCircle, Mail, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Phone, MessageCircle, Mail, ShoppingCart, Heart } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 
 const DetalhesCliente = () => {
@@ -259,7 +259,7 @@ const DetalhesCliente = () => {
               </div>
               <div className="flex items-start gap-3">
                 <div className="size-8 rounded-full bg-pink-50 dark:bg-pink-900/20 flex items-center justify-center flex-none">
-                  <span className="material-symbols-filled text-pink-500 dark:text-pink-400 text-[18px]">favorite</span>
+                  <Heart size={18} className="text-pink-500 dark:text-pink-400 fill-current" />
                 </div>
                 <div className="flex-1">
                   <p className="text-xs text-slate-500 dark:text-slate-400">Sabor Favorito</p>
