@@ -22,7 +22,7 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
   const [isActive, setIsActive] = useState(true);
 
   const recipes = [
-    { id: "", name: "Nenhuma Receita" },
+    { id: "none", name: "Nenhuma Receita" },
     { id: "1", name: "Ninho com Calda de Morango" },
     { id: "2", name: "Geladinho de Sensacao com Calda de Morango" },
     { id: "3", name: "Geladinho de Sensacao com Chocolate" },
