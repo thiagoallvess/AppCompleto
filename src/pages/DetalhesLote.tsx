@@ -1,51 +1,87 @@
 import { ArrowLeft, Edit, Print, Trash2 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const DetalhesLote = () => {
   const [searchParams] = useSearchParams();
   const lotId = searchParams.get('id');
+  const [lot, setLot] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for different lots - in a real app, this would come from an API
-  const lotsData = {
-    "8349": {
-      id: "8349",
-      name: "Ninho com Nutella",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkd8lB5c2Vaw9ZupDeGKA8CqQrsuCbv1IVWtjP1Pgq6N5JYAMjwdcNFdmTh7yXGKKGPykrJKJC3EQGvyud_4OcMgbqUKbbJxg_HMmq1DxGVHqG67Xx_g_O1nhM68hW_zb8fX5mpqZq1K6sshICrQCxa8oV61kN1WUpqDp5PiU3Ww7K_MZF2TOu-iy-FqWeK-zibAFwgP0IvVgMX4QnpBYdPUzoUzGQaTcXvNfJTbTCUlmXc25qyIc3GuUHXF19vX4tEBWm0AYdEA",
-      status: "Finalizado",
-      statusColor: "green",
-      date: "12/08/2023",
-      produced: 50,
-      totalCost: 75.00,
-      unitCost: 1.50,
-      inputs: [
-        { name: "Leite Integral", category: "Laticínios", quantity: "4 Litros" },
-        { name: "Leite Ninho", category: "Secos", quantity: "800g" },
-        { name: "Nutella", category: "Recheio", quantity: "650g" },
-        { name: "Liga Neutra", category: "Aditivos", quantity: "40g" },
-        { name: "Saquinhos 5x24", category: "Embalagem", quantity: "50 un" }
-      ]
-    },
-    "8348": {
-      id: "8348",
-      name: "Morango Gourmet",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCM3cfAeatmEUtNaDEnz796M7L7_1N-EtyXmykGuHogX2Bqw0GLmlvYa3HPA8Wz1_4o9F5wPSUrzWkU8Yp7doalaFscT5306YI3bZgNz9gTLuFuBl4eyymE72I2oud60ide53rz4tw6ycGt2mAau951TpWIjxrfxMQg_NpEJUwcm1qol_S5JpSoZbGnw8au7eUWzH4lvezL2wocDTs541UOAWtFuVwleVW5xacABNhs7r5_Xla2rV2_GgGzX6Ol3wbDpTujEKBi_A",
-      status: "Em Estoque",
-      statusColor: "yellow",
-      date: "11/08/2023",
-      produced: 30,
-      totalCost: 45.00,
-      unitCost: 1.50,
-      inputs: [
-        { name: "Leite Integral", category: "Laticínios", quantity: "2.4 Litros" },
-        { name: "Morango Bandeja", category: "Frutas", quantity: "1.2 kg" },
-        { name: "Leite Condensado", category: "Laticínios", quantity: "1 un" },
-        { name: "Liga Neutra", category: "Aditivos", quantity: "24g" },
-        { name: "Saquinhos 5x24", category: "Embalagem", quantity: "30 un" }
-      ]
+  useEffect(() => {
+    // Load lot data from localStorage or API
+    const loadLotData = () => {
+      try {
+        const storedLots = localStorage.getItem('productionLots');
+        if (storedLots) {
+          const lots = JSON.parse(storedLots);
+          const foundLot = lots.find((l: any) => l.id.toString() === lotId);
+          if (foundLot) {
+            setLot(foundLot);
+          } else {
+            // Fallback to mock data if not found
+            setLot(getMockLotData(lotId));
+          }
+        } else {
+          // Fallback to mock data
+          setLot(getMockLotData(lotId));
+        }
+      } catch (error) {
+        console.error('Error loading lot data:', error);
+        setLot(getMockLotData(lotId));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (lotId) {
+      loadLotData();
+    } else {
+      setLoading(false);
     }
-  };
+  }, [lotId]);
 
-  const lot = lotsData[lotId as keyof typeof lotsData] || lotsData["8349"];
+  const getMockLotData = (id: string | null) => {
+    const mockData = {
+      "8349": {
+        id: "8349",
+        name: "Ninho com Nutella",
+        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkd8lB5c2Vaw9ZupDeGKA8CqQrsuCbv1IVWtjP1Pgq6N5JYAMjwdcNFdmTh7yXGKKGPykrJKJC3EQGvyud_4OcMgbqUKbbJxg_HMmq1DxGVHqG67Xx_g_O1nhM68hW_zb8fX5mpqZq1K6sshICrQCxa8oV61kN1WUpqDp5PiU3Ww7K_MZF2TOu-iy-FqWeK-zibAFwgP0IvVgMX4QnpBYdPUzoUzGQaTcXvNfJTbTCUlmXc25qyIc3GuUHXF19vX4tEBWm0AYdEA",
+        status: "Finalizado",
+        statusColor: "green",
+        date: "12/08/2023",
+        produced: 50,
+        totalCost: 75.00,
+        unitCost: 1.50,
+        inputs: [
+          { name: "Leite Integral", category: "Laticínios", quantity: "4 Litros" },
+          { name: "Leite Ninho", category: "Secos", quantity: "800g" },
+          { name: "Nutella", category: "Recheio", quantity: "650g" },
+          { name: "Liga Neutra", category: "Aditivos", quantity: "40g" },
+          { name: "Saquinhos 5x24", category: "Embalagem", quantity: "50 un" }
+        ]
+      },
+      "8348": {
+        id: "8348",
+        name: "Morango Gourmet",
+        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCM3cfAeatmEUtNaDEnz796M7L7_1N-EtyXmykGuHogX2Bqw0GLmlvYa3HPA8Wz1_4o9F5wPSUrzWkU8Yp7doalaFscT5306YI3bZgNz9gTLuFuBl4eyymE72I2oud60ide53rz4tw6ycGt2mAau951TpWIjxrfxMQg_NpEJUwcm1qol_S5JpSoZbGnw8au7eUWzH4lvezL2wocDTs541UOAWtFuVwleVW5xacABNhs7r5_Xla2rV2_GgGzX6Ol3wbDpTujEKBi_A",
+        status: "Em Estoque",
+        statusColor: "yellow",
+        date: "11/08/2023",
+        produced: 30,
+        totalCost: 45.00,
+        unitCost: 1.50,
+        inputs: [
+          { name: "Leite Integral", category: "Laticínios", quantity: "2.4 Litros" },
+          { name: "Morango Bandeja", category: "Frutas", quantity: "1.2 kg" },
+          { name: "Leite Condensado", category: "Laticínios", quantity: "1 un" },
+          { name: "Liga Neutra", category: "Aditivos", quantity: "24g" },
+          { name: "Saquinhos 5x24", category: "Embalagem", quantity: "30 un" }
+        ]
+      }
+    };
+    return mockData[id as keyof typeof mockData] || mockData["8349"];
+  };
 
   const getStatusColor = (color: string) => {
     switch (color) {
@@ -55,10 +91,63 @@ const DetalhesLote = () => {
     }
   };
 
-  const totalInputsCost = lot.inputs.reduce((sum, input) => {
+  const totalInputsCost = lot?.inputs?.reduce((sum, input) => {
     // Mock cost calculation - in real app this would be from data
     return sum + (Math.random() * 10); // Placeholder
-  }, 0);
+  }, 0) || 0;
+
+  if (loading) {
+    return (
+      <div className="relative flex min-h-screen w-full flex-col pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
+        <header className="sticky top-0 z-30 flex items-center justify-between bg-white/90 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+          <Link
+            to="/gestao-producao"
+            className="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <ArrowLeft className="text-slate-600 dark:text-slate-300" size={24} />
+          </Link>
+          <h1 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center text-slate-900 dark:text-white">Carregando...</h1>
+          <div className="size-10"></div>
+        </header>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-slate-500 dark:text-slate-400">Carregando detalhes do lote...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!lot) {
+    return (
+      <div className="relative flex min-h-screen w-full flex-col pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
+        <header className="sticky top-0 z-30 flex items-center justify-between bg-white/90 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+          <Link
+            to="/gestao-producao"
+            className="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <ArrowLeft className="text-slate-600 dark:text-slate-300" size={24} />
+          </Link>
+          <h1 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center text-slate-900 dark:text-white">Lote não encontrado</h1>
+          <div className="size-10"></div>
+        </header>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <span className="material-symbols-outlined text-slate-400 text-6xl mb-4">inventory_2</span>
+            <p className="text-slate-500 dark:text-slate-400 mb-4">Lote não encontrado</p>
+            <Link
+              to="/gestao-producao"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <ArrowLeft size={16} />
+              Voltar para Produção
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex min-h-screen w-full flex-col pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
@@ -81,7 +170,7 @@ const DetalhesLote = () => {
         {/* Lot Header Card */}
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-slate-800/60">
           <div className="flex items-start gap-4">
-            <div className="shrink-0 relative size-20 overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 shadow-sm">
+            <div className="shrink-0 relative size-20 overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
               <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url('${lot.image}')` }}
