@@ -11,7 +11,7 @@ const AddReceita = () => {
   const [recipeName, setRecipeName] = useState("");
   const [description, setDescription] = useState("");
   const [prepTime, setPrepTime] = useState("");
-  const [yield, setYield] = useState("");
+  const [recipeYield, setRecipeYield] = useState("");
   const [cost, setCost] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [linkedProduct, setLinkedProduct] = useState("none");
@@ -33,7 +33,7 @@ const AddReceita = () => {
       recipeName,
       description,
       prepTime,
-      yield,
+      recipeYield,
       cost,
       imageUrl,
       linkedProduct,
@@ -111,15 +111,15 @@ const AddReceita = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="yield">
+                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="recipe_yield">
                   Rendimento
                 </label>
                 <div className="relative">
                   <Input
-                    id="yield"
+                    id="recipe_yield"
                     placeholder="20"
-                    value={yield}
-                    onChange={(e) => setYield(e.target.value)}
+                    value={recipeYield}
+                    onChange={(e) => setRecipeYield(e.target.value)}
                     className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-12"
                   />
                   <span className="absolute inset-y-0 right-3 flex items-center text-slate-500 dark:text-slate-400 text-sm font-medium">
