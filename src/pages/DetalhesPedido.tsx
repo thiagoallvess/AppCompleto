@@ -1,4 +1,4 @@
-import { ArrowLeft, Print, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, Person, LocationOn, Payments, History } from "lucide-react";
+import { ArrowLeft, Print, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, Person, Payments, History } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const DetalhesPedido = () => {
@@ -88,7 +88,7 @@ const DetalhesPedido = () => {
         <div className="rounded-2xl bg-surface-light dark:bg-surface-dark p-5 border border-border-light dark:border-border-dark shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-slate-900 dark:text-white text-base font-bold flex items-center gap-2">
-              <LocationOn className="text-text-secondary-light dark:text-text-secondary-dark" size={20} />
+              <MapPin className="text-text-secondary-light dark:text-text-secondary-dark" size={20} />
               Entrega
             </h3>
             <button className="text-primary text-xs font-bold uppercase tracking-wider hover:underline">Ver no Mapa</button>
