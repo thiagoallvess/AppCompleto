@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Home, IceCream, Receipt, Settings, BarChart } from "lucide-react";
+import { Menu, X, Home, IceCream, Receipt, Settings, BarChart, ShoppingCart } from "lucide-react";
+import { useCart } from "../contexts/CartContext";
 
 const Index = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { totalItems } = useCart();
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary min-h-screen">
@@ -19,6 +21,17 @@ const Index = () => {
           <h1 className="text-slate-900 dark:text-text-primary text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-12">
             Geladinho Gourmet
           </h1>
+          <Link
+            to="/cart"
+            className="relative flex size-10 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+          >
+            <ShoppingCart className="text-slate-900 dark:text-text-primary" size={24} />
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-primary text-white text-xs font-bold">
+                {totalItems}
+              </span>
+            )}
+          </Link>
         </div>
       </header>
 
