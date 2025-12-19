@@ -1,4 +1,4 @@
-import { ArrowLeft, AttachMoney, ShoppingBag, TrendingUp, Download } from "lucide-react";
+import { ArrowLeft, DollarSign, ShoppingBag, TrendingUp, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -49,7 +49,7 @@ const Relatorios = () => {
           <div className="flex flex-col gap-3 rounded-2xl p-5 bg-white dark:bg-card-dark shadow-sm border border-gray-100 dark:border-gray-800">
             <div className="flex items-center gap-2">
               <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <AttachMoney size={20} />
+                <DollarSign size={20} />
               </div>
               <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Faturamento</p>
             </div>
