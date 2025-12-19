@@ -163,11 +163,6 @@ const Index = () => {
             </SheetContent>
           </Sheet>
 
-          <div className="flex flex-col items-center">
-            <h1 className="text-lg font-bold leading-tight tracking-tight">Geladinhos Gourmet</h1>
-            <p className="text-xs text-slate-500 dark:text-text-secondary">São Paulo, SP</p>
-          </div>
-
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" className="size-10 rounded-full p-0 relative">
               <Search size={24} className="text-slate-900 dark:text-text-primary" />
