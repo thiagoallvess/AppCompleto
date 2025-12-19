@@ -212,73 +212,78 @@ const GestaoPedidos = () => {
               <button className="text-primary text-xs font-semibold hover:underline">Ver tudo</button>
             </div>
             {openOrders.map((order) => (
-              <div
+              <Link
                 key={order.id}
-                className={`group relative flex flex-col gap-3 rounded-2xl bg-white dark:bg-surface-dark p-4 border shadow-sm transition-all hover:shadow-md active:scale-[0.99] ${
-                  order.isNew
-                    ? "border-primary/30 dark:border-primary/30"
-                    : "border-slate-200 dark:border-slate-800"
-                }`}
+                to="/detalhes-pedido"
+                className="block"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`relative flex items-center justify-center rounded-xl shrink-0 size-12 ${
-                      order.statusColor === "primary" ? "bg-primary/10 text-primary" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
-                    }`}>
-                      {getStatusIcon(order.statusIcon)}
-                      {order.isNew && (
-                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 ring-2 ring-white dark:ring-surface-dark"></span>
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-slate-900 dark:text-white text-base font-bold leading-tight">{order.id}</p>
-                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${getStatusColor(order.statusColor)}`}>
-                          {order.status}
-                        </span>
+                <article
+                  className={`group relative flex flex-col gap-3 rounded-2xl bg-white dark:bg-surface-dark p-4 border shadow-sm transition-all hover:shadow-md active:scale-[0.99] cursor-pointer ${
+                    order.isNew
+                      ? "border-primary/30 dark:border-primary/30"
+                      : "border-slate-200 dark:border-slate-800"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`relative flex items-center justify-center rounded-xl shrink-0 size-12 ${
+                        order.statusColor === "primary" ? "bg-primary/10 text-primary" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                      }`}>
+                        {getStatusIcon(order.statusIcon)}
+                        {order.isNew && (
+                          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 ring-2 ring-white dark:ring-surface-dark"></span>
+                        )}
                       </div>
-                      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-0.5">{order.customer}</p>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-slate-900 dark:text-white text-base font-bold leading-tight">{order.id}</p>
+                          <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${getStatusColor(order.statusColor)}`}>
+                            {order.status}
+                          </span>
+                        </div>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-0.5">{order.customer}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-slate-900 dark:text-white text-base font-bold">R$ {order.total.toFixed(2)}</p>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs">{order.time}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-slate-900 dark:text-white text-base font-bold">R$ {order.total.toFixed(2)}</p>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs">{order.time}</p>
-                  </div>
-                </div>
-                <div className="w-full h-px bg-slate-200 dark:bg-slate-800"></div>
-                <div className="flex items-center justify-between gap-4">
-                  {order.eta ? (
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                      <div className="material-symbols-outlined text-sm">schedule</div>
-                      <span>{order.eta}</span>
-                    </div>
-                  ) : (
-                    <p className="text-slate-500 dark:text-slate-400 text-xs leading-normal line-clamp-1 flex-1">
-                      {order.items}
-                    </p>
-                  )}
-                  <div className="flex gap-2">
-                    {order.status === "Novo" && (
-                      <button className="flex size-8 items-center justify-center rounded-full bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
-                        <Check size={18} />
+                  <div className="w-full h-px bg-slate-200 dark:bg-slate-800"></div>
+                  <div className="flex items-center justify-between gap-4">
+                    {order.eta ? (
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                        <div className="material-symbols-outlined text-sm">schedule</div>
+                        <span>{order.eta}</span>
+                      </div>
+                    ) : (
+                      <p className="text-slate-500 dark:text-slate-400 text-xs leading-normal line-clamp-1 flex-1">
+                        {order.items}
+                      </p>
+                    )}
+                    <div className="flex gap-2">
+                      {order.status === "Novo" && (
+                        <button className="flex size-8 items-center justify-center rounded-full bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
+                          <Check size={18} />
+                        </button>
+                      )}
+                      {order.status === "Rota" && (
+                        <>
+                          <button className="flex size-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
+                            <Phone size={18} />
+                          </button>
+                          <button className="flex size-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
+                            <MessageCircle size={18} />
+                          </button>
+                        </>
+                      )}
+                      <button className="flex size-8 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                        <ChevronRight size={18} />
                       </button>
-                    )}
-                    {order.status === "Rota" && (
-                      <>
-                        <button className="flex size-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
-                          <Phone size={18} />
-                        </button>
-                        <button className="flex size-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
-                          <MessageCircle size={18} />
-                        </button>
-                      </>
-                    )}
-                    <button className="flex size-8 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
-                      <ChevronRight size={18} />
-                    </button>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </article>
+              </Link>
             ))}
           </>
         )}
@@ -290,29 +295,34 @@ const GestaoPedidos = () => {
               <h3 className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">Finalizados Hoje</h3>
             </div>
             {finishedOrders.map((order) => (
-              <div
+              <Link
                 key={order.id}
-                className="group relative flex items-center justify-between rounded-xl bg-white/50 dark:bg-surface-dark/50 p-4 border border-transparent shadow-none opacity-70"
+                to="/detalhes-pedido"
+                className="block"
               >
-                <div className="flex items-center gap-3">
-                  <div className={`flex items-center justify-center rounded-lg shrink-0 size-10 ${getStatusColor(order.statusColor)}`}>
-                    {getStatusIcon(order.statusIcon)}
+                <article
+                  className="group relative flex items-center justify-between rounded-xl bg-white/50 dark:bg-surface-dark/50 p-4 border border-transparent shadow-none opacity-70"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`flex items-center justify-center rounded-lg shrink-0 size-10 ${getStatusColor(order.statusColor)}`}>
+                      {getStatusIcon(order.statusIcon)}
+                    </div>
+                    <div>
+                      <p className={`text-slate-900 dark:text-white text-sm font-bold leading-tight ${order.cancelled ? 'line-through decoration-slate-400' : ''}`}>
+                        {order.id} - {order.customer}
+                      </p>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
+                        {order.status === "Entregue" ? `Entregue às ${order.time}` : "Cancelado pelo cliente"}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className={`text-slate-900 dark:text-white text-sm font-bold leading-tight ${order.cancelled ? 'line-through decoration-slate-400' : ''}`}>
-                      {order.id} - {order.customer}
-                    </p>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
-                      {order.status === "Entregue" ? `Entregue às ${order.time}` : "Cancelado pelo cliente"}
+                  <div className="text-right">
+                    <p className={`text-slate-900 dark:text-white text-sm font-bold ${order.cancelled ? 'line-through decoration-red-500/50' : ''}`}>
+                      R$ {order.total.toFixed(2)}
                     </p>
                   </div>
-                </div>
-                <div className="text-right">
-                  <p className={`text-slate-900 dark:text-white text-sm font-bold ${order.cancelled ? 'line-through decoration-red-500/50' : ''}`}>
-                    R$ {order.total.toFixed(2)}
-                  </p>
-                </div>
-              </div>
+                </article>
+              </Link>
             ))}
           </>
         )}
@@ -324,7 +334,7 @@ const GestaoPedidos = () => {
       </button>
 
       {/* Bottom Navigation - Mobile */}
-      <nav className="fixed bottom-0 z-20 w-full max-w-md border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pb-safe md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-20 w-full max-w-md border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pb-safe md:hidden">
         <div className="flex h-16 items-center justify-around px-2">
           <Link to="/gestao-pedidos" className="flex flex-col items-center justify-center gap-1 w-16 text-primary">
             <div className="material-symbols-outlined fill">list_alt</div>
