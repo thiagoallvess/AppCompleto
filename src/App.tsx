@@ -11,6 +11,7 @@ import Cashback from "./pages/Cashback";
 import Indicacao from "./pages/Indicacao";
 import MeusPedidos from "./pages/MeusPedidos";
 import DetalhesPedido from "./pages/DetalhesPedido";
+import DetalhesPedidoCliente from "./pages/DetalhesPedidoCliente";
 import Perfil from "./pages/Perfil";
 import Enderecos from "./pages/Enderecos";
 import AddEndereco from "./pages/AddEndereco";
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/indicacao" element={<Indicacao />} />
             <Route path="/meus-pedidos" element={<MeusPedidos />} />
             <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
+            <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/enderecos" element={<Enderecos />} />
             <Route path="/add-endereco" element={<AddEndereco />} />
