@@ -12,6 +12,7 @@ import { showSuccess } from "../utils/toast";
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
+  const [addedToCart, setAddedToCart] = useState<string | null>(null);
   const { totalItems, addItem } = useCart();
 
   const products = [
@@ -66,8 +67,14 @@ const Index = () => {
       image: product.image
     });
     
-    showSuccess(`${product.name} adicionado ao carrinho!`);
     setAddingToCart(null);
+    setAddedToCart(product.id);
+    showSuccess(`${product.name} adicionado ao carrinho!`);
+    
+    // Reset to normal state after 2 seconds
+    setTimeout(() => {
+      setAddedToCart(null);
+    }, 2000);
   };
 
   return (
@@ -235,11 +242,20 @@ const Index = () => {
                         handleAddToCart(product);
                       }}
                       disabled={addingToCart === product.id}
-                      className={`w-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center gap-2 transition-all duration-200 ${
-                        addingToCart === product.id ? 'scale-95 opacity-80' : 'hover:scale-105'
+                      className={`w-full flex items-center justify-center gap-2 transition-all duration-200 ${
+                        addedToCart === product.id
+                          ? 'bg-green-500 hover:bg-green-600 text-white scale-105'
+                          : addingToCart === product.id
+                          ? 'scale-95 opacity-80 bg-primary'
+                          : 'bg-primary hover:bg-primary/90 text-white hover:scale-105'
                       }`}
                     >
-                      {addingToCart === product.id ? (
+                      {addedToCart === product.id ? (
+                        <>
+                          <Check size={16} />
+                          <span>Adicionado</span>
+                        </>
+                      ) : addingToCart === product.id ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                           <span>Adicionando...</span>
