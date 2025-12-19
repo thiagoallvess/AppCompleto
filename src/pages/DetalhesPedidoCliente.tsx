@@ -1,4 +1,4 @@
-import { ArrowLeft, HelpCircle, RefreshCw, MapPin, CreditCard, Truck, Clock } from "lucide-react";
+import { ArrowLeft, HelpCircle, RefreshCw, MapPin, CreditCard, Truck, Clock, DollarSign, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const DetalhesPedidoCliente = () => {
@@ -55,7 +55,7 @@ const DetalhesPedidoCliente = () => {
         {/* Cashback */}
         <div className="flex items-center gap-4 rounded-xl bg-surface-dark border border-primary/20 p-4 shadow-[0_0_15px_rgba(22,67,156,0.1)]">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <span className="material-symbols-outlined">savings</span>
+            <DollarSign size={20} />
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-400">Cashback ganho</p>
@@ -68,7 +68,7 @@ const DetalhesPedidoCliente = () => {
             <span className="text-xs font-medium text-gray-500">Cupom aplicado</span>
             <span className="text-sm font-bold text-white tracking-wide">VERAO10</span>
           </div>
-          <span className="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+          <CheckCircle className="text-green-500" size={20} />
         </div>
       </div>
 
