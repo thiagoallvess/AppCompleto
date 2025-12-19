@@ -274,11 +274,19 @@ const Index = () => {
                   <span>Receitas</span>
                 </Link>
                 <Link
+                  to="/gestao-producao"
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  onClick={() => setIsDrawerOpen(false)}
+                >
+                  <div className="material-symbols-outlined">conveyor_belt</div>
+                  <span>Produção</span>
+                </Link>
+                <Link
                   to="/gestao-insumos"
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
                   onClick={() => setIsDrawerOpen(false)}
                 >
-                  <div className="material-symbols-outlined">inventory</div>
+                  <div className="material-symbols-outlined">inventory_2</div>
                   <span>Insumos</span>
                 </Link>
                 <Link
