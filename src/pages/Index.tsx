@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Home, IceCream, Receipt, Settings, Analytics } from "lucide-react";
+import { Menu, X, Home, IceCream, Receipt, Settings, BarChart } from "lucide-react";
 
 const Index = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -136,7 +136,7 @@ const Index = () => {
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
                   onClick={() => setIsDrawerOpen(false)}
                 >
-                  <Analytics size={20} />
+                  <BarChart size={20} />
                   <span>Relatórios</span>
                 </Link>
                 <Link
