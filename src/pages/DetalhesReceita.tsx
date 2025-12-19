@@ -231,15 +231,18 @@ const DetalhesReceita = () => {
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-surface-dark px-2 py-1 rounded ml-auto">{recipe.ingredients.length} itens</span>
                 </div>
                 <div className="space-y-3">
-                  {recipe.ingredients.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                      <div className="flex-1">
-                        <p className="text-slate-900 dark:text-white text-sm font-medium">{item.name}</p>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">{item.quantity}</p>
+                  {recipe.ingredients.map((item, index) => {
+                    const percentage = ((item.cost / recipe.costs.total) * 100).toFixed(1);
+                    return (
+                      <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <div className="flex-1">
+                          <p className="text-slate-900 dark:text-white text-sm font-medium">{item.name}</p>
+                          <p className="text-gray-500 dark:text-gray-400 text-xs">{item.quantity}</p>
+                        </div>
+                        <p className="text-slate-900 dark:text-white text-sm font-semibold">R$ {item.cost.toFixed(2)} ({percentage}%)</p>
                       </div>
-                      <p className="text-slate-900 dark:text-white text-sm font-semibold">R$ {item.cost.toFixed(2)}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -251,15 +254,18 @@ const DetalhesReceita = () => {
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-surface-dark px-2 py-1 rounded ml-auto">{recipe.packaging.length} itens</span>
                 </div>
                 <div className="space-y-3">
-                  {recipe.packaging.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                      <div className="flex-1">
-                        <p className="text-slate-900 dark:text-white text-sm font-medium">{item.name}</p>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">{item.quantity}</p>
+                  {recipe.packaging.map((item, index) => {
+                    const percentage = ((item.cost / recipe.costs.total) * 100).toFixed(1);
+                    return (
+                      <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <div className="flex-1">
+                          <p className="text-slate-900 dark:text-white text-sm font-medium">{item.name}</p>
+                          <p className="text-gray-500 dark:text-gray-400 text-xs">{item.quantity}</p>
+                        </div>
+                        <p className="text-slate-900 dark:text-white text-sm font-semibold">R$ {item.cost.toFixed(2)} ({percentage}%)</p>
                       </div>
-                      <p className="text-slate-900 dark:text-white text-sm font-semibold">R$ {item.cost.toFixed(2)}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -271,15 +277,18 @@ const DetalhesReceita = () => {
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-surface-dark px-2 py-1 rounded ml-auto">{recipe.equipment.length} itens</span>
                 </div>
                 <div className="space-y-3">
-                  {recipe.equipment.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                      <div className="flex-1">
-                        <p className="text-slate-900 dark:text-white text-sm font-medium">{item.name}</p>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">{item.quantity}</p>
+                  {recipe.equipment.map((item, index) => {
+                    const percentage = ((item.cost / recipe.costs.total) * 100).toFixed(1);
+                    return (
+                      <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <div className="flex-1">
+                          <p className="text-slate-900 dark:text-white text-sm font-medium">{item.name}</p>
+                          <p className="text-gray-500 dark:text-gray-400 text-xs">{item.quantity}</p>
+                        </div>
+                        <p className="text-slate-900 dark:text-white text-sm font-semibold">R$ {item.cost.toFixed(2)} ({percentage}%)</p>
                       </div>
-                      <p className="text-slate-900 dark:text-white text-sm font-semibold">R$ {item.cost.toFixed(2)}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -297,19 +306,19 @@ const DetalhesReceita = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-300">Ingredientes</span>
-                      <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.ingredients.toFixed(2)}</span>
+                      <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.ingredients.toFixed(2)} ({((recipe.costs.ingredients / recipe.costs.total) * 100).toFixed(1)}%)</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-300">Embalagens</span>
-                      <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.packaging.toFixed(2)}</span>
+                      <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.packaging.toFixed(2)} ({((recipe.costs.packaging / recipe.costs.total) * 100).toFixed(1)}%)</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-300">Equipamentos</span>
-                      <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.equipment.toFixed(2)}</span>
+                      <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.equipment.toFixed(2)} ({((recipe.costs.equipment / recipe.costs.total) * 100).toFixed(1)}%)</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-300">Mão de Obra</span>
-                      <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.labor.toFixed(2)}</span>
+                      <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.labor.toFixed(2)} ({((recipe.costs.labor / recipe.costs.total) * 100).toFixed(1)}%)</span>
                     </div>
                   </div>
                 </div>
@@ -366,17 +375,20 @@ const DetalhesReceita = () => {
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-surface-dark px-2 py-1 rounded">{recipe.ingredients.length} itens</span>
             </div>
             <div className="flex flex-col">
-              {recipe.ingredients.map((item, index) => (
-                <div key={index} className="flex items-center gap-4 px-4 min-h-[3.5rem] justify-between border-b border-gray-200 dark:border-gray-800 last:border-0 hover:bg-gray-100 dark:hover:bg-surface-dark/50 transition-colors">
-                  <div className="flex flex-col flex-1 truncate pr-2">
-                    <p className="text-slate-900 dark:text-white text-sm font-medium leading-normal truncate">{item.name}</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs font-normal">{item.quantity}</p>
+              {recipe.ingredients.map((item, index) => {
+                const percentage = ((item.cost / recipe.costs.total) * 100).toFixed(1);
+                return (
+                  <div key={index} className="flex items-center gap-4 px-4 min-h-[3.5rem] justify-between border-b border-gray-200 dark:border-gray-800 last:border-0 hover:bg-gray-100 dark:hover:bg-surface-dark/50 transition-colors">
+                    <div className="flex flex-col flex-1 truncate pr-2">
+                      <p className="text-slate-900 dark:text-white text-sm font-medium leading-normal truncate">{item.name}</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-xs font-normal">{item.quantity}</p>
+                    </div>
+                    <div className="shrink-0">
+                      <p className="text-slate-900 dark:text-white text-sm font-semibold leading-normal">R$ {item.cost.toFixed(2)} ({percentage}%)</p>
+                    </div>
                   </div>
-                  <div className="shrink-0">
-                    <p className="text-slate-900 dark:text-white text-sm font-semibold leading-normal">R$ {item.cost.toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -392,17 +404,20 @@ const DetalhesReceita = () => {
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-surface-dark px-2 py-1 rounded">{recipe.packaging.length} itens</span>
             </div>
             <div className="flex flex-col">
-              {recipe.packaging.map((item, index) => (
-                <div key={index} className="flex items-center gap-4 px-4 min-h-[3.5rem] justify-between border-b border-gray-200 dark:border-gray-800 last:border-0 hover:bg-gray-100 dark:hover:bg-surface-dark/50 transition-colors">
-                  <div className="flex flex-col flex-1 truncate pr-2">
-                    <p className="text-slate-900 dark:text-white text-sm font-medium leading-normal truncate">{item.name}</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs font-normal">{item.quantity}</p>
+              {recipe.packaging.map((item, index) => {
+                const percentage = ((item.cost / recipe.costs.total) * 100).toFixed(1);
+                return (
+                  <div key={index} className="flex items-center gap-4 px-4 min-h-[3.5rem] justify-between border-b border-gray-200 dark:border-gray-800 last:border-0 hover:bg-gray-100 dark:hover:bg-surface-dark/50 transition-colors">
+                    <div className="flex flex-col flex-1 truncate pr-2">
+                      <p className="text-slate-900 dark:text-white text-sm font-medium leading-normal truncate">{item.name}</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-xs font-normal">{item.quantity}</p>
+                    </div>
+                    <div className="shrink-0">
+                      <p className="text-slate-900 dark:text-white text-sm font-semibold leading-normal">R$ {item.cost.toFixed(2)} ({percentage}%)</p>
+                    </div>
                   </div>
-                  <div className="shrink-0">
-                    <p className="text-slate-900 dark:text-white text-sm font-semibold leading-normal">R$ {item.cost.toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -418,17 +433,20 @@ const DetalhesReceita = () => {
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-surface-dark px-2 py-1 rounded">{recipe.equipment.length} itens</span>
             </div>
             <div className="flex flex-col">
-              {recipe.equipment.map((item, index) => (
-                <div key={index} className="flex items-center gap-4 px-4 min-h-[3.5rem] justify-between border-b border-gray-200 dark:border-gray-800 last:border-0 hover:bg-gray-100 dark:hover:bg-surface-dark/50 transition-colors">
-                  <div className="flex flex-col flex-1 truncate pr-2">
-                    <p className="text-slate-900 dark:text-white text-sm font-medium leading-normal truncate">{item.name}</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs font-normal">{item.quantity}</p>
+              {recipe.equipment.map((item, index) => {
+                const percentage = ((item.cost / recipe.costs.total) * 100).toFixed(1);
+                return (
+                  <div key={index} className="flex items-center gap-4 px-4 min-h-[3.5rem] justify-between border-b border-gray-200 dark:border-gray-800 last:border-0 hover:bg-gray-100 dark:hover:bg-surface-dark/50 transition-colors">
+                    <div className="flex flex-col flex-1 truncate pr-2">
+                      <p className="text-slate-900 dark:text-white text-sm font-medium leading-normal truncate">{item.name}</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-xs font-normal">{item.quantity}</p>
+                    </div>
+                    <div className="shrink-0">
+                      <p className="text-slate-900 dark:text-white text-sm font-semibold leading-normal">R$ {item.cost.toFixed(2)} ({percentage}%)</p>
+                    </div>
                   </div>
-                  <div className="shrink-0">
-                    <p className="text-slate-900 dark:text-white text-sm font-semibold leading-normal">R$ {item.cost.toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -445,19 +463,19 @@ const DetalhesReceita = () => {
               <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
                 <div className="flex flex-col">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Ingredientes</span>
-                  <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.ingredients.toFixed(2)}</span>
+                  <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.ingredients.toFixed(2)} ({((recipe.costs.ingredients / recipe.costs.total) * 100).toFixed(1)}%)</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Embalagens</span>
-                  <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.packaging.toFixed(2)}</span>
+                  <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.packaging.toFixed(2)} ({((recipe.costs.packaging / recipe.costs.total) * 100).toFixed(1)}%)</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Equipamentos</span>
-                  <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.equipment.toFixed(2)}</span>
+                  <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.equipment.toFixed(2)} ({((recipe.costs.equipment / recipe.costs.total) * 100).toFixed(1)}%)</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Mão de Obra</span>
-                  <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.labor.toFixed(2)}</span>
+                  <span className="text-slate-900 dark:text-white font-medium">R$ {recipe.costs.labor.toFixed(2)} ({((recipe.costs.labor / recipe.costs.total) * 100).toFixed(1)}%)</span>
                 </div>
               </div>
               <div className="h-px bg-gray-200 dark:bg-gray-700"></div>
