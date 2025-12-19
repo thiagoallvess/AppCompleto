@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Home, Search, Heart, User, Menu, ShoppingCart, Star, DollarSign, Receipt, Plus, Check } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 import { MadeWithDyad } from "../components/made-with-dyad";
-import { showSuccess } from "../utils/toast";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -69,7 +68,6 @@ const Index = () => {
     
     setAddingToCart(null);
     setAddedToCart(product.id);
-    showSuccess(`${product.name} adicionado ao carrinho!`);
     
     // Reset to normal state after 2 seconds
     setTimeout(() => {
