@@ -108,14 +108,38 @@ const Index = () => {
                     <User size={20} />
                     <span>Meu Perfil</span>
                   </Link>
-                  <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
-                    <Search size={20} />
-                    <span>Buscar</span>
-                  </button>
-                  <button className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left">
-                    <Heart size={20} />
-                    <span>Favoritos</span>
-                  </button>
+                  <div className="border-t border-border my-2"></div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1">
+                    Administração
+                  </div>
+                  <Link
+                    to="/gestao-pedidos"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <Receipt size={20} />
+                    <span>Gestão de Pedidos</span>
+                  </Link>
+                  <Link
+                    to="/gestao-insumos"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <div className="material-symbols-outlined">inventory</div>
+                    <span>Gestão de Insumos</span>
+                  </Link>
+                  <Link
+                    to="/gestao-produtos"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <div className="material-symbols-outlined">icecream</div>
+                    <span>Gestão de Produtos</span>
+                  </Link>
+                  <Link
+                    to="/configuracoes-admin"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <div className="material-symbols-outlined">settings</div>
+                    <span>Configurações Admin</span>
+                  </Link>
                 </nav>
               </div>
             </SheetContent>
