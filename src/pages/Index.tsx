@@ -4,13 +4,13 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home, Search, Heart, User, Menu, ShoppingCart, Star, DollarSign, Receipt } from "lucide-react";
+import { Home, Search, Heart, User, Menu, ShoppingCart, Star, DollarSign, Receipt, Plus } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 import { MadeWithDyad } from "../components/made-with-dyad";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { totalItems } = useCart();
+  const { totalItems, addItem } = useCart();
 
   const products = [
     {
@@ -50,6 +50,15 @@ const Index = () => {
       reviews: 78
     }
   ];
+
+  const handleAddToCart = (product: typeof products[0]) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-text-primary antialiased">
@@ -206,11 +215,24 @@ const Index = () => {
                         <span className="text-sm font-medium">{product.rating}</span>
                         <span className="text-sm text-slate-500 dark:text-text-secondary">({product.reviews} avaliações)</span>
                       </div>
-                      <Button className="w-full bg-primary hover:bg-primary/90 text-white">
-                        Ver Detalhes
-                      </Button>
                     </div>
                   </Link>
+                  <div className="px-4 pb-4">
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleAddToCart(product)}
+                        className="flex-1 bg-primary hover:bg-primary/90 text-white flex items-center justify-center gap-2"
+                      >
+                        <Plus size={16} />
+                        <span>Adicionar</span>
+                      </Button>
+                      <Link to={`/product-details?id=${product.id}`} className="flex-1">
+                        <Button variant="outline" className="w-full border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+                          Ver Detalhes
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
