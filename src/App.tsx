@@ -25,6 +25,7 @@ import GestaoPedidos from "./pages/GestaoPedidos";
 import Relatorios from "./pages/Relatorios";
 import Clientes from "./pages/Clientes";
 import DetalhesCliente from "./pages/DetalhesCliente";
+import VisaoGeral from "./pages/VisaoGeral";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/relatorios" element={<Relatorios />} />
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
+            <Route path="/visao-geral" element={<VisaoGeral />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
