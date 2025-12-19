@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home, Search, Heart, User, Menu, ShoppingCart, Star, DollarSign, Receipt, Plus, Check } from "lucide-react";
+import { Home, Search, Heart, User, Menu, ShoppingCart, DollarSign, Receipt, Plus, Check } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 import { MadeWithDyad } from "../components/made-with-dyad";
 
@@ -206,18 +206,11 @@ const Index = () => {
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-2">
                         <h3 className="font-bold text-lg leading-tight">{product.name}</h3>
-                        <div className="text-right">
-                          <p className="text-xl font-bold text-primary">R$ {product.price.toFixed(2)}</p>
-                        </div>
+                        <p className="text-xl font-bold text-primary">R$ {product.price.toFixed(2)}</p>
                       </div>
                       <p className="text-sm text-slate-600 dark:text-text-secondary mb-3 line-clamp-2">
                         {product.description}
                       </p>
-                      <div className="flex items-center gap-1 mb-3">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">{product.rating}</span>
-                        <span className="text-sm text-slate-500 dark:text-text-secondary">({product.reviews} avaliações)</span>
-                      </div>
                     </div>
                   </Link>
                   <div className="px-4 pb-4">
