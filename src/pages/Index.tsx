@@ -152,6 +152,14 @@ const Index = () => {
               </h3>
               <nav className="space-y-1">
                 <Link
+                  to="/visao-geral"
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  onClick={() => setIsDrawerOpen(false)}
+                >
+                  <BarChart size={20} />
+                  <span>Visão Geral</span>
+                </Link>
+                <Link
                   to="/gestao-pedidos"
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
                   onClick={() => setIsDrawerOpen(false)}
@@ -281,10 +289,10 @@ const Index = () => {
             <Search size={24} />
             <span className="text-[10px] font-medium">Buscar</span>
           </button>
-          <Link to="/cashback" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
+          <button className="flex flex-col items-center justify-center w-full h-full text-primary space-y-1">
             <div className="material-symbols-outlined">savings</div>
             <span className="text-[10px] font-medium">Cashback</span>
-          </Link>
+          </button>
           <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <Heart size={24} />
             <span className="text-[10px] font-medium">Favoritos</span>
