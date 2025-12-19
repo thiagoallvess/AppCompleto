@@ -1,7 +1,96 @@
 import { ArrowLeft, HelpCircle, RefreshCw, MapPin, CreditCard, Truck, Clock, DollarSign, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const DetalhesPedidoCliente = () => {
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get('id');
+
+  // Mock data for different orders - in a real app, this would come from an API
+  const ordersData = {
+    "1234": {
+      id: "1234",
+      date: "Hoje, 14:30",
+      status: "Saiu para entrega",
+      eta: "15:00 - 15:20",
+      progress: 75,
+      cashback: 1.60,
+      coupon: "VERAO10",
+      discount: 3.20,
+      items: [
+        { quantity: 2, name: "Ninho com Nutella", description: "Cremoso • Sem adição de água", price: 8.00 },
+        { quantity: 1, name: "Morango Gourmet", description: "Fruta natural • Base leite", price: 8.00 },
+        { quantity: 1, name: "Maracujá", description: "Refrescante • Edição limitada", price: 6.00 }
+      ],
+      subtotal: 22.00,
+      delivery: 5.00,
+      total: 23.80,
+      address: "Rua das Flores, 123 - Apt 402",
+      city: "Jardim Paulista, São Paulo - SP",
+      payment: "Mastercard final 4242"
+    },
+    "1102": {
+      id: "1102",
+      date: "10/10/2023",
+      status: "Entregue",
+      eta: null,
+      progress: 100,
+      cashback: 1.93,
+      coupon: null,
+      discount: 0,
+      items: [
+        { quantity: 3, name: "Limão Siciliano", description: "Refrescante • Base leite", price: 6.00 },
+        { quantity: 2, name: "Chocolate Belga", description: "Intenso • Cacau 70%", price: 7.50 }
+      ],
+      subtotal: 33.00,
+      delivery: 5.50,
+      total: 38.50,
+      address: "Av. Paulista, 1000 - Sala 42",
+      city: "Bela Vista, São Paulo - SP",
+      payment: "Pix"
+    },
+    "0988": {
+      id: "0988",
+      date: "25/09/2023",
+      status: "Entregue",
+      eta: null,
+      progress: 100,
+      cashback: 0.80,
+      coupon: "PRIMEIRA10",
+      discount: 1.60,
+      items: [
+        { quantity: 1, name: "Coco com Doce de Leite", description: "Tradicional • Base leite", price: 6.00 },
+        { quantity: 1, name: "Paçoca", description: "Doce brasileiro • Edição especial", price: 5.00 }
+      ],
+      subtotal: 11.00,
+      delivery: 5.00,
+      total: 14.40,
+      address: "Rua das Acácias, 450",
+      city: "Centro, São Paulo - SP",
+      payment: "Dinheiro"
+    },
+    "0845": {
+      id: "0845",
+      date: "12/08/2023",
+      status: "Cancelado",
+      eta: null,
+      progress: 0,
+      cashback: 0,
+      coupon: null,
+      discount: 0,
+      items: [
+        { quantity: 4, name: "Morango com Leite Condensado", description: "Clássico • Base leite", price: 7.00 }
+      ],
+      subtotal: 28.00,
+      delivery: 0,
+      total: 28.00,
+      address: "Rua dos Pinheiros, 789",
+      city: "Pinheiros, São Paulo - SP",
+      payment: "Não processado"
+    }
+  };
+
+  const order = ordersData[orderId as keyof typeof ordersData] || ordersData["1234"];
+
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-6 bg-background-light dark:bg-background-dark">
       {/* TopAppBar */}
@@ -17,7 +106,7 @@ const DetalhesPedidoCliente = () => {
 
       {/* MetaText */}
       <div className="flex flex-col items-center justify-center pt-2 pb-6">
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pedido #4829 • 24 Out, 14:30</p>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pedido #{order.id} • {order.date}</p>
       </div>
 
       {/* Status Card */}
@@ -33,11 +122,13 @@ const DetalhesPedidoCliente = () => {
           <div className="relative flex items-center justify-between p-5">
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wider text-primary">Status Atual</span>
-              <h3 className="text-xl font-bold text-white">Saiu para entrega</h3>
-              <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
-                <Clock size={16} />
-                Previsão: 15:00 - 15:20
-              </p>
+              <h3 className="text-xl font-bold text-white">{order.status}</h3>
+              {order.eta && (
+                <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                  <Clock size={16} />
+                  Previsão: {order.eta}
+                </p>
+              )}
             </div>
             <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30">
               <Truck size={24} />
@@ -45,7 +136,7 @@ const DetalhesPedidoCliente = () => {
           </div>
           {/* Progress Line */}
           <div className="relative h-1 w-full bg-gray-700">
-            <div className="absolute left-0 top-0 h-full w-3/4 bg-primary shadow-[0_0_10px_rgba(22,67,156,0.5)]"></div>
+            <div className="absolute left-0 top-0 h-full bg-primary shadow-[0_0_10px_rgba(22,67,156,0.5)]" style={{ width: `${order.progress}%` }}></div>
           </div>
         </div>
       </div>
@@ -59,56 +150,37 @@ const DetalhesPedidoCliente = () => {
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-400">Cashback ganho</p>
-            <p className="text-lg font-bold text-white">R$ 1,25 <span className="text-xs font-normal text-gray-500 ml-1">(5% do total)</span></p>
+            <p className="text-lg font-bold text-white">R$ {order.cashback.toFixed(2)} <span className="text-xs font-normal text-gray-500 ml-1">(5% do total)</span></p>
           </div>
         </div>
         {/* Referral */}
-        <div className="flex items-center justify-between rounded-xl bg-surface-dark p-3 px-4 border border-white/5">
-          <div className="flex flex-col">
-            <span className="text-xs font-medium text-gray-500">Cupom aplicado</span>
-            <span className="text-sm font-bold text-white tracking-wide">VERAO10</span>
+        {order.coupon && (
+          <div className="flex items-center justify-between rounded-xl bg-surface-dark p-3 px-4 border border-white/5">
+            <div className="flex flex-col">
+              <span className="text-xs font-medium text-gray-500">Cupom aplicado</span>
+              <span className="text-sm font-bold text-white tracking-wide">{order.coupon}</span>
+            </div>
+            <CheckCircle className="text-green-500" size={20} />
           </div>
-          <CheckCircle className="text-green-500" size={20} />
-        </div>
+        )}
       </div>
 
       {/* Order Items Section */}
       <div className="mb-2">
         <h3 className="px-4 pb-3 pt-2 text-base font-bold text-gray-900 dark:text-white">Itens do Pedido</h3>
         <div className="flex flex-col divide-y divide-white/5 border-y border-white/5 bg-surface-dark">
-          {/* Item 1 */}
-          <div className="flex items-center gap-4 px-4 py-4">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded bg-white/10 text-xs font-bold text-white">3x</div>
-            <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-medium text-white">Ninho com Nutella</p>
-              <p className="truncate text-xs text-gray-500">Cremoso • Sem adição de água</p>
+          {order.items.map((item, index) => (
+            <div key={index} className="flex items-center gap-4 px-4 py-4">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded bg-white/10 text-xs font-bold text-white">{item.quantity}x</div>
+              <div className="flex-1 overflow-hidden">
+                <p className="truncate text-sm font-medium text-white">{item.name}</p>
+                <p className="truncate text-xs text-gray-500">{item.description}</p>
+              </div>
+              <div className="shrink-0 text-right">
+                <p className="text-sm font-medium text-white">R$ {(item.price * item.quantity).toFixed(2)}</p>
+              </div>
             </div>
-            <div className="shrink-0 text-right">
-              <p className="text-sm font-medium text-white">R$ 15,00</p>
-            </div>
-          </div>
-          {/* Item 2 */}
-          <div className="flex items-center gap-4 px-4 py-4">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded bg-white/10 text-xs font-bold text-white">2x</div>
-            <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-medium text-white">Morango Premium</p>
-              <p className="truncate text-xs text-gray-500">Fruta natural • Base leite</p>
-            </div>
-            <div className="shrink-0 text-right">
-              <p className="text-sm font-medium text-white">R$ 10,00</p>
-            </div>
-          </div>
-          {/* Item 3 */}
-          <div className="flex items-center gap-4 px-4 py-4">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded bg-white/10 text-xs font-bold text-white">1x</div>
-            <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-medium text-white">Mousse de Maracujá</p>
-              <p className="truncate text-xs text-gray-500">Edição limitada</p>
-            </div>
-            <div className="shrink-0 text-right">
-              <p className="text-sm font-medium text-white">R$ 5,00</p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -121,8 +193,8 @@ const DetalhesPedidoCliente = () => {
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-white">Endereço de entrega</p>
-            <p className="text-sm text-gray-400">Rua das Flores, 123 - Apt 402</p>
-            <p className="text-xs text-gray-500">Jardim Paulista, São Paulo - SP</p>
+            <p className="text-sm text-gray-400">{order.address}</p>
+            <p className="text-xs text-gray-500">{order.city}</p>
           </div>
         </div>
         {/* Payment */}
@@ -132,7 +204,7 @@ const DetalhesPedidoCliente = () => {
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-white">Pagamento</p>
-            <p className="text-sm text-gray-400">Mastercard final 4242</p>
+            <p className="text-sm text-gray-400">{order.payment}</p>
           </div>
         </div>
       </div>
@@ -142,20 +214,22 @@ const DetalhesPedidoCliente = () => {
         <div className="mb-6 space-y-2">
           <div className="flex justify-between text-sm text-gray-400">
             <span>Subtotal</span>
-            <span>R$ 30,00</span>
+            <span>R$ {order.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm text-gray-400">
             <span>Taxa de entrega</span>
-            <span>R$ 5,00</span>
+            <span>R$ {order.delivery.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-sm text-green-500">
-            <span>Desconto (VERAO10)</span>
-            <span>- R$ 3,00</span>
-          </div>
+          {order.discount > 0 && (
+            <div className="flex justify-between text-sm text-green-500">
+              <span>Desconto ({order.coupon})</span>
+              <span>- R$ {order.discount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="my-3 h-px w-full bg-white/10"></div>
           <div className="flex justify-between items-center">
             <span className="text-base font-medium text-white">Total</span>
-            <span className="text-2xl font-bold text-white">R$ 32,00</span>
+            <span className="text-2xl font-bold text-white">R$ {order.total.toFixed(2)}</span>
           </div>
         </div>
         <div className="flex gap-3">

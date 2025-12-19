@@ -36,7 +36,7 @@ const MeusPedidos = () => {
       items: "1x Coco com Doce de Leite, 1x Paçoca",
       itemCount: 2,
       total: 16.00,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAG7Uj02VQJ-qhcbTCnesEG4gD3UInDA4rNayZup2RLN2_bQCfTnVNR_l-DTdXOBvhL9WAaX87UftAK2U7sB2U6JTa7r8wpWfiDPIEbAtGGvQ-5CrecYaZuuD9l1b4s01XjoNpc5t9qaYh4dzSCTxZXGQq2UVC2yLgyUnmioy-w9jEP6S31faZwIlo68d951DTN_-oos0ZbKhyHyEGxSHXFfW4gxKyg2e9ICHwtS3Beq_3-2wSvZVjYKvOLPZI2_nP6TbsWYvi__Q",
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAG7Uj02VQJ-qhcbTCnesEG4gD3UInDA4rNayZup2RLN2_bQCfTnVNR_l-DTdXOBvhL9WAaX87UftAK2U7sB2U6JTa7r8wpWfiDPIEbAtGGv-5CrecYaZuuD9l1b4s01XjoNpc5t9qaYh4dzSCTxZXGQq2UVC2yLgyUnmioy-w9jEP6S31faZwIlo68d951DTN_-oos0ZbKhyHyEGxSHXFfW4gxKyg2e9ICHwtS3Beq_3-2wSvZVjYKvOLPZI2_nP6TbsWYvi__Q",
       action: "Pedir novamente",
       rating: 4.8
     },
@@ -97,7 +97,7 @@ const MeusPedidos = () => {
           {orders.map((order) => (
             <Link
               key={order.id}
-              to="/detalhes-pedido"
+              to={`/detalhes-pedido-cliente?id=${order.id}`}
               className="block"
             >
               <article
@@ -105,7 +105,7 @@ const MeusPedidos = () => {
                   order.cancelled ? 'opacity-75 hover:opacity-100' : ''
                 }`}
               >
-                <div className="mb-3 flex items-start justify-between">
+                <div className="mb-3 flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1">
                     <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
                       order.statusColor === 'blue' ? 'bg-blue-100 dark:bg-primary/20 text-primary dark:text-blue-200' :
@@ -120,11 +120,11 @@ const MeusPedidos = () => {
                   <ArrowLeft className="text-gray-400 dark:text-text-secondary rotate-180" size={20} />
                 </div>
                 <div className="flex gap-4">
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
+                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
                     <img
-                      src={order.image}
                       alt={order.items}
                       className={`h-full w-full object-cover ${order.cancelled ? 'grayscale opacity-50' : ''}`}
+                      src={order.image}
                     />
                   </div>
                   <div className="flex flex-1 flex-col justify-between py-0.5">
