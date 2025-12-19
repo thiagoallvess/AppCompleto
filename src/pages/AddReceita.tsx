@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const AddReceita = () => {
   const [recipeName, setRecipeName] = useState("");
-  const [yield, setYield] = useState("");
+  const [recipeYield, setRecipeYield] = useState("");
   const [laborTime, setLaborTime] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [linkedProduct, setLinkedProduct] = useState("");
@@ -129,7 +129,7 @@ const AddReceita = () => {
   const equipmentCost = equipment.reduce((sum, e) => sum + e.totalCost, 0);
   const laborCost = laborTime ? (parseFloat(laborTime) / 60) * 15 : 0; // Assuming R$15/hour
   const totalCost = ingredientsCost + packagingCost + equipmentCost + laborCost;
-  const unitCost = yield ? totalCost / parseFloat(yield) : 0;
+  const unitCost = recipeYield ? totalCost / parseFloat(recipeYield) : 0;
   const suggestedPrice = unitCost * 1.4; // 40% markup
   const currentSellingPrice = sellingPrice ? parseFloat(sellingPrice) : suggestedPrice;
   const unitProfit = currentSellingPrice - unitCost;
@@ -140,7 +140,7 @@ const AddReceita = () => {
     // TODO: Implement recipe creation logic
     console.log({
       recipeName,
-      yield,
+      recipeYield,
       laborTime,
       sellingPrice,
       linkedProduct,
@@ -198,8 +198,8 @@ const AddReceita = () => {
                 <label className="flex flex-col flex-1 min-w-[120px]">
                   <p className="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2 truncate">Rendimento (unid)</p>
                   <Input
-                    value={yield}
-                    onChange={(e) => setYield(e.target.value)}
+                    value={recipeYield}
+                    onChange={(e) => setRecipeYield(e.target.value)}
                     type="number"
                     className="h-14 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
                     placeholder="0"
