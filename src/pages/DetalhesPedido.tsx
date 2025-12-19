@@ -1,4 +1,4 @@
-import { ArrowLeft, Print, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History } from "lucide-react";
+import { ArrowLeft, Printer, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const DetalhesPedido = () => {
@@ -17,7 +17,7 @@ const DetalhesPedido = () => {
         </div>
         <div className="flex items-center gap-2">
           <button className="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white transition-colors">
-            <Print size={24} />
+            <Printer size={24} />
           </button>
           <button className="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white transition-colors">
             <MoreVertical size={24} />
