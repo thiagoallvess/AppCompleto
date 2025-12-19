@@ -10,7 +10,6 @@ import { MadeWithDyad } from "../components/made-with-dyad";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [addingToCart, setAddingToCart] = useState<string | null>(null);
   const [addedToCart, setAddedToCart] = useState<string | null>(null);
   const { totalItems, addItem } = useCart();
 
@@ -54,10 +53,7 @@ const Index = () => {
   ];
 
   const handleAddToCart = async (product: typeof products[0]) => {
-    setAddingToCart(product.id);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 600));
+    setAddedToCart(product.id);
     
     addItem({
       id: product.id,
@@ -65,9 +61,6 @@ const Index = () => {
       price: product.price,
       image: product.image
     });
-    
-    setAddingToCart(null);
-    setAddedToCart(product.id);
     
     // Reset to normal state after 2 seconds
     setTimeout(() => {
@@ -239,12 +232,9 @@ const Index = () => {
                         e.stopPropagation();
                         handleAddToCart(product);
                       }}
-                      disabled={addingToCart === product.id}
                       className={`w-full flex items-center justify-center gap-2 transition-all duration-200 ${
                         addedToCart === product.id
                           ? 'bg-green-500 hover:bg-green-600 text-white scale-105'
-                          : addingToCart === product.id
-                          ? 'scale-95 opacity-80 bg-primary'
                           : 'bg-primary hover:bg-primary/90 text-white hover:scale-105'
                       }`}
                     >
@@ -252,11 +242,6 @@ const Index = () => {
                         <>
                           <Check size={16} />
                           <span>Adicionado</span>
-                        </>
-                      ) : addingToCart === product.id ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                          <span>Adicionando...</span>
                         </>
                       ) : (
                         <>
