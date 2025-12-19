@@ -215,24 +215,15 @@ const Index = () => {
                         <span className="text-sm font-medium">{product.rating}</span>
                         <span className="text-sm text-slate-500 dark:text-text-secondary">({product.reviews} avaliações)</span>
                       </div>
-                    </div>
-                  </Link>
-                  <div className="px-4 pb-4">
-                    <div className="flex gap-2">
                       <Button
                         onClick={() => handleAddToCart(product)}
-                        className="flex-1 bg-primary hover:bg-primary/90 text-white flex items-center justify-center gap-2"
+                        className="w-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center gap-2"
                       >
                         <Plus size={16} />
                         <span>Adicionar</span>
                       </Button>
-                      <Link to={`/product-details?id=${product.id}`} className="flex-1">
-                        <Button variant="outline" className="w-full border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
-                          Ver Detalhes
-                        </Button>
-                      </Link>
                     </div>
-                  </div>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
