@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Receipt, Users, IceCream, BarChart, Settings, Home, Search, Heart, User } from "lucide-react";
+import { Menu, X, Receipt, Users, IceCream, BarChart, Settings, Home, Search, Heart, User, ShoppingCart } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 import { showSuccess } from "../utils/toast";
 
@@ -213,7 +213,7 @@ const Index = () => {
         </button>
         <h1 className="text-xl font-bold text-slate-900 dark:text-white">Geladinho Gourmet</h1>
         <Link to="/cart" className="relative flex size-10 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
-          <Heart className="text-slate-900 dark:text-white" size={24} />
+          <ShoppingCart className="text-slate-900 dark:text-white" size={24} />
         </Link>
       </header>
 
