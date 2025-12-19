@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Home, IceCream, Receipt, Settings, BarChart, ShoppingCart } from "lucide-react";
+import { Menu, X, Home, IceCream, Receipt, Settings, BarChart, ShoppingCart, Users } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 
 const Index = () => {
@@ -102,6 +102,14 @@ const Index = () => {
                 >
                   <div className="material-symbols-outlined">person</div>
                   <span>Perfil</span>
+                </Link>
+                <Link
+                  to="/indicacao"
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  onClick={() => setIsDrawerOpen(false)}
+                >
+                  <Users size={20} />
+                  <span>Indicação</span>
                 </Link>
                 <Link
                   to="/cashback"
