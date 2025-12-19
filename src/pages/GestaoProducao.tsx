@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Plus, Search, Filter, MoreVertical, Trash2 } from "lucide-react";
 
 const GestaoProducao = () => {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -155,7 +156,7 @@ const GestaoProducao = () => {
   return (
     <div className="relative flex min-h-screen w-full flex-col pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
       {/* Top App Bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between bg-white/90 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+      <header className="sticky top-0 z-30 flex items-center bg-background-light dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 justify-between border-b border-slate-200 dark:border-slate-800 w-full">
         <button className="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <span className="material-symbols-outlined text-slate-600 dark:text-slate-300">menu</span>
         </button>
@@ -210,15 +211,15 @@ const GestaoProducao = () => {
             <span className="material-symbols-outlined text-primary text-[20px]">factory</span>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Produzido</span>
           </div>
-          <p className="text-xl font-bold text-slate-900 dark:text-white">{totalProduced}</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalProduced}</p>
           <p className="text-xs text-slate-500 dark:text-slate-400">unidades</p>
         </div>
         <div className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-outlined text-green-500 text-[20px]">attach_money</span>
+            <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-[20px]">attach_money</span>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Custo Total</span>
           </div>
-          <p className="text-xl font-bold text-slate-900 dark:text-white">R$ {totalCost.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white">R$ {totalCost.toFixed(2)}</p>
           <p className="text-xs text-green-500">+8.2%</p>
         </div>
         <div className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -226,7 +227,7 @@ const GestaoProducao = () => {
             <span className="material-symbols-outlined text-blue-500 text-[20px]">trending_up</span>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Lucro</span>
           </div>
-          <p className="text-xl font-bold text-slate-900 dark:text-white">R$ {totalProfit.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white">R$ {totalProfit.toFixed(2)}</p>
           <p className="text-xs text-blue-500">+12.5%</p>
         </div>
       </div>
@@ -242,7 +243,8 @@ const GestaoProducao = () => {
         {filteredLots.map((lot) => (
           <div
             key={lot.id}
-            className="group relative flex flex-col gap-3 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-slate-800/60"
+            onClick={() => navigate(`/detalhes-lote?id=${lot.id}`)}
+            className="group relative flex flex-col gap-3 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-slate-800/60 cursor-pointer hover:shadow-md transition-all active:scale-[0.99]"
           >
             <div className="flex items-start gap-4">
               {/* Image */}
