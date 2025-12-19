@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Home, Search, Heart, User, Menu, ShoppingCart, Star, DollarSign, Receipt, Plus } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 import { MadeWithDyad } from "../components/made-with-dyad";
+import { showSuccess } from "../utils/toast";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,6 +59,7 @@ const Index = () => {
       price: product.price,
       image: product.image
     });
+    showSuccess(`${product.name} adicionado ao carrinho!`);
   };
 
   return (
