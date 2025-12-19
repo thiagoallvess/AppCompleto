@@ -31,7 +31,7 @@ const AddReceita = () => {
   const [equipmentMinTime, setEquipmentMinTime] = useState("");
 
   const products = [
-    { id: "", name: "Nenhum Produto" },
+    { id: "none", name: "Nenhum Produto" },
     { id: "1", name: "Geladinho Gourmet Ninho" },
     { id: "2", name: "Geladinho Gourmet Morango" }
   ];
