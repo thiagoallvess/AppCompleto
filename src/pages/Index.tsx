@@ -4,13 +4,14 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home, Search, Heart, User, Menu, ShoppingCart, Star, DollarSign, Receipt, Plus } from "lucide-react";
+import { Home, Search, Heart, User, Menu, ShoppingCart, Star, DollarSign, Receipt, Plus, Check } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 import { MadeWithDyad } from "../components/made-with-dyad";
 import { showSuccess } from "../utils/toast";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [addingToCart, setAddingToCart] = useState<string | null>(null);
   const { totalItems, addItem } = useCart();
 
   const products = [
@@ -52,14 +53,21 @@ const Index = () => {
     }
   ];
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  const handleAddToCart = async (product: typeof products[0]) => {
+    setAddingToCart(product.id);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
     addItem({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.image
     });
+    
     showSuccess(`${product.name} adicionado ao carrinho!`);
+    setAddingToCart(null);
   };
 
   return (
@@ -217,15 +225,33 @@ const Index = () => {
                         <span className="text-sm font-medium">{product.rating}</span>
                         <span className="text-sm text-slate-500 dark:text-text-secondary">({product.reviews} avaliações)</span>
                       </div>
-                      <Button
-                        onClick={() => handleAddToCart(product)}
-                        className="w-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center gap-2"
-                      >
-                        <Plus size={16} />
-                        <span>Adicionar</span>
-                      </Button>
                     </div>
                   </Link>
+                  <div className="px-4 pb-4">
+                    <Button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToCart(product);
+                      }}
+                      disabled={addingToCart === product.id}
+                      className={`w-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center gap-2 transition-all duration-200 ${
+                        addingToCart === product.id ? 'scale-95 opacity-80' : 'hover:scale-105'
+                      }`}
+                    >
+                      {addingToCart === product.id ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                          <span>Adicionando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Plus size={16} />
+                          <span>Adicionar</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
