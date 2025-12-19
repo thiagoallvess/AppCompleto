@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 const DetalhesPedido = () => {
   return (
-    <div className="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto overflow-x-hidden bg-background-light dark:bg-background-dark shadow-2xl">
+    <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-6 bg-background-light dark:bg-background-dark">
       {/* Header */}
-      <header className="sticky top-0 z-20 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 justify-between border-b border-border-light dark:border-border-dark">
+      <header className="sticky top-0 z-20 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 justify-between border-b border-border-light dark:border-border-dark max-w-7xl mx-auto lg:px-6">
         <div className="flex items-center gap-3">
           <Link
             to="/gestao-pedidos"
@@ -26,7 +26,7 @@ const DetalhesPedido = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-6 space-y-6 pb-32">
+      <main className="flex-1 px-4 py-6 space-y-6 pb-32 max-w-7xl mx-auto lg:px-6">
         {/* Order Status */}
         <div className="rounded-2xl bg-surface-light dark:bg-surface-dark p-5 border border-border-light dark:border-border-dark shadow-sm">
           <div className="flex items-center justify-between mb-4">
@@ -34,7 +34,7 @@ const DetalhesPedido = () => {
             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary border border-primary/20">Novo</span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="relative flex items-center justify-center rounded-full bg-primary/10 shrink-0 size-14 text-primary">
+            <div className="flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-14 text-primary">
               <span className="material-symbols-outlined text-[28px]">inventory_2</span>
             </div>
             <div>
@@ -67,7 +67,7 @@ const DetalhesPedido = () => {
             <div className="flex-1">
               <p className="text-slate-900 dark:text-white font-bold text-base">Maria Silva</p>
               <div className="flex items-center gap-1 mt-1 text-text-secondary-light dark:text-text-secondary-dark text-sm">
-                <span className="material-symbols-outlined text-[16px] text-yellow-500">star</span>
+                <span className="material-symbols-outlined text-base text-yellow-500">star</span>
                 <span>4.9 (12 pedidos)</span>
               </div>
             </div>
@@ -215,7 +215,7 @@ const DetalhesPedido = () => {
       </main>
 
       {/* Bottom Action */}
-      <div className="fixed bottom-0 z-30 w-full max-w-md border-t border-border-light dark:border-border-dark bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-md p-4 pb-safe">
+      <div className="fixed bottom-0 z-30 w-full border-t border-border-light dark:border-border-dark bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-md p-4 pb-safe max-w-7xl mx-auto">
         <button className="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-primary text-white font-bold text-lg shadow-xl shadow-primary/25 hover:bg-primary-dark transition-all active:scale-[0.98]">
           <span className="material-symbols-outlined">edit</span>
           Atualizar Status
