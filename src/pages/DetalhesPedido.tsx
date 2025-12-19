@@ -1,4 +1,4 @@
-import { ArrowLeft, Print, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, Person, CreditCard, History } from "lucide-react";
+import { ArrowLeft, Print, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const DetalhesPedido = () => {
@@ -57,7 +57,7 @@ const DetalhesPedido = () => {
         {/* Customer Info */}
         <div className="rounded-2xl bg-surface-light dark:bg-surface-dark p-5 border border-border-light dark:border-border-dark shadow-sm">
           <h3 className="text-slate-900 dark:text-white text-base font-bold mb-4 flex items-center gap-2">
-            <Person className="text-text-secondary-light dark:text-text-secondary-dark" size={20} />
+            <User className="text-text-secondary-light dark:text-text-secondary-dark" size={20} />
             Cliente
           </h3>
           <div className="flex items-start gap-4">
