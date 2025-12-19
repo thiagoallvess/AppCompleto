@@ -31,6 +31,7 @@ import AddReceita from "./pages/AddReceita";
 import DetalhesReceita from "./pages/DetalhesReceita";
 import GestaoProducao from "./pages/GestaoProducao";
 import AddProducao from "./pages/AddProducao";
+import DetalhesLote from "./pages/DetalhesLote";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -72,6 +73,7 @@ const App = () => (
             <Route path="/detalhes-receita" element={<DetalhesReceita />} />
             <Route path="/gestao-producao" element={<GestaoProducao />} />
             <Route path="/add-producao" element={<AddProducao />} />
+            <Route path="/detalhes-lote" element={<DetalhesLote />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
