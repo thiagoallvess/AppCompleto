@@ -32,7 +32,7 @@ const GestaoProducao = () => {
       id: 1,
       name: "Ninho com Nutella",
       recipe: "Ninho com Nutella",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkd8lB5c2Vaw9ZupDeGKA8CqQrsuCbv1IVWtjP1Pgq6N5JYAMjwdcNFdmTh7yXGKKGPykrJKJC3EQGvyud_4OcMgbqUKbbJxg_HMmq1DxGVHqG67Xx_g_O1nhM68hW_zb8fX5mpqZq1K6sshICrQCxa8oV61kN1WUpqDp5PiU3Ww7K_MZF2TOu-iy-FqWeK-zibAFwgP0IvVgMX4QnpBYdPUzoUzGQaTcXvNfJTbTCUlmXc25qyIc3GuUHXF19vX4tEBWm0AYdEA",
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDQI5Bd-HQhMa0roL66f0M780HWmmqj98bmIZaQjBCeGYe5rZ31qkJu43AOVL3u8tAt_AWdZ_tAhbDsirOp9nG8KG_S_Sc0AraSlLL5HDsJg6pkxcfIxrGbnsJrrpRxgWxiLWlOT1-m21pyJhpZEsu1JDIZt-ewzQQ8Ng8B93krfEByXuYSH5XCAwVUVSJ0BUkY5K1lNRYF1Jokck2SkgLRA9Iw28BqZB63RyZloSS3PukeRI-NHlmXR3NulS-tiLx-fi6mm71LjQ",
       date: "12/08/2023",
       produced: 50,
       cost: 75.00,
@@ -45,7 +45,7 @@ const GestaoProducao = () => {
       id: 2,
       name: "Morango Gourmet",
       recipe: "Morango Cremoso",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDqVk8SMO1ewrqfBfb-7DbV3pYaduHuQQCUS6cyyskyk_vMuPhOH5YkjHT7b4_8L2p4-DXY5pG5yxSdxKaTDievreCs66jGW_XLejFaHqvLm8b3ZrYojpR4mZcRuXfFTEPDRxVFUs2l4MfTr_V4BLGBR2CVZU_gHGKRF15loMFVJMygzdLzOHCtazt6eWrYGxN6mbReSsH42Q6OP1Ml2Nf3oh0_YnGsYnc0DwSrnnbW_e_trqD-JxL41sToyrq0AtTJs_ZFxmWl7A",
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCM3cfAeatmEUtNaDEnz796M7L7_1N-EtyXmykGuHogX2Bqw0GLmlvYa3HPA8Wz1_4o9F5wPSUrzWkU8Yp7doalaFscT5306YI3bZgNz9gTLuFuBl4eyymE72I2oud60ide53rz4tw6ycGt2mAau951TpWIjxrfxMQg_NpEJUwcm1qol_S5JpSoZbGnw8au7eUWzH4lvezL2wocDTs541UOAWtFuVwleVW5xacABNhs7r5_Xla2rV2_GgGzX6Ol3wbDpTujEKBi_A",
       date: "11/08/2023",
       produced: 30,
       cost: 45.00,
@@ -58,7 +58,7 @@ const GestaoProducao = () => {
       id: 3,
       name: "Maracujá Cremoso",
       recipe: "Maracujá Trufado",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuClXN97cpaE3Nu2y3nLPiXcSd7e4IhHvNiE-bMU8zky0nU4wRbW0gUBQhF6qObEibejnzY0v3UYM1gNsW6odJkUqmFnj7WRm0W4y-0TZ5q_xQpcPDC4d81MDzOZ5kmJwiOOpg46p9_nbBg9AIFKNqXW_i2ZPBq7BZCoyFPxG8Rq_e2FG54LQvngzEUz8_dRFGRl1uUYAvLHknl3yjF1-0LlHh20rDhDP_rL58l-yh39VqLynB_C5eYkqdnj1-z_8zFUJBMLTqexvQ",
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBoZ4WrJnviJNuxDALva68IEx8BdGnHIjNAHbiCD9c4LdL8-hJlme5-_jxH6yK45w60ONtc-wS1X4YRBtWIaMoT-ulkjkHFRp2qqXBLfOkCCCkwdQaWLx2-89611q0649qzVgnLg86WrY-Ea70L22N2sX9RqBAfGRPY9V-lGLiw6-mIc2syzuhmzeimcROK7NbRdCxSJMIFrOkJSzh4puGnvIZiAPSOVeuwwrqMUlMvOWxuvH8MJKoEM1-UH9iaFBbmLGPUy3smQQ",
       date: "10/08/2023",
       produced: 100,
       cost: 120.00,
@@ -172,7 +172,7 @@ const GestaoProducao = () => {
           <Input
             type="text"
             placeholder="Buscar por produto ou receita..."
-            className="pl-10 h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+            className="pl-10 h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -189,7 +189,7 @@ const GestaoProducao = () => {
               className={`flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full px-4 transition-colors ${
                 activeFilter === filter.label
                   ? "bg-primary text-white"
-                  : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               }`}
             >
               <span className="text-xs font-semibold">{filter.label}</span>
@@ -399,12 +399,12 @@ const GestaoProducao = () => {
       </Dialog>
 
       {/* FAB */}
-      <button
-        onClick={() => setIsCreateModalOpen(true)}
-        className="fixed bottom-24 right-5 z-20 flex size-14 items-center justify-center rounded-full bg-primary shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95"
+      <Link
+        to="/add-producao"
+        className="fixed bottom-24 right-5 z-20 w-14 h-14 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-all active:scale-95"
       >
-        <Plus className="text-white" size={28} />
-      </button>
+        <Plus size={28} />
+      </Link>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800/80 backdrop-blur-lg bg-opacity-95">
@@ -412,7 +412,7 @@ const GestaoProducao = () => {
           <span className="material-symbols-outlined text-[24px]">dashboard</span>
           <span className="text-[10px] font-medium">Início</span>
         </Link>
-        <button className="flex flex-col items-center gap-1 p-2 w-16 text-primary">
+        <button className="flex flex-col items-center justify-center gap-1 p-2 w-16 text-primary">
           <span className="material-symbols-outlined fill-current text-[24px]">conveyor_belt</span>
           <span className="text-[10px] font-medium">Produção</span>
         </button>
