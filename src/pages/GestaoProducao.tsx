@@ -13,13 +13,10 @@ const GestaoProducao = () => {
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newLot, setNewLot] = useState({
-    name: "",
-    recipe: "",
-    quantity: "",
-    date: "",
-    status: "Produzindo"
-  });
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [filterSearch, setFilterSearch] = useState("");
+  const [selectedStatuses, setSelectedStatuses] = useState(["Em Estoque", "Finalizado"]);
+  const [selectedPeriod, setSelectedPeriod] = useState("Este Mês");
 
   const filters = [
     { label: "Todos", count: null },
@@ -33,7 +30,7 @@ const GestaoProducao = () => {
       id: 1,
       name: "Ninho com Nutella",
       recipe: "Ninho com Nutella",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDQI5Bd-HQhMa0roL66f0M780HWmmqj98bmIZaQjBCeGYe5rZ31qkJu43AOVL3u8tAt_AWdZ_tAhbDsirOp9nG8KG_S_Sc0AraSlLL5HDsJg6pkxcfIxrGbnsJrrpRxgWxiLWlOT1-m21pyJhpZEsu1JDIZt-ewzQQ8Ng8B93krfEByXuYSH5XCAwVUVSJ0BUkY5K1lNRYF1Jokck2SkgLRA9Iw28BqZB63RyZloSS3PukeRI-NHlmXR3NulS-tiLx-fi6mm71LjQ",
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkd8lB5c2Vaw9ZupDeGKA8CqQrsuCbv1IVWtjP1Pgq6N5JYAMjwdcNFdmTh7yXGKKGPykrJKJC3EQGvyud_4OcMgbqUKbbJxg_HMmq1DxGVHqG67Xx_g_O1nhM68hW_zb8fX5mpqZq1K6sshICrQCxa8oV61kN1WUpqDp5PiU3Ww7K_MZF2TOu-iy-FqWeK-zibAFwgP0IvVgMX4QnpBYdPUzoUzGQaTcXvNfJTbTCUlmXc25qyIc3GuUHXF19vX4tEBWm0AYdEA",
       date: "12/08/2023",
       produced: 50,
       cost: 75.00,
@@ -149,6 +146,25 @@ const GestaoProducao = () => {
     }));
   };
 
+  const handleApplyFilters = () => {
+    // Apply filters logic here
+    setIsFilterModalOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilterSearch("");
+    setSelectedStatuses(["Em Estoque", "Finalizado"]);
+    setSelectedPeriod("Este Mês");
+  };
+
+  const handleStatusToggle = (status: string) => {
+    setSelectedStatuses(prev =>
+      prev.includes(status)
+        ? prev.filter(s => s !== status)
+        : [...prev, status]
+    );
+  };
+
   const totalProduced = filteredLots.reduce((sum, lot) => sum + lot.produced, 0);
   const totalCost = filteredLots.reduce((sum, lot) => sum + lot.cost, 0);
   const totalProfit = filteredLots.reduce((sum, lot) => sum + lot.profit, 0);
@@ -156,12 +172,12 @@ const GestaoProducao = () => {
   return (
     <div className="relative flex min-h-screen w-full flex-col pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
       {/* Top App Bar */}
-      <header className="sticky top-0 z-30 flex items-center bg-background-light dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 justify-between border-b border-slate-200 dark:border-slate-800 w-full">
+      <header className="sticky top-0 z-30 flex items-center justify-between bg-white/90 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-slate-200 dark:border-slate-800">
         <button className="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <span className="material-symbols-outlined text-slate-600 dark:text-slate-300">menu</span>
         </button>
         <h1 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center text-slate-900 dark:text-white">Gestão de Produção</h1>
-        <button className="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+        <button onClick={() => setIsFilterModalOpen(true)} className="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <Filter className="text-slate-600 dark:text-slate-300" size={20} />
         </button>
       </header>
@@ -208,8 +224,8 @@ const GestaoProducao = () => {
       <div className="px-4 py-4 grid grid-cols-3 gap-3">
         <div className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-outlined text-primary text-[20px]">factory</span>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Produzido</span>
+            <span className="material-symbols-outlined text-slate-400 text-[20px]">factory</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Produzido</span>
           </div>
           <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalProduced}</p>
           <p className="text-xs text-slate-500 dark:text-slate-400">unidades</p>
@@ -217,7 +233,7 @@ const GestaoProducao = () => {
         <div className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-[20px]">attach_money</span>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Custo Total</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Custo Total</span>
           </div>
           <p className="text-3xl font-bold text-slate-900 dark:text-white">R$ {totalCost.toFixed(2)}</p>
           <p className="text-xs text-green-500">+8.2%</p>
@@ -225,7 +241,7 @@ const GestaoProducao = () => {
         <div className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <span className="material-symbols-outlined text-blue-500 text-[20px]">trending_up</span>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Lucro</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Lucro</span>
           </div>
           <p className="text-3xl font-bold text-slate-900 dark:text-white">R$ {totalProfit.toFixed(2)}</p>
           <p className="text-xs text-blue-500">+12.5%</p>
@@ -258,7 +274,11 @@ const GestaoProducao = () => {
               <div className="flex flex-1 flex-col h-[72px] justify-between">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight pr-2">{lot.name}</h3>
+                    <h3 className={`text-base font-bold text-slate-900 dark:text-white leading-tight pr-2 ${
+                      lot.status === "Cancelado" ? "text-gray-500 dark:text-gray-400" : ""
+                    }`}>
+                      {lot.name}
+                    </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{lot.recipe}</p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -395,6 +415,90 @@ const GestaoProducao = () => {
               className="flex-1 bg-primary hover:bg-primary/90"
             >
               Criar Lote
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Filter Modal */}
+      <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+        <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-slate-200 dark:border-slate-800 p-0 max-h-[85vh] overflow-hidden">
+          <DialogHeader className="px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+            <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">Filtros de Produção</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Receita</label>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <Search className="text-slate-400" size={20} />
+                </div>
+                <Input
+                  className="pl-10 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600"
+                  placeholder="Buscar receita..."
+                  value={filterSearch}
+                  onChange={(e) => setFilterSearch(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Status do Lote</label>
+              <div className="space-y-3">
+                {["Produzindo", "Em Estoque", "Finalizado", "Cancelado"].map((status) => (
+                  <div key={status} className="relative flex items-start">
+                    <div className="flex h-6 items-center">
+                      <input
+                        className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-700 dark:ring-offset-slate-800"
+                        id={`status-${status.toLowerCase()}`}
+                        name={`status-${status.toLowerCase()}`}
+                        type="checkbox"
+                        checked={selectedStatuses.includes(status)}
+                        onChange={() => handleStatusToggle(status)}
+                      />
+                    </div>
+                    <div className="ml-3 text-sm leading-6">
+                      <label className="font-medium text-slate-700 dark:text-slate-300" htmlFor={`status-${status.toLowerCase()}`}>
+                        {status}
+                      </label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="border-t border-slate-100 dark:border-slate-800"></div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Período de Produção</label>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {["Últimos 7 dias", "Últimos 30 dias", "Este Mês", "Mês Passado", "Intervalo Personalizado"].map((period) => (
+                  <button
+                    key={period}
+                    onClick={() => setSelectedPeriod(period)}
+                    className={`rounded-md px-3 py-2 text-xs font-semibold shadow-sm border transition-colors ${
+                      selectedPeriod === period
+                        ? "bg-primary text-white border-primary"
+                        : "bg-slate-100 dark:bg-surface-dark text-slate-900 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800"
+                    }`}
+                    type="button"
+                  >
+                    {period}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-50 dark:bg-black/20 px-4 py-4 border-t border-slate-100 dark:border-slate-800 gap-3 flex">
+            <Button
+              onClick={handleApplyFilters}
+              className="flex-1 bg-primary hover:bg-blue-600 text-white font-semibold text-sm active:scale-[0.98] transition-transform"
+            >
+              Aplicar Filtros
+            </Button>
+            <Button
+              onClick={handleClearFilters}
+              variant="outline"
+              className="flex-1 bg-white dark:bg-surface-dark text-slate-900 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-[0.98] transition-transform"
+            >
+              Limpar
             </Button>
           </div>
         </DialogContent>
