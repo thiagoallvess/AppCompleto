@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Menu, X, Home, Receipt, Users, Settings, BarChart, IceCream, Heart, ShoppingCart, Star, Plus } from "lucide-react";
+import { Search, Menu, X, Home, Receipt, Users, Settings, BarChart, IceCream, Heart, ShoppingCart, Star } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 
 const Index = () => {
@@ -147,14 +147,6 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Floating Action Button */}
-      <Link
-        to="/add-produto"
-        className="fixed bottom-20 right-4 w-14 h-14 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-all active:scale-95 z-30"
-      >
-        <Plus size={28} />
-      </Link>
-
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-lg pb-safe">
         <div className="flex justify-around items-center h-16 max-w-md mx-auto lg:max-w-none lg:px-6">
@@ -182,7 +174,7 @@ const Index = () => {
           <Link to="/perfil" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600"></div>
             <span className="text-[10px] font-medium">Perfil</span>
-          </Link>
+          </button>
         </div>
       </nav>
 
