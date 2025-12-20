@@ -174,7 +174,7 @@ const Index = () => {
           <Link to="/perfil" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600"></div>
             <span className="text-[10px] font-medium">Perfil</span>
-          </button>
+          </Link>
         </div>
       </nav>
 
@@ -187,9 +187,7 @@ const Index = () => {
       )}
 
       {/* Drawer */}
-      <div className={`fixed top-0 left-0 h-full w-80 bg-white dark:bg-surface-dark shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
-        isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
+      <div className={`fixed top-0 left-0 h-full w-80 bg-white dark:bg-surface-dark shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Drawer Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Menu</h2>
