@@ -4,6 +4,7 @@ import { Plus, Search, ShoppingCart, Home, Search as SearchIcon, Heart, User, Do
 import { Button } from "@/components/ui/button";
 import { useCart } from "../contexts/CartContext";
 import { showSuccess } from "../utils/toast";
+import MainDrawer from "../components/MainDrawer";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -78,6 +79,7 @@ const Index = () => {
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center p-4 pb-2 justify-between max-w-md mx-auto lg:max-w-7xl lg:px-6 w-full">
           <div className="flex items-center gap-3">
+            <MainDrawer />
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">G</span>
             </div>
