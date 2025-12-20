@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Search, ShoppingCart, Home, Receipt, Users, BarChart, IceCream, Settings, ArrowLeft } from "lucide-react";
+import { Menu, Search, ShoppingCart, Home, Receipt, Users, BarChart, IceCream, Settings, ArrowLeft, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/CartContext";
@@ -8,7 +8,8 @@ import { useCart } from "@/contexts/CartContext";
 const Index = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { totalItems } = useCart();
+  const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
+  const { totalItems, addItem } = useCart();
 
   const products = [
     {
@@ -53,6 +54,24 @@ const Index = () => {
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleAddToCart = (product: typeof products[0]) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+    setAddedItems(prev => new Set(prev).add(product.id));
+    // Reset the animation after 2 seconds
+    setTimeout(() => {
+      setAddedItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(product.id);
+        return newSet;
+      });
+    }, 2000);
+  };
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-text-primary antialiased">
@@ -99,12 +118,11 @@ const Index = () => {
       <main className="flex-1 px-4 pb-24">
         <div className="grid grid-cols-4 gap-4">
           {filteredProducts.map((product) => (
-            <Link
+            <div
               key={product.id}
-              to={`/product-details?id=${product.id}`}
-              className="block"
+              className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-shadow"
             >
-              <div className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-shadow active:scale-[0.99]">
+              <Link to={`/product-details?id=${product.id}`}>
                 <div className="aspect-square overflow-hidden">
                   <img
                     src={product.image}
@@ -119,7 +137,7 @@ const Index = () => {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
                     {product.description}
                   </p>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-xl font-bold text-primary">
                       R$ {product.price.toFixed(2)}
                     </span>
@@ -131,8 +149,32 @@ const Index = () => {
                     </div>
                   </div>
                 </div>
+              </Link>
+              <div className="px-4 pb-4">
+                <Button
+                  onClick={() => handleAddToCart(product)}
+                  className={`w-full h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${
+                    addedItems.has(product.id)
+                      ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30'
+                      : 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {addedItems.has(product.id) ? (
+                      <>
+                        <span className="text-green-100">✓</span>
+                        <span>Adicionado</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus size={16} />
+                        <span>Adicionar</span>
+                      </>
+                    )}
+                  </div>
+                </Button>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </main>
