@@ -96,6 +96,25 @@ const GestaoProducao = () => {
     navigate(`/detalhes-lote?id=${newId}`);
   };
 
+  const handleStatusChange = (status: string, checked: boolean) => {
+    if (checked) {
+      setSelectedStatuses([...selectedStatuses, status]);
+    } else {
+      setSelectedStatuses(selectedStatuses.filter(s => s !== status));
+    }
+  };
+
+  const handleApplyFilters = () => {
+    // Apply filters logic here
+    setIsFilterModalOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    setSelectedStatuses(["Em Estoque", "Finalizado"]);
+    setSelectedPeriod("Este Mês");
+    setFilterSearch("");
+  };
+
   const getStatusColor = (color: string) => {
     switch (color) {
       case "green": return "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400";
@@ -122,10 +141,10 @@ const GestaoProducao = () => {
         <h1 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center text-slate-900 dark:text-white">Gestão de Produção</h1>
         <Button
           size="sm"
-          className="size-10 rounded-full p-0 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30"
-          onClick={() => setIsCreateModalOpen(true)}
+          className="size-10 rounded-full p-0 bg-slate-100 dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+          onClick={() => setIsFilterModalOpen(true)}
         >
-          <Plus size={24} />
+          <Filter size={20} />
         </Button>
       </header>
 
@@ -148,7 +167,7 @@ const GestaoProducao = () => {
       {/* Filter Chips */}
       <div className="w-full overflow-x-auto no-scrollbar pb-2 pl-4 pr-4">
         <div className="flex gap-2 min-w-max">
-          {["Todos", "Finalizados", "Em Estoque", "Produzindo"].map((filter) => (
+          {["Todos", "Esta Semana", "Mês Passado", "Finalizados"].map((filter) => (
             <Button
               key={filter}
               variant={activeFilter === filter ? "default" : "outline"}
@@ -193,7 +212,10 @@ const GestaoProducao = () => {
 
       {/* Production Lots List */}
       <div className="flex-1 px-4 pb-20 space-y-3">
-        <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 mt-2">Lotes Recentes</h3>
+        <div className="flex items-center justify-between pt-2">
+          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 mt-2">Lotes Recentes</h3>
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Total: {filteredLots.length}</span>
+        </div>
         {filteredLots.map((lot) => (
           <Link
             key={lot.id}
@@ -339,6 +361,106 @@ const GestaoProducao = () => {
               className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold text-sm shadow-lg shadow-primary/20"
             >
               Criar Lote
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Filter Modal */}
+      <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+        <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-slate-200 dark:border-slate-800 p-0 max-h-[90vh] overflow-hidden">
+          <DialogHeader className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3">
+            <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">Filtros de Produção</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            {/* Recipe Search */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Receita</label>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <Search className="text-slate-400" size={20} />
+                </div>
+                <Input
+                  className="block w-full rounded-lg border-0 py-2.5 pl-10 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-black/20 dark:text-white dark:ring-slate-700"
+                  placeholder="Buscar receita..."
+                  type="text"
+                  value={filterSearch}
+                  onChange={(e) => setFilterSearch(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Status Checkboxes */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Status do Lote</label>
+              <div className="space-y-3">
+                {[
+                  { id: "produzindo", label: "Produzindo", value: "Produzindo" },
+                  { id: "estoque", label: "Em Estoque", value: "Em Estoque" },
+                  { id: "finalizado", label: "Finalizado", value: "Finalizado" },
+                  { id: "cancelado", label: "Cancelado", value: "Cancelado" }
+                ].map((status) => (
+                  <div key={status.id} className="relative flex items-start">
+                    <div className="flex h-6 items-center">
+                      <input
+                        className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-700 dark:ring-offset-slate-800"
+                        id={`status-${status.id}`}
+                        name={`status-${status.id}`}
+                        type="checkbox"
+                        checked={selectedStatuses.includes(status.value)}
+                        onChange={(e) => handleStatusChange(status.value, e.target.checked)}
+                      />
+                    </div>
+                    <div className="ml-3 text-sm leading-6">
+                      <label className="font-medium text-slate-700 dark:text-slate-300" htmlFor={`status-${status.id}`}>
+                        {status.label}
+                      </label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Period Selection */}
+            <div className="border-t border-slate-100 dark:border-slate-800 pt-6">
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Período de Produção</label>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {[
+                  "Últimos 7 dias",
+                  "Últimos 30 dias",
+                  "Este Mês",
+                  "Mês Passado",
+                  "Intervalo Personalizado"
+                ].map((period) => (
+                  <button
+                    key={period}
+                    type="button"
+                    className={`rounded-md px-3 py-2 text-xs font-semibold shadow-sm border focus:ring-2 focus:ring-primary ${
+                      selectedPeriod === period
+                        ? "bg-primary text-white border-transparent"
+                        : "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border-transparent"
+                    }`}
+                    onClick={() => setSelectedPeriod(period)}
+                  >
+                    {period}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-50 px-4 py-4 sm:flex sm:flex-row-reverse dark:bg-black/20 border-t border-slate-100 dark:border-slate-800 gap-3 flex">
+            <Button
+              onClick={handleApplyFilters}
+              className="flex-1 inline-flex w-full justify-center rounded-lg bg-primary px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-600 sm:ml-3 sm:w-auto active:scale-[0.98] transition-transform"
+            >
+              Aplicar Filtros
+            </Button>
+            <Button
+              onClick={handleClearFilters}
+              variant="outline"
+              className="flex-1 inline-flex w-full justify-center rounded-lg bg-white px-3 py-3 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-700 dark:hover:bg-slate-700 sm:mt-0 sm:w-auto active:scale-[0.98] transition-transform"
+            >
+              Limpar
             </Button>
           </div>
         </DialogContent>
