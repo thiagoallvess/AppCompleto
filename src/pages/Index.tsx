@@ -6,7 +6,7 @@ import { useCart } from "../contexts/CartContext";
 const Index = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { totalItems } = useCart();
+  const { totalItems, addItem } = useCart();
 
   const products = [
     {
@@ -51,6 +51,17 @@ const Index = () => {
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleAddToCart = (product: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+  };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white min-h-screen">
@@ -117,11 +128,18 @@ const Index = () => {
                     </div>
                   </div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">{product.description}</p>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 mb-3">
                     <Star className="text-yellow-500 fill-current" size={16} />
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{product.rating}</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">({product.reviews} avaliações)</span>
                   </div>
+                  <button
+                    onClick={(e) => handleAddToCart(product, e)}
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-4 rounded-lg transition-all active:scale-[0.98] shadow-sm"
+                  >
+                    <ShoppingCart size={18} />
+                    <span>Adicionar ao Carrinho</span>
+                  </button>
                 </div>
               </article>
             </Link>
