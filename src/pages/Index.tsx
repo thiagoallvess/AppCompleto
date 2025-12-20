@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Menu, X, Home, Receipt, Users, Settings, BarChart, IceCream, Heart, ShoppingCart, Star } from "lucide-react";
+import { Search, Menu, X, Home, Receipt, Users, Settings, BarChart, IceCream, Heart, ShoppingCart, Star, Check } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 
 const Index = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [addedToCart, setAddedToCart] = useState<string | null>(null);
   const { totalItems, addItem } = useCart();
 
   const products = [
@@ -61,6 +62,12 @@ const Index = () => {
       price: product.price,
       image: product.image
     });
+    
+    // Show success animation
+    setAddedToCart(product.id);
+    setTimeout(() => {
+      setAddedToCart(null);
+    }, 2000);
   };
 
   return (
@@ -135,10 +142,23 @@ const Index = () => {
                   </div>
                   <button
                     onClick={(e) => handleAddToCart(product, e)}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-4 rounded-lg transition-all active:scale-[0.98] shadow-sm"
+                    className={`w-full flex items-center justify-center gap-2 font-bold py-2.5 px-4 rounded-lg transition-all active:scale-[0.98] shadow-sm ${
+                      addedToCart === product.id
+                        ? 'bg-green-500 hover:bg-green-600 text-white'
+                        : 'bg-primary hover:bg-primary/90 text-white'
+                    }`}
                   >
-                    <ShoppingCart size={18} />
-                    <span>Adicionar ao Carrinho</span>
+                    {addedToCart === product.id ? (
+                      <>
+                        <Check size={18} />
+                        <span>Adicionado</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={18} />
+                        <span>Adicionar ao Carrinho</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </article>
