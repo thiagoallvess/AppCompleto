@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, ShoppingCart, Home, Search as SearchIcon, Heart, User } from "lucide-react";
+import { Plus, Search, ShoppingCart, Home, Search as SearchIcon, Heart, User, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "../contexts/CartContext";
 import { showSuccess } from "../utils/toast";
@@ -64,7 +64,6 @@ const Index = () => {
     setAddedItems(prev => new Set(prev).add(product.id));
     showSuccess(`${product.name} adicionado ao carrinho!`);
 
-    // Reset the added state after 2 seconds
     setTimeout(() => {
       setAddedItems(prev => {
         const newSet = new Set(prev);
@@ -76,7 +75,6 @@ const Index = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white min-h-screen flex flex-col">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center p-4 pb-2 justify-between max-w-md mx-auto lg:max-w-7xl lg:px-6 w-full">
           <div className="flex items-center gap-3">
@@ -93,7 +91,6 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Search Bar */}
       <div className="px-4 py-4 w-full">
         <div className="relative flex items-center w-full h-12 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-slate-200 dark:border-slate-800 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
           <div className="grid place-items-center h-full w-12 text-slate-400 dark:text-slate-500">
@@ -109,7 +106,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Products Grid */}
       <main className="flex-1 px-4 pb-24">
         <div className="grid grid-cols-2 gap-4 max-w-md mx-auto lg:max-w-7xl lg:grid-cols-4">
           {filteredProducts.map((product) => (
@@ -174,7 +170,6 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-lg pb-safe">
         <div className="flex justify-around items-center h-16 max-w-md mx-auto lg:max-w-none lg:px-6">
           <button className="flex flex-col items-center justify-center w-full h-full text-primary space-y-1">
@@ -186,6 +181,7 @@ const Index = () => {
             <span className="text-[10px] font-medium">Buscar</span>
           </button>
           <Link to="/cashback" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
+            <DollarSign size={24} />
             <span className="text-[10px] font-medium">Cashback</span>
           </Link>
           <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
@@ -195,7 +191,7 @@ const Index = () => {
           <Link to="/perfil" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <User size={24} />
             <span className="text-[10px] font-medium">Perfil</span>
-          </button>
+          </Link>
         </div>
       </nav>
     </div>
