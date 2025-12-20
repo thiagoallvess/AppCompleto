@@ -1,12 +1,10 @@
-import { ArrowLeft, Menu, Plus, Search, MoreVertical, Phone, MessageCircle, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Bell, Plus, Search, MoreVertical, Phone, MessageCircle, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import Sidebar from "@/components/Sidebar";
 
 const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const filters = ["Todos", "VIPs", "Devedores", "Novos", "Inativos"];
 
@@ -63,36 +61,28 @@ const Clientes = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const getStatusColor = (color: string) => {
-    switch (color) {
-      case "yellow": return "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400";
-      case "red": return "bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400";
-      case "blue": return "bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400";
-      default: return "";
-    }
-  };
-
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-white/5">
-        <div className="flex items-center justify-between h-14 mb-2 px-4">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="flex items-center justify-center size-10 rounded-full text-slate-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+      <header className="flex-none bg-background-light dark:bg-background-dark px-4 pt-4 pb-2 z-10 border-b border-slate-200 dark:border-white/5">
+        <div className="flex items-center justify-between h-14 mb-2">
+          <Link
+            to="/"
+            className="flex items-center justify-center size-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
           >
-            <Menu size={24} />
-          </button>
+            <ArrowLeft className="text-slate-900 dark:text-white" size={24} />
+          </Link>
           <div className="flex items-center gap-2">
-            <h1 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Clientes</h1>
-          </div>
-          <div className="flex items-center gap-2">
+            <button className="flex items-center justify-center size-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+              <Bell className="text-slate-900 dark:text-white" size={24} />
+            </button>
             <button className="flex items-center justify-center size-10 rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-colors">
               <Plus size={24} />
             </button>
           </div>
         </div>
-        <div className="flex flex-col gap-1 px-4">
+        <div className="flex flex-col gap-1 px-1">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Clientes</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">Gerencie seus contatos e pedidos</p>
         </div>
       </header>
@@ -158,7 +148,7 @@ const Clientes = () => {
                       </div>
                     )}
                     {customer.isOnline && (
-                      <div className="absolute bottom-1 right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
+                      <div className="absolute -bottom-1 -right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
                     )}
                   </div>
                   <div>
@@ -220,33 +210,30 @@ const Clientes = () => {
 
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-20">
-        <button className="flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-xl hover:bg-primary/90 hover:scale-105 transition-all active:scale-95">
+        <button className="flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-xl hover:bg-primary/90 hover:scale-105 transition-all">
           <ShoppingCart size={28} />
         </button>
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/5 backdrop-blur-lg bg-opacity-95">
-        <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined text-[24px]">dashboard</span>
+      <nav className="flex-none bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/5 pb-6 pt-2 px-6 flex justify-between items-center z-10">
+        <Link to="/" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">dashboard</span>
           <span className="text-[10px] font-medium">Início</span>
         </Link>
-        <button className="flex flex-col items-center gap-1 p-2 w-16 text-primary dark:text-primary transition-colors">
-          <span className="material-symbols-outlined fill-current text-[24px]">group</span>
+        <button className="flex flex-col items-center gap-1 p-2 text-primary dark:text-primary transition-colors">
+          <span className="material-symbols-filled">group</span>
           <span className="text-[10px] font-medium">Clientes</span>
         </button>
-        <Link to="/gestao-insumos" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined text-[24px]">inventory_2</span>
+        <Link to="/gestao-insumos" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">inventory_2</span>
           <span className="text-[10px] font-medium">Estoque</span>
         </Link>
-        <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined text-[24px]">settings</span>
+        <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">settings</span>
           <span className="text-[10px] font-medium">Ajustes</span>
         </Link>
       </nav>
-
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </div>
   );
 };

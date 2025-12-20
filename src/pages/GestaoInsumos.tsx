@@ -1,14 +1,12 @@
-import { ArrowLeft, Plus, Search, MoreVertical, Cookie, Package, ChefHat, Archive, IceCream, Tag, Menu } from "lucide-react";
+import { ArrowLeft, Plus, Search, CheckCircle, AlertTriangle, MoreVertical, Cookie, Package, ChefHat, Archive, IceCream, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Sidebar from "@/components/Sidebar";
 
 const GestaoInsumos = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const filters = ["Todos", "Ingredientes", "Embalagens", "Baixo Estoque"];
 
@@ -85,7 +83,7 @@ const GestaoInsumos = () => {
 
   const getStatusIcon = (status: string) => {
     if (status === "Baixo" || status === "Crítico") {
-      return <AlertTriangle size={16} />;
+      return <AlertTriangle className="w-3 h-3" />;
     }
     return null;
   };
@@ -104,14 +102,14 @@ const GestaoInsumos = () => {
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between bg-background-light dark:bg-background-dark p-4 pb-2 backdrop-blur-md bg-opacity-95 dark:bg-opacity-95 border-b border-slate-200 dark:border-slate-800/50">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setSidebarOpen(true)}
+          <Link
+            to="/"
             className="flex items-center justify-center size-10 rounded-full text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           >
-            <Menu size={24} />
-          </button>
+            <ArrowLeft size={24} />
+          </Link>
         </div>
         <h1 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Gestão de Insumos</h1>
         <div className="flex items-center gap-2">
@@ -146,7 +144,7 @@ const GestaoInsumos = () => {
             className={`h-9 shrink-0 px-4 ${
               activeFilter === filter
                 ? "bg-primary hover:bg-primary/90"
-                : "bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 hover:border-gray-400 dark:hover:border-gray-500"
+                : "bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
             } ${filter === "Baixo Estoque" ? "border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20" : ""}`}
             onClick={() => setActiveFilter(filter)}
           >
@@ -235,7 +233,7 @@ const GestaoInsumos = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
+      <nav className="fixed bottom-0 left-0 right-0 w-full bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
         <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
           <ArrowLeft size={20} />
           <span className="text-[10px] font-medium">Início</span>
@@ -258,9 +256,6 @@ const GestaoInsumos = () => {
           <span className="text-[10px] font-medium">Ajustes</span>
         </button>
       </nav>
-
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </div>
   );
 };

@@ -1,14 +1,12 @@
-import { ArrowLeft, Plus, Search, MoreVertical, Package, TrendingUp, DollarSign, Calendar, Menu } from "lucide-react";
+import { ArrowLeft, Plus, Search, MoreVertical, Package, TrendingUp, DollarSign, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Sidebar from "@/components/Sidebar";
 
 const GestaoProducao = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const filters = ["Todos", "Em Produção", "Finalizado", "Em Estoque"];
 
@@ -76,12 +74,12 @@ const GestaoProducao = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
         <div className="flex items-center gap-3 px-4 py-3">
-          <button
-            onClick={() => setSidebarOpen(true)}
+          <Link
+            to="/visao-geral"
             className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
-            <Menu size={24} />
-          </button>
+            <ArrowLeft size={24} />
+          </Link>
           <div className="flex flex-col">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Produção</span>
             <h1 className="text-xl font-bold leading-tight tracking-tight">Gestão de Produção</h1>
@@ -236,17 +234,14 @@ const GestaoProducao = () => {
             <span className="material-symbols-outlined">inventory_2</span>
             <span className="text-[10px] font-medium">Estoque</span>
           </Link>
-          <Link to="/relatorios" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">payments</span>
-            <span className="text-[10px] font-medium">Finanças</span>
+          <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">settings</span>
+            <span className="text-[10px] font-medium">Ajustes</span>
           </Link>
         </div>
       </nav>
       {/* Safe Area Spacer for Bottom Nav */}
       <div className="h-[70px]"></div>
-
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </div>
   );
 };
