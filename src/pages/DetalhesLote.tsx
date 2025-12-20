@@ -1,4 +1,4 @@
-import { ArrowLeft, Edit, Print, Trash2 } from "lucide-react";
+import { ArrowLeft, Edit, Printer, Trash2 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -250,7 +250,7 @@ const DetalhesLote = () => {
         {/* Action Buttons */}
         <div className="pt-2 pb-6 flex gap-3">
           <button className="flex-1 flex items-center justify-center gap-2 h-12 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-200 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            <Print className="text-[20px]" />
+            <Printer className="text-[20px]" />
             Imprimir Etiqueta
           </button>
           <button className="flex-1 flex items-center justify-center gap-2 h-12 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400 font-semibold text-sm hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
