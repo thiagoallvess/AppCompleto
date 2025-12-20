@@ -120,7 +120,7 @@ const Index = () => {
               className="block"
             >
               <article className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all active:scale-[0.99]">
-                <div className="aspect-square overflow-hidden">
+                <div className="aspect-[4/3] overflow-hidden">
                   <img
                     src={product.image}
                     alt={product.name}
