@@ -266,6 +266,14 @@ const Index = () => {
                   <span>Produtos</span>
                 </Link>
                 <Link
+                  to="/add-produto"
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                  onClick={() => setIsDrawerOpen(false)}
+                >
+                  <div className="material-symbols-outlined">add</div>
+                  <span>Adicionar Produto</span>
+                </Link>
+                <Link
                   to="/gestao-receitas"
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
                   onClick={() => setIsDrawerOpen(false)}
