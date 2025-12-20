@@ -1,24 +1,3 @@
-import { ArrowLeft, Plus, Search, MoreVertical, IceCream, Receipt, Settings, Home } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import AddProdutoModal from "@/components/AddProdutoModal";
-
-const GestaoProdutos = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilter, setActiveFilter] = useState("Todos");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const filters = ["Todos", "Em estoque", "Esgotado", "Rascunhos"];
-
-  const products = [
-    {
-      id: 1,
-      name: "Ninho com Nutella",
-      description: "Base cremosa de leite ninho com recheio de nutella generoso.",
-     <dyad-write path="src/pages/GestaoProdutos.tsx" description="Adding sidebar drawer functionality to the products management page">
 import { ArrowLeft, Plus, Search, MoreVertical, IceCream, Receipt, Settings, Home, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -44,7 +23,7 @@ const GestaoProdutos = () => {
       stock: 45,
       status: "Em estoque",
       statusColor: "emerald",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCM6J9kuR4cOh8UXIW26pv-fPK3cG9jQCzURHy7AV7t8Arw9q1NoBye9wKKB8WXufd8tzM4G1BAZ9JvwhrwDX9YLZolz40iRUA9AzzFuIaZSbYsO6Vmo9xMOil91XsmiJaxBoFlaD1iQ9JVIfHkUNsbsdoRyqW82u5BLzsgxfxTtDTMmZSfAbz7KzFJGKROwBtkcrp8pvM0jqSfYcv8pKpx4xRgAVi5VHAM-MtKHIV_WCsKjLr2rHnMeUX4m_HOr7kgJC5OA2ZUEA"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkd8lB5c2Vaw9ZupDeGKA8CqQrsuCbv1IVWtjP1Pgq6N5JYAMjwdcNFdmTh7yXGKKGPykrJKJC3EQGvyud_4OcMgbqUKbbJxg_HMmq1DxGVHqG67Xx_g_O1nhM68hW_zb8fX5mpqZq1K6sshICrQCxa8oV61kN1WUpqDp5PiU3Ww7K_MZF2TOu-iy-FqWeK-zibAFwgP0IvVgMX4QnpBYdPUzoUzGQaTcXvNfJTbTCUlmXc25qyIc3GuUHXF19vX4tEBWm0AYdEA"
     },
     {
       id: 2,
@@ -54,7 +33,7 @@ const GestaoProdutos = () => {
       stock: 12,
       status: "Em estoque",
       statusColor: "amber",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuALIN-0vBOujBRjsDYUBXhwtCV2D55pn4vbUcWkolFHJANKRu0hFOlmpzSgT4OwOnUFr9I2JK2jqC9HdADvivIFZY0anCP0_E13hoilTot4lV-ThjVDB65m0gRDtnZ2kVc26Pn4YQH-Lef1ebUWex2Vb2oBy0At4vPy8g4SaQux0I7FHbYkiJad2ePupyCTeeqoVGlIWNK7uTfrm8fgG8FzHUFOVoL5NlxQRlL9cGrAhwt_1gvPIB6x3o0pelrrAIa5ct4c6DT8cg"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCM3cfAeatmEUtNaDEnz796M7L7_1N-EtyXmykGuHogX2Bqw0GLmlvYa3HPA8Wz1_4o9F5wPSUrzWkU8Yp7doalaFscT5306YI3bZgNz9gTLuFuBl4eyymE72I2oud60ide53rz4tw6ycGt2mAau951TpWIjxrfxMQg_NpEJUwcm1qol_S5JpSoZbGnw8au7eUWzH4lvezL2wocDTs541UOAWtFuVwleVW5xacABNhs7r5_Xla2rV2_GgGzX6Ol3wbDpTujEKBi_A"
     },
     {
       id: 3,
@@ -64,7 +43,7 @@ const GestaoProdutos = () => {
       stock: 0,
       status: "Esgotado",
       statusColor: "red",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBLIUMP1srFnkVqveLSMzwWTOjgyOR1yId15K0zodu97y-MNJqATjrPCxPb7IKMwPe0d4pzdKP8WnEl5dcJViZRcRaNI-yvkTAYx5kdjIln3Xv-z1kYZvbcEfCyLhYDXdWBoHWhl4rO3Uz2__MBPvK47qwxwLT5tRCW8zjNM_2aMWsq2CsyhVKi5UVLO1h9N6g0AB55-EpgAC0LDmtT0-QUhIxjcd6U1bW7S52mWCbxTi20IYyrQ6YKOAe01ZqgP_lwBm1zq_dpCA"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBoZ4WrJnviJNuxDALva68IEx8BdGnHIjNAHbiCD9c4LdL8-hJlme5-_jxH6yK45w60ONtc-wS1X4YRBtWIaMoT-ulkjkHFRp2qqXBLfOkCCCkwdQaWLx2-89611q0649qzVgnLg86WrY-Ea70L22N2sX9RqBAfGRPY9V-lGLiw6-mIc2syzuhmzeimcROK7NbRdCxSJMIFrOkJSzh4puGnvIZiAPSOVeuwwrqMUlMvOWxuvH8MJKoEM1-UH9iaFBbmLGPUy3smQQ"
     },
     {
       id: 4,
@@ -157,9 +136,10 @@ const GestaoProdutos = () => {
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="text-gray-400" size={20} />
           </div>
-          <Input
+          <input
             className="block w-full pl-10 pr-3 py-2.5 border-none rounded-xl text-sm font-medium bg-gray-100 dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
             placeholder="Buscar por sabor, ID ou categoria..."
+            type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -178,8 +158,7 @@ const GestaoProdutos = () => {
                 activeFilter === filter
                   ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900"
                   : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
-              } transition-transform active:scale-95`}
-              onClick={() => setActiveFilter(filter)}
+              }`}
             >
               {filter}
             </Button>
