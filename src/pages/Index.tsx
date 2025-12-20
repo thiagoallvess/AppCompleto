@@ -113,9 +113,9 @@ const Index = () => {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-shadow flex flex-col"
             >
-              <Link to={`/product-details?id=${product.id}`}>
+              <Link to={`/product-details?id=${product.id}`} className="flex-1 flex flex-col">
                 <div className="aspect-[4/3] overflow-hidden">
                   <img
                     src={product.image}
@@ -123,14 +123,14 @@ const Index = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-4">
+                <div className="p-4 flex-1 flex flex-col">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
                     {product.name}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2 flex-1">
                     {product.description}
                   </p>
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-3 mt-auto">
                     <span className="text-xl font-bold text-primary">
                       R$ {product.price.toFixed(2)}
                     </span>
