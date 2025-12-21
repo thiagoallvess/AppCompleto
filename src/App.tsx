@@ -32,6 +32,7 @@ import DetalhesReceita from "./pages/DetalhesReceita";
 import GestaoProducao from "./pages/GestaoProducao";
 import AddProducao from "./pages/AddProducao";
 import DetalhesLote from "./pages/DetalhesLote";
+import CurvaABC from "./pages/CurvaABC";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -76,6 +77,7 @@ const App = () => (
               <Route path="/gestao-producao" element={<GestaoProducao />} />
               <Route path="/add-producao" element={<AddProducao />} />
               <Route path="/detalhes-lote" element={<DetalhesLote />} />
+              <Route path="/curva-abc" element={<CurvaABC />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
