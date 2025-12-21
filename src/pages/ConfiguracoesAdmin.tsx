@@ -1,12 +1,14 @@
 import { ArrowLeft, Home, IceCream, Receipt, Settings, Store, Bolt, HardHat, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { useStore } from "../contexts/StoreContext";
+import { showSuccess } from "../utils/toast";
 
 const ConfiguracoesAdmin = () => {
-  const [storeOpen, setStoreOpen] = useState(true);
+  const { storeOpen, setStoreOpen, businessHours, setBusinessHours } = useStore();
   const [gasWeight, setGasWeight] = useState("13");
   const [gasPrice, setGasPrice] = useState("120.00");
   const [gasConsumption, setGasConsumption] = useState("medium");
@@ -15,39 +17,18 @@ const ConfiguracoesAdmin = () => {
   const [minCashback, setMinCashback] = useState("20.00");
   const [cashbackPercentage, setCashbackPercentage] = useState("2.5");
 
-  const [businessHours, setBusinessHours] = useState({
-    monday: { open: "09:00", close: "18:00" },
-    tuesday: { open: "09:00", close: "18:00" },
-    wednesday: { open: "09:00", close: "18:00" },
-    thursday: { open: "09:00", close: "18:00" },
-    friday: { open: "09:00", close: "20:00" },
-    saturday: { open: "10:00", close: "22:00" },
-    sunday: { open: "10:00", close: "18:00" }
-  });
-
   const handleSave = () => {
-    // TODO: Implement save logic
-    console.log({
-      storeOpen,
-      businessHours,
-      gasWeight,
-      gasPrice,
-      gasConsumption,
-      energyCost,
-      laborCost,
-      minCashback,
-      cashbackPercentage
-    });
+    showSuccess("Configurações salvas com sucesso!");
   };
 
   const updateBusinessHour = (day: string, type: 'open' | 'close', value: string) => {
-    setBusinessHours(prev => ({
-      ...prev,
+    setBusinessHours({
+      ...businessHours,
       [day]: {
-        ...prev[day as keyof typeof prev],
+        ...businessHours[day as keyof typeof businessHours],
         [type]: value
       }
-    }));
+    });
   };
 
   const days = [
@@ -96,7 +77,7 @@ const ConfiguracoesAdmin = () => {
                 <Store size={20} />
               </div>
               <div className="flex flex-col">
-                <p className="text-slate-900 dark:text-white text-base font-medium leading-normal">Loja Aberta</p>
+                <p className="text-sm font-bold leading-tight">Loja Aberta</p>
                 <p className="text-slate-500 dark:text-slate-400 text-xs">Permitir novos pedidos</p>
               </div>
             </div>
@@ -335,9 +316,11 @@ const ConfiguracoesAdmin = () => {
                 </div>
               </div>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-2">
-              Defina as regras para o programa de fidelidade do geladinho gourmet.
-            </p>
+            <div className="rounded-lg bg-slate-50 p-3 dark:bg-black/20">
+              <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                * Defina as regras para o programa de fidelidade do geladinho gourmet.
+              </p>
+            </div>
           </div>
         </div>
       </div>

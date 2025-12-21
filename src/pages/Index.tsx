@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "../contexts/CartContext";
 import { showSuccess } from "../utils/toast";
 import MainDrawer from "../components/MainDrawer";
+import StoreStatusBanner from "../components/StoreStatusBanner";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -92,6 +93,8 @@ const Index = () => {
           </Link>
         </div>
       </header>
+
+      <StoreStatusBanner />
 
       <div className="px-4 py-4 w-full">
         <div className="relative flex items-center w-full h-12 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-slate-200 dark:border-slate-800 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
