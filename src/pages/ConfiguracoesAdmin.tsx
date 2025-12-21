@@ -1,67 +1,60 @@
-import { useState, useEffect } from "react";
+import { ArrowLeft, Home, IceCream, Receipt, Settings, Store, Bolt, HardHat, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Store, Clock, CreditCard, Bell, Shield, Users, Palette, Globe, Smartphone, Mail, Phone, MapPin, DollarSign, Percent, Settings, Save } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStore } from "../contexts/StoreContext";
+import { showSuccess } from "../utils/toast";
 
 const ConfiguracoesAdmin = () => {
   const { storeOpen, setStoreOpen, businessHours, setBusinessHours } = useStore();
   const [tempBusinessHours, setTempBusinessHours] = useState(businessHours);
-  const [settings, setSettings] = useState({
-    storeName: "Geladinhos Gourmet",
-    storeDescription: "Geladinhos artesanais feitos com ingredientes frescos e naturais",
-    contactEmail: "contato@geladinhosgourmet.com",
-    contactPhone: "(11) 99999-9999",
-    deliveryFee: 5.00,
-    minimumOrder: 15.00,
-    cashbackPercentage: 5,
-    theme: "light",
-    language: "pt-BR",
-    notifications: {
-      newOrders: true,
-      lowStock: true,
-      customerMessages: true,
-      systemUpdates: false
-    }
-  });
 
-  useEffect(() => {
-    setTempBusinessHours(businessHours);
-  }, [businessHours]);
+  // Gas configurations
+  const [gasWeight, setGasWeight] = useState("13");
+  const [gasPrice, setGasPrice] = useState("120");
+  const [gasConsumptionLow, setGasConsumptionLow] = useState("0,06");
+  const [gasConsumptionMedium, setGasConsumptionMedium] = useState("0,12");
+  const [gasConsumptionHigh, setGasConsumptionHigh] = useState("0,24");
 
-  const handleBusinessHoursChange = (day: string, field: 'open' | 'close', value: string) => {
+  // Energy configurations
+  const [energyCost, setEnergyCost] = useState("0,8");
+
+  // Labor configurations
+  const [laborCost, setLaborCost] = useState("30");
+
+  // Cashback configurations
+  const [cashbackMinValue, setCashbackMinValue] = useState("80");
+
+  const days = [
+    { key: 'monday', label: 'Segunda-feira' },
+    { key: 'tuesday', label: 'Terça-feira' },
+    { key: 'wednesday', label: 'Quarta-feira' },
+    { key: 'thursday', label: 'Quinta-feira' },
+    { key: 'friday', label: 'Sexta-feira' },
+    { key: 'saturday', label: 'Sábado' },
+    { key: 'sunday', label: 'Domingo' }
+  ];
+
+  const handleSaveAllSettings = () => {
+    // Save business hours
+    setBusinessHours(tempBusinessHours);
+    
+    // TODO: Save gas settings to backend/storage
+    // TODO: Save energy settings to backend/storage
+    // TODO: Save labor settings to backend/storage
+    // TODO: Save cashback settings to backend/storage
+    
+    showSuccess("Todas as configurações foram salvas!");
+  };
+
+  const handleTimeChange = (day: string, field: 'open' | 'close', value: string) => {
     setTempBusinessHours(prev => ({
       ...prev,
       [day]: {
         ...prev[day as keyof typeof prev],
         [field]: value
-      }
-    }));
-  };
-
-  const handleSaveAllSettings = () => {
-    setBusinessHours(tempBusinessHours);
-    // Save other settings to localStorage or API
-    localStorage.setItem('adminSettings', JSON.stringify(settings));
-    alert('Configurações salvas com sucesso!');
-  };
-
-  const handleSettingChange = (key: string, value: any) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
-
-  const handleNotificationChange = (key: string, value: boolean) => {
-    setSettings(prev => ({
-      ...prev,
-      notifications: {
-        ...prev.notifications,
-        [key]: value
       }
     }));
   };
@@ -86,276 +79,220 @@ const ConfiguracoesAdmin = () => {
 
       {/* Main Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-32 space-y-6">
-        {/* Store Status */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Store className="text-primary text-xl" />
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Status da Loja</h3>
+        {/* Configurações da Loja */}
+        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
+            <span className="material-symbols-outlined text-primary text-xl">store</span>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
+              Configurações da Loja
+            </h3>
           </div>
-          <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+          <p className="text-slate-600 dark:text-slate-400 text-sm">
+            Gerencie o status de abertura e os horários de funcionamento da sua loja.
+          </p>
+
+          <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50">
             <div className="flex flex-col">
-              <span className="text-slate-900 dark:text-white font-medium">Loja Aberta</span>
-              <span className="text-slate-500 dark:text-slate-400 text-sm">Aceitar novos pedidos</span>
+              <span className="text-slate-900 dark:text-white text-sm font-semibold">Loja Aberta</span>
+              <span className="text-slate-500 dark:text-slate-400 text-xs">Ative ou desative a loja para receber pedidos.</span>
             </div>
             <Switch
               checked={storeOpen}
               onCheckedChange={setStoreOpen}
             />
           </div>
-        </div>
 
-        {/* Business Hours */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Clock className="text-primary text-xl" />
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Horário de Funcionamento</h3>
-          </div>
-          <div className="space-y-3">
-            {Object.entries(tempBusinessHours).map(([day, hours]) => (
-              <div key={day} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                <span className="text-slate-900 dark:text-white font-medium capitalize">
-                  {day === 'monday' ? 'Segunda' :
-                   day === 'tuesday' ? 'Terça' :
-                   day === 'wednesday' ? 'Quarta' :
-                   day === 'thursday' ? 'Quinta' :
-                   day === 'friday' ? 'Sexta' :
-                   day === 'saturday' ? 'Sábado' :
-                   'Domingo'}
-                </span>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="time"
-                    value={hours.open}
-                    onChange={(e) => handleBusinessHoursChange(day, 'open', e.target.value)}
-                    className="w-24 h-8 text-xs bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"
-                  />
-                  <span className="text-slate-500 dark:text-slate-400">-</span>
-                  <Input
-                    type="time"
-                    value={hours.close}
-                    onChange={(e) => handleBusinessHoursChange(day, 'close', e.target.value)}
-                    className="w-24 h-8 text-xs bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Store Information */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Store className="text-primary text-xl" />
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Informações da Loja</h3>
-          </div>
           <div className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Nome da Loja</label>
-              <Input
-                value={settings.storeName}
-                onChange={(e) => handleSettingChange('storeName', e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-lg">schedule</span>
+              <h4 className="text-slate-900 dark:text-white text-base font-semibold">Horários de Funcionamento Semanal</h4>
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Descrição</label>
-              <Input
-                value={settings.storeDescription}
-                onChange={(e) => handleSettingChange('storeDescription', e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
-            </div>
-          </div>
-        </div>
+            <p className="text-slate-500 dark:text-slate-400 text-xs">
+              Use o formato HH:MM (ex: 09:00) ou digite 'Fechado' para dias sem expediente.
+            </p>
 
-        {/* Contact Information */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Phone className="text-primary text-xl" />
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Contato</h3>
-          </div>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">E-mail</label>
-              <Input
-                type="email"
-                value={settings.contactEmail}
-                onChange={(e) => handleSettingChange('contactEmail', e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Telefone</label>
-              <Input
-                value={settings.contactPhone}
-                onChange={(e) => handleSettingChange('contactPhone', e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Delivery Settings */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="text-primary text-xl" />
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Configurações de Entrega</h3>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Taxa de Entrega</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">R$</span>
+            <div className="space-y-3">
+              {days.map((day) => (
+                <div key={day.key} className="flex items-center gap-4">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300 w-32">{day.label}</span>
+                  <div className="flex items-center gap-2 flex-1">
+                    <Input
+                      type="time"
+                      value={tempBusinessHours[day.key as keyof typeof tempBusinessHours].open}
+                      onChange={(e) => handleTimeChange(day.key, 'open', e.target.value)}
+                      className="h-10 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+                    />
+                    <span className="text-slate-500 dark:text-slate-400">até</span>
+                    <Input
+                      type="time"
+                      value={tempBusinessHours[day.key as keyof typeof tempBusinessHours].close}
+                      onChange={(e) => handleTimeChange(day.key, 'close', e.target.value)}
+                      className="h-10 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+                    />
+                  </div>
                 </div>
-                <Input
-                  type="number"
-                  step="0.50"
-                  value={settings.deliveryFee}
-                  onChange={(e) => handleSettingChange('deliveryFee', parseFloat(e.target.value))}
-                  className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pl-10"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Pedido Mínimo</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">R$</span>
-                </div>
-                <Input
-                  type="number"
-                  step="0.50"
-                  value={settings.minimumOrder}
-                  onChange={(e) => handleSettingChange('minimumOrder', parseFloat(e.target.value))}
-                  className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pl-10"
-                />
-              </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Cashback Settings */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="text-primary text-xl" />
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Cashback</h3>
+        {/* Configurações de Gás */}
+        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
+            <span className="material-symbols-outlined text-primary text-xl">local_fire_department</span>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
+              Configurações de Gás
+            </h3>
           </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">
+            Gerencie os detalhes do seu botijão de gás e taxas de consumo.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-weight">
+                Peso do Botijão (kg)
+              </label>
+              <Input
+                id="gas-weight"
+                value={gasWeight}
+                onChange={(e) => setGasWeight(e.target.value)}
+                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-price">
+                Preço do Botijão (R$)
+              </label>
+              <Input
+                id="gas-price"
+                value={gasPrice}
+                onChange={(e) => setGasPrice(e.target.value)}
+                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-low">
+                Consumo Baixo (kg/h)
+              </label>
+              <Input
+                id="gas-low"
+                value={gasConsumptionLow}
+                onChange={(e) => setGasConsumptionLow(e.target.value)}
+                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-medium">
+                Consumo Médio (kg/h)
+              </label>
+              <Input
+                id="gas-medium"
+                value={gasConsumptionMedium}
+                onChange={(e) => setGasConsumptionMedium(e.target.value)}
+                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+              />
+            </div>
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-high">
+                Consumo Alto (kg/h)
+              </label>
+              <Input
+                id="gas-high"
+                value={gasConsumptionHigh}
+                onChange={(e) => setGasConsumptionHigh(e.target.value)}
+                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Configurações de Energia */}
+        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
+            <span className="material-symbols-outlined text-primary text-xl">bolt</span>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
+              Configurações de Energia
+            </h3>
+          </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">
+            Defina o custo do kWh elétrico.
+          </p>
+
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Percentual de Cashback</label>
-            <div className="relative">
-              <Input
-                type="number"
-                min="0"
-                max="20"
-                value={settings.cashbackPercentage}
-                onChange={(e) => handleSettingChange('cashbackPercentage', parseInt(e.target.value))}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-12"
-              />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">%</span>
-              </div>
-            </div>
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="energy-cost">
+              Custo kWh Elétrico (R$)
+            </label>
+            <Input
+              id="energy-cost"
+              value={energyCost}
+              onChange={(e) => setEnergyCost(e.target.value)}
+              className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+            />
           </div>
         </div>
 
-        {/* Notifications */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Bell className="text-primary text-xl" />
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Notificações</h3>
+        {/* Configurações de Preço e Mão de Obra */}
+        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
+            <span className="material-symbols-outlined text-primary text-xl">engineering</span>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
+              Configurações de Preço e Mão de Obra
+            </h3>
           </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-              <div className="flex flex-col">
-                <span className="text-slate-900 dark:text-white font-medium">Novos Pedidos</span>
-                <span className="text-slate-500 dark:text-slate-400 text-sm">Receber alertas de novos pedidos</span>
-              </div>
-              <Switch
-                checked={settings.notifications.newOrders}
-                onCheckedChange={(checked) => handleNotificationChange('newOrders', checked)}
-              />
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-              <div className="flex flex-col">
-                <span className="text-slate-900 dark:text-white font-medium">Estoque Baixo</span>
-                <span className="text-slate-500 dark:text-slate-400 text-sm">Alertas quando produtos acabarem</span>
-              </div>
-              <Switch
-                checked={settings.notifications.lowStock}
-                onCheckedChange={(checked) => handleNotificationChange('lowStock', checked)}
-              />
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-              <div className="flex flex-col">
-                <span className="text-slate-900 dark:text-white font-medium">Mensagens de Clientes</span>
-                <span className="text-slate-500 dark:text-slate-400 text-sm">Notificações de mensagens</span>
-              </div>
-              <Switch
-                checked={settings.notifications.customerMessages}
-                onCheckedChange={(checked) => handleNotificationChange('customerMessages', checked)}
-              />
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-              <div className="flex flex-col">
-                <span className="text-slate-900 dark:text-white font-medium">Atualizações do Sistema</span>
-                <span className="text-slate-500 dark:text-slate-400 text-sm">Novidades e manutenções</span>
-              </div>
-              <Switch
-                checked={settings.notifications.systemUpdates}
-                onCheckedChange={(checked) => handleNotificationChange('systemUpdates', checked)}
-              />
-            </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">
+            Defina o custo da mão de obra por hora.
+          </p>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="labor-cost">
+              Custo Mão de Obra (R$/hora)
+            </label>
+            <Input
+              id="labor-cost"
+              value={laborCost}
+              onChange={(e) => setLaborCost(e.target.value)}
+              className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+            />
           </div>
         </div>
 
-        {/* Appearance */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Palette className="text-primary text-xl" />
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Aparência</h3>
+        {/* Configurações de Cashback */}
+        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
+            <span className="material-symbols-outlined text-primary text-xl">savings</span>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
+              Configurações de Cashback
+            </h3>
           </div>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tema</label>
-              <Select value={settings.theme} onValueChange={(value) => handleSettingChange('theme', value)}>
-                <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="light">Claro</SelectItem>
-                  <SelectItem value="dark">Escuro</SelectItem>
-                  <SelectItem value="auto">Automático</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Idioma</label>
-              <Select value={settings.language} onValueChange={(value) => handleSettingChange('language', value)}>
-                <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                  <SelectItem value="en-US">English (US)</SelectItem>
-                  <SelectItem value="es-ES">Español</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">
+            Defina o valor mínimo para resgate de cashback.
+          </p>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="cashback-min">
+              Valor Mínimo de Resgate (R$)
+            </label>
+            <Input
+              id="cashback-min"
+              value={cashbackMinValue}
+              onChange={(e) => setCashbackMinValue(e.target.value)}
+              className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+            />
           </div>
+        </div>
+
+        {/* Single Save Button */}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
+          <Button
+            onClick={handleSaveAllSettings}
+            className="w-full max-w-md mx-auto bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined">save</span>
+            Salvar Todas as Configurações
+          </Button>
         </div>
       </main>
-
-      {/* Single Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-20">
-        <Button
-          onClick={handleSaveAllSettings}
-          className="w-full max-w-md mx-auto bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-        >
-          <span className="material-symbols-outlined">save</span>
-          Salvar Todas as Configurações
-        </Button>
-      </div>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 backdrop-blur-lg bg-opacity-95">
