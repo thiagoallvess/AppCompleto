@@ -144,7 +144,6 @@ const DetalhesPedido = () => {
         </div>
 
         {/* Delivery Info */}
-        <div className="rounded-2xl<dyad-write path="src/pages/DetalhesPedido.tsx" description="Completing the DetalhesPedido update to use OrdersContext">
         <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-slate-900 dark:text-white text-base font-bold flex items-center gap-2">
