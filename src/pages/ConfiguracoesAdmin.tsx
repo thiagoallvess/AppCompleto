@@ -282,11 +282,11 @@ const ConfiguracoesAdmin = () => {
           </div>
         </div>
 
-        {/* Single Save Button */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
+        {/* Save Button within configurations */}
+        <div className="flex justify-center pt-4">
           <Button
             onClick={handleSaveAllSettings}
-            className="w-full max-w-md mx-auto bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+            className="bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 px-8"
           >
             <span className="material-symbols-outlined">save</span>
             Salvar Todas as Configurações
