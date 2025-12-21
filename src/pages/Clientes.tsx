@@ -211,13 +211,6 @@ const Clientes = () => {
           </Link>
         ))}
       </main>
-
-      {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6 z-20">
-        <button className="flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-xl hover:bg-primary/90 hover:scale-105 transition-all active:scale-95">
-          <ShoppingCart size={28} />
-        </button>
-      </div>
     </div>
   );
 };
