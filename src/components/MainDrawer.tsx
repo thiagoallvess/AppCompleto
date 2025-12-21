@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Analytics } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -20,7 +20,7 @@ const MainDrawer = () => {
     { icon: Factory, label: "Produção", path: "/gestao-producao" },
     { icon: Package, label: "Insumos", path: "/gestao-insumos" },
     { icon: Users, label: "Clientes", path: "/clientes" },
-    { icon: Analytics, label: "Curva ABC", path: "/curva-abc" },
+    { icon: BarChart, label: "Curva ABC", path: "/curva-abc" },
     { icon: FileText, label: "Relatórios", path: "/relatorios" },
     { icon: Settings, label: "Configurações", path: "/configuracoes-admin" },
   ];
