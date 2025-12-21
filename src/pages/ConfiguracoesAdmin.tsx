@@ -37,29 +37,16 @@ const ConfiguracoesAdmin = () => {
     { key: 'sunday', label: 'Domingo' }
   ];
 
-  const handleSaveBusinessHours = () => {
+  const handleSaveAllSettings = () => {
+    // Save business hours
     setBusinessHours(tempBusinessHours);
-    showSuccess("Horários de funcionamento salvos!");
-  };
-
-  const handleSaveGasSettings = () => {
+    
     // TODO: Save gas settings to backend/storage
-    showSuccess("Configurações de gás salvas!");
-  };
-
-  const handleSaveEnergySettings = () => {
     // TODO: Save energy settings to backend/storage
-    showSuccess("Configurações de energia salvas!");
-  };
-
-  const handleSaveLaborSettings = () => {
     // TODO: Save labor settings to backend/storage
-    showSuccess("Configurações de mão de obra salvas!");
-  };
-
-  const handleSaveCashbackSettings = () => {
     // TODO: Save cashback settings to backend/storage
-    showSuccess("Configurações de cashback salvas!");
+    
+    showSuccess("Todas as configurações foram salvas!");
   };
 
   const handleTimeChange = (day: string, field: 'open' | 'close', value: string) => {
@@ -146,13 +133,6 @@ const ConfiguracoesAdmin = () => {
                 </div>
               ))}
             </div>
-
-            <Button
-              onClick={handleSaveBusinessHours}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98]"
-            >
-              Salvar Horários da Loja
-            </Button>
           </div>
         </div>
 
@@ -225,13 +205,6 @@ const ConfiguracoesAdmin = () => {
               />
             </div>
           </div>
-
-          <Button
-            onClick={handleSaveGasSettings}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98]"
-          >
-            Salvar Configurações de Gás
-          </Button>
         </div>
 
         {/* Configurações de Energia */}
@@ -257,13 +230,6 @@ const ConfiguracoesAdmin = () => {
               className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
             />
           </div>
-
-          <Button
-            onClick={handleSaveEnergySettings}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98]"
-          >
-            Salvar Configurações de Energia
-          </Button>
         </div>
 
         {/* Configurações de Preço e Mão de Obra */}
@@ -289,13 +255,6 @@ const ConfiguracoesAdmin = () => {
               className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
             />
           </div>
-
-          <Button
-            onClick={handleSaveLaborSettings}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98]"
-          >
-            Salvar Configurações de Mão de Obra
-          </Button>
         </div>
 
         {/* Configurações de Cashback */}
@@ -321,12 +280,16 @@ const ConfiguracoesAdmin = () => {
               className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
             />
           </div>
+        </div>
 
+        {/* Single Save Button */}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
           <Button
-            onClick={handleSaveCashbackSettings}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98]"
+            onClick={handleSaveAllSettings}
+            className="w-full max-w-md mx-auto bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
           >
-            Salvar Configurações de Cashback
+            <span className="material-symbols-outlined">save</span>
+            Salvar Todas as Configurações
           </Button>
         </div>
       </main>
