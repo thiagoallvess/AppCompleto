@@ -27,16 +27,16 @@ const Relatorios = () => {
       <main className="flex-1 flex flex-col gap-6 px-4 pt-4">
         {/* Segmented Control (Time Filter) */}
         <div className="w-full">
-          <div className="flex h-12 w-full items-center justify-center rounded-xl bg-gray-200 dark:bg-card-dark p-1">
-            <label className="group flex cursor-pointer h-full flex-1 items-center justify-center rounded-lg px-2 transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-surface-dark has-[:checked]:shadow-sm">
+          <div className="flex h-12 w-full items-center justify-center rounded-xl bg-gray-200 dark:bg-surface-dark p-1">
+            <label className="group flex cursor-pointer h-full flex-1 items-center justify-center rounded-lg px-2 transition-all has-[:checked]:bg-gray-100 dark:has-[:checked]:bg-gray-800 has-[:checked]:shadow-sm">
               <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 group-has-[:checked]:text-primary truncate transition-colors">Dia</span>
               <input className="invisible w-0 h-0 absolute" name="period-filter" type="radio" value="Dia" />
             </label>
-            <label className="group flex cursor-pointer h-full flex-1 items-center justify-center rounded-lg px-2 transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-surface-dark has-[:checked]:shadow-sm">
+            <label className="group flex cursor-pointer h-full flex-1 items-center justify-center rounded-lg px-2 transition-all has-[:checked]:bg-gray-100 dark:has-[:checked]:bg-gray-800 has-[:checked]:shadow-sm">
               <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 group-has-[:checked]:text-primary truncate transition-colors">Semana</span>
               <input checked className="invisible w-0 h-0 absolute" name="period-filter" type="radio" value="Semana" />
             </label>
-            <label className="group flex cursor-pointer h-full flex-1 items-center justify-center rounded-lg px-2 transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-surface-dark has-[:checked]:shadow-sm">
+            <label className="group flex cursor-pointer h-full flex-1 items-center justify-center rounded-lg px-2 transition-all has-[:checked]:bg-gray-100 dark:has-[:checked]:bg-gray-800 has-[:checked]:shadow-sm">
               <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 group-has-[:checked]:text-primary truncate transition-colors">Mês</span>
               <input className="invisible w-0 h-0 absolute" name="period-filter" type="radio" value="Mês" />
             </label>
@@ -46,7 +46,7 @@ const Relatorios = () => {
         {/* KPI Cards */}
         <div className="grid grid-cols-2 gap-3">
           {/* Total Sales */}
-          <div className="flex flex-col gap-3 rounded-2xl p-5 bg-white dark:bg-card-dark shadow-sm border border-gray-100 dark:border-gray-800">
+          <div className="flex flex-col gap-3 rounded-2xl p-5 bg-gray-100 dark:bg-surface-dark shadow-sm border border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-2">
               <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <DollarSign size={20} />
@@ -63,7 +63,7 @@ const Relatorios = () => {
           </div>
 
           {/* Total Orders */}
-          <div className="flex flex-col gap-3 rounded-2xl p-5 bg-white dark:bg-card-dark shadow-sm border border-gray-100 dark:border-gray-800">
+          <div className="flex flex-col gap-3 rounded-2xl p-5 bg-gray-100 dark:bg-surface-dark shadow-sm border border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-2">
               <div className="flex size-8 items-center justify-center rounded-full bg-orange-500/10 text-orange-500">
                 <ShoppingBag size={20} />
@@ -81,7 +81,7 @@ const Relatorios = () => {
         </div>
 
         {/* Sales Trend Chart */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-card-dark p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+        <div className="flex flex-col gap-4 rounded-2xl bg-gray-100 dark:bg-surface-dark p-5 shadow-sm border border-gray-200 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-slate-900 dark:text-white text-base font-bold">Tendência de Vendas</h3>
@@ -106,8 +106,8 @@ const Relatorios = () => {
               {/* Line Stroke */}
               <path d="M0,110 C40,110 40,50 80,50 C120,50 120,80 160,80 C200,80 200,30 240,30 C280,30 280,90 320,90 C350,90 350,20 380,20" fill="none" stroke="#195de6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3"></path>
               {/* Data Points (Optional Interaction Hints) */}
-              <circle className="dark:stroke-card-dark" cx="240" cy="30" fill="#195de6" r="4" stroke="white" strokeWidth="2"></circle>
-              <circle className="dark:stroke-card-dark" cx="380" cy="20" fill="#195de6" r="4" stroke="white" strokeWidth="2"></circle>
+              <circle className="stroke-gray-100 dark:stroke-surface-dark" cx="240" cy="30" fill="#195de6" r="4" strokeWidth="2"></circle>
+              <circle className="stroke-gray-100 dark:stroke-surface-dark" cx="380" cy="20" fill="#195de6" r="4" strokeWidth="2"></circle>
             </svg>
           </div>
           {/* X-Axis Labels */}
@@ -130,7 +130,7 @@ const Relatorios = () => {
           </div>
           <div className="flex flex-col gap-3">
             {/* Item 1 */}
-            <div className="flex items-center gap-4 rounded-xl bg-white dark:bg-card-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800">
+            <div className="flex items-center gap-4 rounded-xl bg-gray-100 dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-gray-800">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-yellow-400/20 text-yellow-600 dark:text-yellow-400 font-bold text-lg">
                 1
               </div>
@@ -139,15 +139,15 @@ const Relatorios = () => {
                   <h4 className="text-slate-900 dark:text-white font-semibold truncate pr-2">Ninho com Nutella</h4>
                   <span className="text-slate-900 dark:text-white font-bold">142 un</span>
                 </div>
-                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div className="bg-primary h-1.5 rounded-full" style={{ width: '85%' }}></div>
                 </div>
               </div>
             </div>
 
             {/* Item 2 */}
-            <div className="flex items-center gap-4 rounded-xl bg-white dark:bg-card-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-surface-dark text-gray-500 font-bold text-lg">
+            <div className="flex items-center gap-4 rounded-xl bg-gray-100 dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-gray-800">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-500 font-bold text-lg">
                 2
               </div>
               <div className="flex-1 min-w-0">
@@ -155,15 +155,15 @@ const Relatorios = () => {
                   <h4 className="text-slate-900 dark:text-white font-semibold truncate pr-2">Morango Gourmet</h4>
                   <span className="text-slate-900 dark:text-white font-bold">98 un</span>
                 </div>
-                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div className="bg-primary/70 h-1.5 rounded-full" style={{ width: '65%' }}></div>
                 </div>
               </div>
             </div>
 
             {/* Item 3 */}
-            <div className="flex items-center gap-4 rounded-xl bg-white dark:bg-card-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-surface-dark text-gray-500 font-bold text-lg">
+            <div className="flex items-center gap-4 rounded-xl bg-gray-100 dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-gray-800">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-500 font-bold text-lg">
                 3
               </div>
               <div className="flex-1 min-w-0">
@@ -171,15 +171,15 @@ const Relatorios = () => {
                   <h4 className="text-slate-900 dark:text-white font-semibold truncate pr-2">Paçoca Cremosa</h4>
                   <span className="text-slate-900 dark:text-white font-bold">74 un</span>
                 </div>
-                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div className="bg-primary/50 h-1.5 rounded-full" style={{ width: '45%' }}></div>
                 </div>
               </div>
             </div>
 
             {/* Item 4 */}
-            <div className="flex items-center gap-4 rounded-xl bg-white dark:bg-card-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800 opacity-80">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-surface-dark text-gray-500 font-bold text-lg">
+            <div className="flex items-center gap-4 rounded-xl bg-gray-100 dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-gray-800 opacity-80">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-500 font-bold text-lg">
                 4
               </div>
               <div className="flex-1 min-w-0">
@@ -187,7 +187,7 @@ const Relatorios = () => {
                   <h4 className="text-slate-900 dark:text-white font-semibold truncate pr-2">Maracujá Trufado</h4>
                   <span className="text-slate-900 dark:text-white font-bold">52 un</span>
                 </div>
-                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div className="bg-primary/30 h-1.5 rounded-full" style={{ width: '32%' }}></div>
                 </div>
               </div>
