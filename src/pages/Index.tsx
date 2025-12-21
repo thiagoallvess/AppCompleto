@@ -151,7 +151,7 @@ const Index = () => {
           <Link to="/cashback" className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <DollarSign size={24} />
             <span className="text-[10px] font-medium">Cashback</span>
-          </button>
+          </Link>
           <button className="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors space-y-1">
             <Heart size={24} />
             <span className="text-[10px] font-medium">Favoritos</span>
