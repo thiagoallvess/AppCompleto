@@ -19,71 +19,7 @@ const GestaoInsumos = () => {
         if (storedItems) {
           setInventoryItems(JSON.parse(storedItems));
         } else {
-          // Initialize with default items if no data exists
-          const defaultItems = [
-            {
-              id: 1,
-              name: "Leite Ninho",
-              quantity: "2.5 kg",
-              minQuantity: "3 kg",
-              status: "Baixo",
-              statusColor: "amber",
-              icon: "Cookie",
-              category: "Ingredientes"
-            },
-            {
-              id: 2,
-              name: "Leite Condensado",
-              quantity: "12 caixas (395g)",
-              minQuantity: null,
-              status: "Normal",
-              statusColor: "normal",
-              icon: "Package",
-              category: "Ingredientes"
-            },
-            {
-              id: 3,
-              name: "Nutella",
-              quantity: "3 kg",
-              minQuantity: null,
-              status: "Normal",
-              statusColor: "normal",
-              icon: "ChefHat",
-              category: "Ingredientes"
-            },
-            {
-              id: 4,
-              name: "Saquinho 5x24",
-              quantity: "50 un",
-              minQuantity: "200 un",
-              status: "Crítico",
-              statusColor: "red",
-              icon: "Archive",
-              category: "Embalagens"
-            },
-            {
-              id: 5,
-              name: "Liga Neutra",
-              quantity: "1 kg",
-              minQuantity: null,
-              status: "Normal",
-              statusColor: "normal",
-              icon: "IceCream",
-              category: "Ingredientes"
-            },
-            {
-              id: 6,
-              name: "Fita de Cetim",
-              quantity: "5 rolos",
-              minQuantity: null,
-              status: "Normal",
-              statusColor: "normal",
-              icon: "Tag",
-              category: "Embalagens"
-            }
-          ];
-          setInventoryItems(defaultItems);
-          localStorage.setItem('inventoryItems', JSON.stringify(defaultItems));
+          setInventoryItems([]);
         }
       } catch (error) {
         console.error('Error loading inventory items:', error);
@@ -96,7 +32,7 @@ const GestaoInsumos = () => {
 
   // Save to localStorage whenever inventoryItems changes
   useEffect(() => {
-    if (inventoryItems.length > 0) {
+    if (inventoryItems.length >= 0) {
       localStorage.setItem('inventoryItems', JSON.stringify(inventoryItems));
     }
   }, [inventoryItems]);
@@ -136,17 +72,6 @@ const GestaoInsumos = () => {
         return "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-500/10";
       default:
         return "";
-    }
-  };
-
-  const getStatusDotColor = (status) => {
-    switch (status) {
-      case "Baixo":
-        return "bg-amber-500";
-      case "Crítico":
-        return "bg-red-500";
-      default:
-        return "bg-gray-500";
     }
   };
 
@@ -255,56 +180,74 @@ const GestaoInsumos = () => {
       </div>
 
       {/* Inventory List */}
-      <div className="flex flex-col pb-24">
-        {filteredItems.map((item) => {
-          const IconComponent = getIcon(item.icon);
-          return (
-            <div
-              key={item.id}
-              className="group relative flex items-center gap-4 px-4 py-3 hover:bg-slate-50 dark:hover:bg-surface-dark/50 transition-colors border-b border-slate-100 dark:border-slate-800/50"
-            >
-              <div className="relative shrink-0">
-                <div className="flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shrink-0 size-14 text-slate-500 dark:text-slate-400">
-                  <IconComponent size={24} />
-                </div>
-                {(item.status === "Baixo" || item.status === "Crítico") && (
-                  <div className={`absolute -bottom-1 -right-1 size-5 rounded-full flex items-center justify-center border-2 border-white dark:border-background-dark ${
-                    item.statusColor === "red" ? "bg-red-500" : "bg-amber-500"
-                  }`}>
-                    {getStatusIcon(item.status)}
+      {filteredItems.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          <div className="flex items-center justify-center size-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
+            <Package className="text-slate-400 dark:text-slate-500" size={32} />
+          </div>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Nenhum insumo cadastrado</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center max-w-xs mb-6">
+            Comece adicionando seus ingredientes e embalagens para gerenciar o estoque.
+          </p>
+          <Button asChild className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30">
+            <Link to="/add-insumo" className="flex items-center gap-2">
+              <Plus size={20} />
+              Adicionar Primeiro Insumo
+            </Link>
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-col pb-24">
+          {filteredItems.map((item) => {
+            const IconComponent = getIcon(item.icon);
+            return (
+              <div
+                key={item.id}
+                className="group relative flex items-center gap-4 px-4 py-3 hover:bg-slate-50 dark:hover:bg-surface-dark/50 transition-colors border-b border-slate-100 dark:border-slate-800/50"
+              >
+                <div className="relative shrink-0">
+                  <div className="flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shrink-0 size-14 text-slate-500 dark:text-slate-400">
+                    <IconComponent size={24} />
                   </div>
-                )}
-              </div>
-              <div className="flex flex-col flex-1 min-w-0">
-                <div className="flex justify-between items-start">
-                  <p className={`text-base font-semibold truncate pr-2 ${
-                    item.status === "Esgotado" ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
-                  }`}>
-                    {item.name}
-                  </p>
                   {(item.status === "Baixo" || item.status === "Crítico") && (
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${getStatusColor(item.status)}`}>
-                      {item.status}
-                    </span>
+                    <div className={`absolute -bottom-1 -right-1 size-5 rounded-full flex items-center justify-center border-2 border-white dark:border-background-dark ${
+                      item.statusColor === "red" ? "bg-red-500" : "bg-amber-500"
+                    }`}>
+                      {getStatusIcon(item.status)}
+                    </div>
                   )}
                 </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{item.quantity}</p>
-                  {item.minQuantity && (
-                    <>
-                      <span className="size-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                      <p className="text-slate-400 dark:text-slate-500 text-xs">Mín: {item.minQuantity}</p>
-                    </>
-                  )}
+                <div className="flex flex-col flex-1 min-w-0">
+                  <div className="flex justify-between items-start">
+                    <p className={`text-base font-semibold truncate pr-2 ${
+                      item.status === "Esgotado" ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
+                    }`}>
+                      {item.name}
+                    </p>
+                    {(item.status === "Baixo" || item.status === "Crítico") && (
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${getStatusColor(item.status)}`}>
+                        {item.status}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{item.quantity}</p>
+                    {item.minQuantity && (
+                      <>
+                        <span className="size-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                        <p className="text-slate-400 dark:text-slate-500 text-xs">Mín: {item.minQuantity}</p>
+                      </>
+                    )}
+                  </div>
                 </div>
+                <button className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-white p-2">
+                  <MoreVertical size={20} />
+                </button>
               </div>
-              <button className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-white p-2">
-                <MoreVertical size={20} />
-              </button>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 w-full bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
