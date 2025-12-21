@@ -61,6 +61,15 @@ const Clientes = () => {
     return matchesSearch && matchesFilter;
   });
 
+  const getStatusColor = (color: string) => {
+    switch (color) {
+      case "yellow": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
+      case "red": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "blue": return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
+      default: return "";
+    }
+  };
+
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
@@ -95,7 +104,7 @@ const Clientes = () => {
             <Search className="text-slate-400" size={20} />
           </div>
           <input
-            className="block w-full p-3 pl-10 text-sm text-slate-900 border border-slate-200 rounded-xl bg-white dark:bg-surface-dark dark:border-white/10 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary focus:outline-none transition-all"
+            className="block w-full p-3 pl-10 border border-slate-200 rounded-xl bg-white dark:bg-surface-dark dark:border-white/10 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary focus:outline-none transition-all"
             placeholder="Buscar por nome, telefone ou status..."
             type="text"
             value={searchTerm}
@@ -155,12 +164,7 @@ const Clientes = () => {
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-semibold text-slate-900 dark:text-white">{customer.name}</h3>
                       {customer.status && (
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
-                          customer.statusColor === 'yellow' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
-                          customer.statusColor === 'red' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
-                          customer.statusColor === 'blue' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
-                          ''
-                        }`}>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusColor(customer.statusColor)}`}>
                           {customer.status}
                         </span>
                       )}
@@ -180,7 +184,7 @@ const Clientes = () => {
                     </p>
                   </div>
                 </div>
-                <button className="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary">
+                <button className="text-slate-400 hover:text-primary dark:hover:text-primary">
                   <MoreVertical size={20} />
                 </button>
               </div>
@@ -195,11 +199,11 @@ const Clientes = () => {
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400 transition-colors">
-                    <Phone size={20} />
+                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
+                    <Phone size={18} />
                   </button>
-                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400 transition-colors">
-                    <MessageCircle size={20} />
+                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
+                    <MessageCircle size={18} />
                   </button>
                 </div>
               </div>
@@ -210,30 +214,10 @@ const Clientes = () => {
 
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-20">
-        <button className="flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-xl hover:bg-primary/90 hover:scale-105 transition-all">
+        <button className="flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-xl hover:bg-primary/90 hover:scale-105 transition-all active:scale-95">
           <ShoppingCart size={28} />
         </button>
       </div>
-
-      {/* Bottom Navigation */}
-      <nav className="flex-none bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/5 pb-6 pt-2 px-6 flex justify-between items-center z-10">
-        <Link to="/" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">dashboard</span>
-          <span className="text-[10px] font-medium">Início</span>
-        </Link>
-        <button className="flex flex-col items-center gap-1 p-2 text-primary dark:text-primary transition-colors">
-          <span className="material-symbols-filled">group</span>
-          <span className="text-[10px] font-medium">Clientes</span>
-        </button>
-        <Link to="/gestao-insumos" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">inventory_2</span>
-          <span className="text-[10px] font-medium">Estoque</span>
-        </Link>
-        <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">settings</span>
-          <span className="text-[10px] font-medium">Ajustes</span>
-        </Link>
-      </nav>
     </div>
   );
 };
