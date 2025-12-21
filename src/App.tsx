@@ -36,53 +36,62 @@ import CurvaABC from "./pages/CurvaABC";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
+import { ProductsProvider } from "./contexts/ProductsContext";
+import { OrdersProvider } from "./contexts/OrdersContext";
+import { ClientsProvider } from "./contexts/ClientsContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <StoreProvider>
-      <CartProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/product-details" element={<ProductDetails />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/cashback" element={<Cashback />} />
-              <Route path="/indicacao" element={<Indicacao />} />
-              <Route path="/meus-pedidos" element={<MeusPedidos />} />
-              <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
-              <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
-              <Route path="/perfil" element={<Perfil />} />
-              <Route path="/enderecos" element={<Enderecos />} />
-              <Route path="/add-endereco" element={<AddEndereco />} />
-              <Route path="/edit-endereco" element={<EditEndereco />} />
-              <Route path="/gestao-insumos" element={<GestaoInsumos />} />
-              <Route path="/add-insumo" element={<AddInsumo />} />
-              <Route path="/gestao-produtos" element={<GestaoProdutos />} />
-              <Route path="/add-produto" element={<AddProduto />} />
-              <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
-              <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
-              <Route path="/relatorios" element={<Relatorios />} />
-              <Route path="/clientes" element={<Clientes />} />
-              <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
-              <Route path="/visao-geral" element={<VisaoGeral />} />
-              <Route path="/gestao-receitas" element={<GestaoReceitas />} />
-              <Route path="/add-receita" element={<AddReceita />} />
-              <Route path="/detalhes-receita" element={<DetalhesReceita />} />
-              <Route path="/gestao-producao" element={<GestaoProducao />} />
-              <Route path="/add-producao" element={<AddProducao />} />
-              <Route path="/detalhes-lote" element={<DetalhesLote />} />
-              <Route path="/curva-abc" element={<CurvaABC />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </CartProvider>
+      <ProductsProvider>
+        <OrdersProvider>
+          <ClientsProvider>
+            <CartProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/product-details" element={<ProductDetails />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/cashback" element={<Cashback />} />
+                    <Route path="/indicacao" element={<Indicacao />} />
+                    <Route path="/meus-pedidos" element={<MeusPedidos />} />
+                    <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
+                    <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
+                    <Route path="/perfil" element={<Perfil />} />
+                    <Route path="/enderecos" element={<Enderecos />} />
+                    <Route path="/add-endereco" element={<AddEndereco />} />
+                    <Route path="/edit-endereco" element={<EditEndereco />} />
+                    <Route path="/gestao-insumos" element={<GestaoInsumos />} />
+                    <Route path="/add-insumo" element={<AddInsumo />} />
+                    <Route path="/gestao-produtos" element={<GestaoProdutos />} />
+                    <Route path="/add-produto" element={<AddProduto />} />
+                    <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
+                    <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
+                    <Route path="/relatorios" element={<Relatorios />} />
+                    <Route path="/clientes" element={<Clientes />} />
+                    <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
+                    <Route path="/visao-geral" element={<VisaoGeral />} />
+                    <Route path="/gestao-receitas" element={<GestaoReceitas />} />
+                    <Route path="/add-receita" element={<AddReceita />} />
+                    <Route path="/detalhes-receita" element={<DetalhesReceita />} />
+                    <Route path="/gestao-producao" element={<GestaoProducao />} />
+                    <Route path="/add-producao" element={<AddProducao />} />
+                    <Route path="/detalhes-lote" element={<DetalhesLote />} />
+                    <Route path="/curva-abc" element={<CurvaABC />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </TooltipProvider>
+            </CartProvider>
+          </ClientsProvider>
+        </OrdersProvider>
+      </ProductsProvider>
     </StoreProvider>
   </QueryClientProvider>
 );

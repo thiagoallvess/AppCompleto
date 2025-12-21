@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Plus } from "lucide-react";
+import { useProducts } from "@/contexts/ProductsContext";
 
 interface AddProdutoModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
   const [imageUrl, setImageUrl] = useState("");
   const [recipeId, setRecipeId] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const { addProduct } = useProducts();
 
   const recipes = [
     { id: "none", name: "Nenhuma Receita" },
@@ -37,16 +39,16 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement product creation logic
-    console.log({
-      productName,
-      description,
-      price,
-      isPromotion,
-      imageUrl,
-      recipeId,
-      isActive
-    });
+    const newProduct = {
+      id: Date.now().toString(),
+      name: productName,
+      price: parseFloat(price) || 0,
+      image: imageUrl || "https://via.placeholder.com/300x200?text=Produto",
+      description: description,
+      rating: 0,
+      reviews: 0
+    };
+    addProduct(newProduct);
     // Reset form and close modal
     setProductName("");
     setDescription("");
@@ -84,6 +86,7 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
           <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-5">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
+<dyad-write path="src/components/AddProdutoModal.tsx" description="Completing the AddProdutoModal update to use ProductsContext">
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="product_name">
                   Nome do Produto
                 </label>

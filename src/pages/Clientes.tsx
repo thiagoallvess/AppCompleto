@@ -1,63 +1,22 @@
 import { ArrowLeft, Bell, Plus, Search, MoreVertical, Phone, MessageCircle, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useClients } from "@/contexts/ClientsContext";
 
 const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
+  const { clients } = useClients();
 
   const filters = ["Todos", "VIPs", "Devedores", "Novos", "Inativos"];
 
-  const customers = [
-    {
-      id: 1,
-      name: "Maria Silva",
-      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuATnOgwjdatv2PuCBwYZ9_8wozN9Vb8eVEMG9uQMv3p_AyJjWvZ9MJw2-d04bcBFq4Y_4188BM6tgO0H5wM3uqdyLguoJw5_sStCNK1q6t3ufbIQxiR-cYLqZtGmfsUTomFqe2XfiSspGzCVa3_APTZ9rVah6UXJXhcF-Zhnmyh4TKXCPKaNvMUc4fPrE3gceUwe46m-D_GY3AXbc7vEs1Evt_Q_271UyaypBKvfRdnICSdNb3iTzcadPG9-3ZnvxgJuIIEmLQmew",
-      status: "VIP",
-      statusColor: "yellow",
-      lastOrder: "Hoje, 14:30",
-      totalSpent: 450.00,
-      isOnline: true,
-      type: "vip"
-    },
-    {
-      id: 2,
-      name: "João Souza",
-      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCO87rE_qgFksEKiShqMAZbbtrOWc3LOlkRp420n15KoVRr7SpctX9clA8IPagAq2rRDKsosshOEDqPZnsGuesHKwjc6-mdqB31_DcGL5jDNkcPQ403xwYQDjLr6F3lBS5eZoDLH95dZUzMkyPrJc8nOVGKkHK3m-wRqj2GeENu79sqzqofFsKKHmTiIE7dXm2rT4rKHZrCVUMm2qSJfR0KjrnvrO_6msa2L7C-WQ95C0LYhQ043xCRmpKYEvyuspov50AjnSGatw",
-      status: "Pendente",
-      statusColor: "red",
-      lastOrder: "Ontem, 09:15",
-      debt: 25.00,
-      type: "debtor"
-    },
-    {
-      id: 3,
-      name: "Bruno Ferreira",
-      initials: "BF",
-      status: "Novo",
-      statusColor: "blue",
-      registered: "15/10/2023",
-      preference: "Ninho c/ Nutella",
-      type: "new"
-    },
-    {
-      id: 4,
-      name: "Carla Dias",
-      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuDfzIKUXhxlSfDjxkFpISPVb6bsmspsBeD8OV4scHNq8pWTxXnZ6kjE_14EaoddytcaMtDq3g01fBMbuZFNz7LEAgwJ0VgbDIwSqrmF2nAodzjcL59djAIKgtNl_RcLT93rclnnDIrU7bDoEC4cxRyZUXtkoFUn8Fr5NZOpWQfZ8tTnh3RRHIWB2DBev-_CjBXk40wPTD8e0G5JPtDiRMf-eJJWr3lK-XxTfl5Q8BHQzKEyyMq_Aiht-DphW3dfntXgakQSoPaZ-Q",
-      status: null,
-      lastOrder: "12/10, 18:00",
-      totalSpent: 120.00,
-      type: "standard"
-    }
-  ];
-
-  const filteredCustomers = customers.filter(customer => {
-    const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredClients = clients.filter(client => {
+    const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = activeFilter === "Todos" ||
-                         (activeFilter === "VIPs" && customer.type === "vip") ||
-                         (activeFilter === "Devedores" && customer.type === "debtor") ||
-                         (activeFilter === "Novos" && customer.type === "new") ||
-                         (activeFilter === "Inativos" && customer.type === "inactive");
+                         (activeFilter === "VIPs" && client.type === "vip") ||
+                         (activeFilter === "Devedores" && client.type === "debtor") ||
+                         (activeFilter === "Novos" && client.type === "new") ||
+                         (activeFilter === "Inativos" && client.type === "inactive");
     return matchesSearch && matchesFilter;
   });
 
@@ -73,7 +32,7 @@ const Clientes = () => {
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="flex-none bg-background-light dark:bg-background-dark px-4 pt-4 pb-2 z-10 border-b border-slate-200 dark:border-white/5">
+      <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-white/5">
         <div className="flex items-center justify-between h-14 mb-2">
           <Link
             to="/"
@@ -131,54 +90,54 @@ const Clientes = () => {
 
       {/* Customer List */}
       <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-4 space-y-3 pb-24">
-        {filteredCustomers.map((customer) => (
+        {filteredClients.map((client) => (
           <Link
-            key={customer.id}
-            to={`/detalhes-cliente?id=${customer.id}`}
+            key={client.id}
+            to={`/detalhes-cliente?id=${client.id}`}
             className="block"
           >
             <article
               className={`group relative flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-100 dark:border-white/5 shadow-sm active:scale-[0.99] transition-transform ${
-                customer.debt ? 'opacity-75 hover:opacity-100' : ''
+                client.debt ? 'opacity-75 hover:opacity-100' : ''
               }`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    {customer.avatar ? (
+                    {client.avatar ? (
                       <img
                         className="size-12 rounded-full object-cover border-2 border-primary/20"
-                        src={customer.avatar}
-                        alt={customer.name}
+                        src={client.avatar}
+                        alt={client.name}
                       />
                     ) : (
                       <div className="size-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-bold text-lg flex items-center justify-center">
-                        {customer.initials}
+                        {client.initials}
                       </div>
                     )}
-                    {customer.isOnline && (
+                    {client.isOnline && (
                       <div className="absolute -bottom-1 -right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
                     )}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-semibold text-slate-900 dark:text-white">{customer.name}</h3>
-                      {customer.status && (
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusColor(customer.statusColor)}`}>
-                          {customer.status}
+                      <h3 className="text-base font-semibold text-slate-900 dark:text-white">{client.name}</h3>
+                      {client.status && (
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusColor(client.statusColor)}`}>
+                          {client.status}
                         </span>
                       )}
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-                      {customer.lastOrder ? (
+                      {client.lastOrder ? (
                         <>
                           <span className="material-symbols-outlined text-[14px]">history</span>
-                          Último pedido: {customer.lastOrder}
+                          Último pedido: {client.lastOrder}
                         </>
-                      ) : customer.registered ? (
+                      ) : client.registered ? (
                         <>
                           <span className="material-symbols-outlined text-[14px]">calendar_month</span>
-                          Cadastrado: {customer.registered}
+                          Cadastrado: {client.registered}
                         </>
                       ) : null}
                     </p>
@@ -192,10 +151,10 @@ const Clientes = () => {
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
                   <span className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-wider">
-                    {customer.debt ? "Débito" : customer.preference ? "Preferência" : "Total Gasto"}
+                    {client.debt ? "Débito" : client.preference ? "Preferência" : "Total Gasto"}
                   </span>
-                  <span className={`text-sm font-medium ${customer.debt ? "text-red-600 dark:text-red-400" : "text-slate-700 dark:text-slate-200"}`}>
-                    {customer.debt ? `R$ ${customer.debt.toFixed(2)}` : customer.preference ? customer.preference : `R$ ${customer.totalSpent?.toFixed(2)}`}
+                  <span className={`text-sm font-medium ${client.debt ? "text-red-600 dark:text-red-400" : "text-slate-700 dark:text-slate-200"}`}>
+                    {client.debt ? `R$ ${client.debt.toFixed(2)}` : client.preference ? client.preference : `R$ ${client.totalSpent?.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="flex gap-2">

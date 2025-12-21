@@ -3,76 +3,19 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useOrders } from "@/contexts/OrdersContext";
 
 const GestaoPedidos = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
+  const { orders } = useOrders();
 
   const filters = [
     { label: "Todos", count: null },
-    { label: "Novos", count: 4 },
-    { label: "Em Preparo", count: 2 },
-    { label: "A Caminho", count: null },
-    { label: "Entregues", count: null }
-  ];
-
-  const orders = [
-    {
-      id: "#1024",
-      customer: "Maria Silva",
-      status: "Novo",
-      statusColor: "primary",
-      statusIcon: "inventory_2",
-      time: "14:32",
-      total: 45.00,
-      items: "3x Ninho com Nutella, 2x Morango, 1x Coco...",
-      isNew: true,
-      section: "open"
-    },
-    {
-      id: "#1023",
-      customer: "Carlos Oliveira",
-      status: "Preparo",
-      statusColor: "orange",
-      statusIcon: "soup_kitchen",
-      time: "14:15",
-      total: 22.50,
-      items: "5x Limão Siciliano",
-      section: "open"
-    },
-    {
-      id: "#1022",
-      customer: "Ana Souza",
-      status: "Rota",
-      statusColor: "blue",
-      statusIcon: "sports_motorsports",
-      time: "13:50",
-      total: 60.00,
-      items: "",
-      eta: "Chegada em 5 min",
-      section: "open"
-    },
-    {
-      id: "#1021",
-      customer: "Roberto Lima",
-      status: "Entregue",
-      statusColor: "green",
-      statusIcon: "check_circle",
-      time: "13:30",
-      total: 18.00,
-      section: "finished"
-    },
-    {
-      id: "#1020",
-      customer: "Julia M.",
-      status: "Cancelado",
-      statusColor: "red",
-      statusIcon: "cancel",
-      time: "",
-      total: 32.00,
-      section: "finished",
-      cancelled: true
-    }
+    { label: "Novos", count: orders.filter(o => o.status === "Novo").length },
+    { label: "Em Preparo", count: orders.filter(o => o.status === "Preparo").length },
+    { label: "A Caminho", count: orders.filter(o => o.status === "Rota").length },
+    { label: "Entregues", count: orders.filter(o => o.status === "Entregue").length }
   ];
 
   const filteredOrders = orders.filter(order => {
@@ -124,17 +67,9 @@ const GestaoPedidos = () => {
             <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">Gourmet Ice</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="relative flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white transition-colors">
+        <div className="flex items-center justify-end gap-2">
+          <button className="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white transition-colors">
             <Bell size={24} />
-            <span className="absolute top-2 right-2 size-2 rounded-full bg-primary border-2 border-background-light dark:border-background-dark"></span>
-          </button>
-          <button className="flex size-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white overflow-hidden">
-            <img
-              alt="Admin Avatar"
-              className="size-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8naAE7ZPJQ_2lWZ-mpC3aul9CjvoS5Sl4dR3iHLgDfV0g46r2rZhLSCjoDSDGytBqsdZLba-BK44FA__egoZrSbyxtW0EbMxfq1583Sj4e7vIaLxrdpyeEJge0WjTS3ERJQdu0O61_qoVjxHbg8RyBg58cXtcFsRflTZXrA6oR5bmaeuieV1WIy2v8mqGe-az9cke_OD_My6sfqgrRNBvW131WJf_1RWhHReMAaYmWFR5pJLiCyO0Tur_6qe6xeipTczKPBpqyQ"
-            />
           </button>
         </div>
       </header>
@@ -142,21 +77,29 @@ const GestaoPedidos = () => {
       {/* Stats Section */}
       <div className="px-4 pt-6 pb-2">
         <div className="flex flex-wrap gap-3">
-          <div className="flex flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between">
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Hoje</p>
-              <TrendingUp className="text-primary text-lg" />
+          <div className="flex flex-1 flex-col gap-1 rounded-2xl p-5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                <TrendingUp size={18} />
+              </span>
+              <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Pendentes</p>
             </div>
-            <p className="text-slate-900 dark:text-white tracking-tight text-2xl font-bold">24</p>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">Pedidos novos</p>
+            <div>
+              <p className="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">{openOrders.length}</p>
+              <p className="text-primary text-xs font-medium mt-1">Aguardando ação</p>
+            </div>
           </div>
-          <div className="flex flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between">
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Receita</p>
-              <DollarSign className="text-green-500 text-lg" />
+          <div className="flex flex-1 flex-col gap-1 rounded-2xl p-5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="flex items-center justify-center size-8 rounded-full bg-green-500/10 text-green-500">
+                <DollarSign size={18} />
+              </span>
+              <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Vendas Hoje</p>
             </div>
-            <p className="text-slate-900 dark:text-white tracking-tight text-2xl font-bold">R$ 350</p>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">+12% vs ontem</p>
+            <div>
+              <p className="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">R$ {orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}</p>
+              <p className="text-green-500 text-xs font-medium mt-1">Total do dia</p>
+            </div>
           </div>
         </div>
       </div>
@@ -168,7 +111,7 @@ const GestaoPedidos = () => {
             <Search size={20} />
           </div>
           <Input
-            className="peer h-full w-full outline-none bg-transparent text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 pr-4 font-medium border-none focus:ring-0"
+            className="peer h-full w-full outline-none text-sm text-slate-700 dark:text-slate-200 pr-2 bg-transparent placeholder-slate-400 dark:placeholder-slate-600 font-medium border-none focus:ring-0"
             placeholder="Buscar por cliente ou pedido..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -192,7 +135,7 @@ const GestaoPedidos = () => {
               onClick={() => setActiveFilter(filter.label)}
             >
               <span className="text-sm font-semibold">{filter.label}</span>
-              {filter.count && (
+              {filter.count !== null && filter.count > 0 && (
                 <span className="ml-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary px-1">
                   {filter.count}
                 </span>
@@ -251,16 +194,9 @@ const GestaoPedidos = () => {
                   </div>
                   <div className="w-full h-px bg-slate-200 dark:bg-slate-800"></div>
                   <div className="flex items-center justify-between gap-4">
-                    {order.eta ? (
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                        <div className="material-symbols-outlined text-sm">schedule</div>
-                        <span>{order.eta}</span>
-                      </div>
-                    ) : (
-                      <p className="text-slate-500 dark:text-slate-400 text-xs leading-normal line-clamp-1 flex-1">
-                        {order.items}
-                      </p>
-                    )}
+                    <p className="text-slate-500 dark:text-slate-400 text-xs leading-normal line-clamp-1 flex-1">
+                      {order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')}
+                    </p>
                     <div className="flex gap-2">
                       {order.status === "Novo" && (
                         <button className="flex size-8 items-center justify-center rounded-full bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
@@ -326,7 +262,7 @@ const GestaoPedidos = () => {
             ))}
           </>
         )}
-      </div>
+      </main>
 
       {/* Floating Action Button */}
       <button className="fixed bottom-6 right-6 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95">
@@ -336,20 +272,20 @@ const GestaoPedidos = () => {
       {/* Bottom Navigation - Mobile */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 w-full max-w-md border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pb-safe md:hidden">
         <div className="flex h-16 items-center justify-around px-2">
-          <Link to="/gestao-pedidos" className="flex flex-col items-center justify-center gap-1 w-16 text-primary">
-            <div className="material-symbols-outlined fill">list_alt</div>
-            <span className="text-[10px] font-bold">Pedidos</span>
+          <Link to="/visao-geral" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">list_alt</span>
+            <span className="text-[10px] font-medium">Pedidos</span>
           </Link>
-          <Link to="/gestao-insumos" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-            <div className="material-symbols-outlined">inventory</div>
+          <Link to="/gestao-insumos" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">inventory</span>
             <span className="text-[10px] font-medium">Estoque</span>
           </Link>
-          <button className="flex flex-col items-center justify-center gap-1 w-16 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-            <div className="material-symbols-outlined">bar_chart</div>
-            <span className="text-[10px] font-medium">Vendas</span>
+          <button className="flex flex-col items-center justify-center gap-1 w-16 text-primary">
+            <span className="material-symbols-outlined fill">list_alt</span>
+            <span className="text-[10px] font-medium">Pedidos</span>
           </button>
-          <Link to="/configuracoes-admin" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-            <div className="material-symbols-outlined">settings</div>
+          <Link to="/configuracoes-admin" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">settings</span>
             <span className="text-[10px] font-medium">Ajustes</span>
           </Link>
         </div>
@@ -359,20 +295,20 @@ const GestaoPedidos = () => {
       <nav className="hidden md:flex fixed bottom-0 left-0 right-0 z-20 w-full border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md">
         <div className="flex h-16 items-center justify-center w-full max-w-4xl mx-auto px-4">
           <div className="flex items-center justify-around w-full max-w-md">
-            <Link to="/gestao-pedidos" className="flex flex-col items-center justify-center gap-1 text-primary">
-              <div className="material-symbols-outlined fill">list_alt</div>
+            <Link to="/visao-geral" className="flex flex-col items-center justify-center gap-1 text-primary">
+              <span className="material-symbols-outlined fill">list_alt</span>
               <span className="text-xs font-bold">Pedidos</span>
             </Link>
             <Link to="/gestao-insumos" className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <div className="material-symbols-outlined">inventory</div>
+              <span className="material-symbols-outlined">inventory</span>
               <span className="text-xs font-medium">Estoque</span>
             </Link>
             <button className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <div className="material-symbols-outlined">bar_chart</div>
+              <span className="material-symbols-outlined">bar_chart</span>
               <span className="text-xs font-medium">Vendas</span>
             </button>
             <Link to="/configuracoes-admin" className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <div className="material-symbols-outlined">settings</div>
+              <span className="material-symbols-outlined">settings</span>
               <span className="text-xs font-medium">Ajustes</span>
             </Link>
           </div>
