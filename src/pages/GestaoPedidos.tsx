@@ -157,7 +157,7 @@ const GestaoPedidos = () => {
             {openOrders.map((order) => (
               <Link
                 key={order.id}
-                to="/detalhes-pedido"
+                to={`/detalhes-pedido?id=${order.id}`}
                 className="block"
               >
                 <article
@@ -233,7 +233,7 @@ const GestaoPedidos = () => {
             {finishedOrders.map((order) => (
               <Link
                 key={order.id}
-                to="/detalhes-pedido"
+                to={`/detalhes-pedido?id=${order.id}`}
                 className="block"
               >
                 <article
@@ -262,7 +262,7 @@ const GestaoPedidos = () => {
             ))}
           </>
         )}
-      </main>
+      </div>
 
       {/* Floating Action Button */}
       <button className="fixed bottom-6 right-6 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95">
