@@ -1,13 +1,26 @@
-import { ArrowLeft, Plus, Search, CheckCircle, AlertTriangle, MoreVertical, Cookie, Package, ChefHat, Archive, IceCream, Tag } from "lucide-react";
+import { ArrowLeft, Plus, Search, CheckCircle, AlertTriangle, MoreVertical, Cookie, Package, ChefHat, Archive, IceCream, Tag, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { showSuccess, showError } from "@/utils/toast";
 
 const GestaoInsumos = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [inventoryItems, setInventoryItems] = useState([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    category: "",
+    quantity: "",
+    unit: "",
+    minQuantity: ""
+  });
 
   const filters = ["Todos", "Ingredientes", "Embalagens", "Baixo Estoque"];
 
@@ -85,6 +98,48 @@ const GestaoInsumos = () => {
 
   const removeItem = (id) => {
     setInventoryItems(prevItems => prevItems.filter(item => item.id !== id));
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setEditForm({
+      name: item.name,
+      category: item.category,
+      quantity: item.quantity,
+      unit: item.unit,
+      minQuantity: item.minQuantity || ""
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = (item) => {
+    if (confirm(`Tem certeza que deseja excluir "${item.name}"?`)) {
+      removeItem(item.id);
+      showSuccess(`"${item.name}" foi removido do estoque`);
+    }
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingItem) return;
+
+    const updatedItem = {
+      ...editingItem,
+      name: editForm.name,
+      category: editForm.category,
+      quantity: editForm.quantity,
+      unit: editForm.unit,
+      minQuantity: editForm.minQuantity
+    };
+
+    setInventoryItems(prevItems =>
+      prevItems.map(item =>
+        item.id === editingItem.id ? updatedItem : item
+      )
+    );
+
+    setIsEditModalOpen(false);
+    setEditingItem(null);
+    showSuccess(`"${editForm.name}" foi atualizado`);
   };
 
   const totalItems = inventoryItems.length;
@@ -240,14 +295,118 @@ const GestaoInsumos = () => {
                     )}
                   </div>
                 </div>
-                <button className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-white p-2">
-                  <MoreVertical size={20} />
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-white p-2">
+                      <MoreVertical size={20} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => handleEdit(item)} className="cursor-pointer">
+                      <Edit className="mr-2 h-4 w-4" />
+                      <span>Editar</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleDelete(item)} 
+                      className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      <span>Excluir</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* Edit Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Insumo</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="name" className="text-right text-sm font-medium">
+                Nome
+              </label>
+              <Input
+                id="name"
+                value={editForm.name}
+                onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="category" className="text-right text-sm font-medium">
+                Categoria
+              </label>
+              <Select value={editForm.category} onValueChange={(value) => setEditForm(prev => ({ ...prev, category: value }))}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Ingredientes">Ingredientes</SelectItem>
+                  <SelectItem value="Embalagens">Embalagens</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="quantity" className="text-right text-sm font-medium">
+                Quantidade
+              </label>
+              <Input
+                id="quantity"
+                value={editForm.quantity}
+                onChange={(e) => setEditForm(prev => ({ ...prev, quantity: e.target.value }))}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="unit" className="text-right text-sm font-medium">
+                Unidade
+              </label>
+              <Select value={editForm.unit} onValueChange={(value) => setEditForm(prev => ({ ...prev, unit: value }))}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kg">Kg</SelectItem>
+                  <SelectItem value="g">Grama</SelectItem>
+                  <SelectItem value="l">Litro</SelectItem>
+                  <SelectItem value="ml">Mililitro</SelectItem>
+                  <SelectItem value="un">Unidade</SelectItem>
+                  <SelectItem value="cx">Caixa</SelectItem>
+                  <SelectItem value="rolo">Rolo</SelectItem>
+                  <SelectItem value="pacote">Pacote</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="minQuantity" className="text-right text-sm font-medium">
+                Mínimo
+              </label>
+              <Input
+                id="minQuantity"
+                value={editForm.minQuantity}
+                onChange={(e) => setEditForm(prev => ({ ...prev, minQuantity: e.target.value }))}
+                placeholder="Opcional"
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveEdit}>
+              Salvar Alterações
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 w-full bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
