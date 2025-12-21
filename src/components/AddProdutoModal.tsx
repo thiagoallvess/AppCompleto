@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useProducts } from "@/contexts/ProductsContext";
+import { showSuccess } from "@/utils/toast";
 
 interface AddProdutoModalProps {
   isOpen: boolean;
@@ -49,6 +50,8 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
       reviews: 0
     };
     addProduct(newProduct);
+    showSuccess(`${productName} adicionado com sucesso!`);
+    
     // Reset form and close modal
     setProductName("");
     setDescription("");
@@ -86,7 +89,6 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
           <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-5">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-<dyad-write path="src/components/AddProdutoModal.tsx" description="Completing the AddProdutoModal update to use ProductsContext">
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="product_name">
                   Nome do Produto
                 </label>
@@ -96,6 +98,7 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                   className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+                  required
                 />
               </div>
 
@@ -129,6 +132,7 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pl-10 font-medium"
+                    required
                   />
                 </div>
               </div>
