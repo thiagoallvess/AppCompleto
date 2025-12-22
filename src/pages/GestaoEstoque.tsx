@@ -1,9 +1,12 @@
-import { ArrowLeft, Search, Package, AlertTriangle, CheckCircle, MoreVertical, Edit, Trash2, Plus, IceCream } from "lucide-react";
+import { ArrowLeft, Plus, Search, CheckCircle, AlertTriangle, MoreVertical, Edit, Trash2, Package, IceCream } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { showSuccess, showError } from "@/utils/toast";
 
 const GestaoEstoque = () => {
@@ -11,6 +14,16 @@ const GestaoEstoque = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [inventoryItems, setInventoryItems] = useState([]);
   const [products, setProducts] = useState([]);
+  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
+  const [movementForm, setMovementForm] = useState({
+    itemType: "Ingrediente",
+    item: "",
+    quantity: "",
+    costType: "unitario",
+    unitValue: "",
+    date: new Date().toISOString().split('T')[0],
+    description: ""
+  });
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -45,6 +58,13 @@ const GestaoEstoque = () => {
     loadInventoryItems();
     loadProducts();
   }, []);
+
+  // Save to localStorage whenever inventoryItems changes
+  useEffect(() => {
+    if (inventoryItems.length >= 0) {
+      localStorage.setItem('inventoryItems', JSON.stringify(inventoryItems));
+    }
+  }, [inventoryItems]);
 
   const filteredItems = () => {
     let items = [];
@@ -119,9 +139,68 @@ const GestaoEstoque = () => {
     return item.status || "Em dia";
   };
 
+  const handleSaveMovement = () => {
+    // Validate required fields
+    if (!movementForm.item || !movementForm.quantity || !movementForm.unitValue) {
+      showError("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    // Here you would typically save to backend
+    console.log("Saving movement:", movementForm);
+    
+    showSuccess("Movimentação registrada com sucesso!");
+    
+    // Reset form and close modal
+    setMovementForm({
+      itemType: "Ingrediente",
+      item: "",
+      quantity: "",
+      costType: "unitario",
+      unitValue: "",
+      date: new Date().toISOString().split('T')[0],
+      description: ""
+    });
+    setIsMovementModalOpen(false);
+  };
+
   const totalItems = inventoryItems.length + products.length;
   const lowStockItems = inventoryItems.filter(item => item.status === "Baixo" || item.status === "Crítico").length;
   const outOfStockProducts = products.filter(product => product.stock === 0).length;
+
+  const availableItems = [
+    { id: "liga_neutra", name: "Liga Neutra (g)", type: "Ingrediente" },
+    { id: "chocolate_genuine", name: "Chocolate Preto Genuine 2,05kg (g)", type: "Ingrediente" },
+    { id: "acucar", name: "Açúcar 5kg (g)", type: "Ingrediente" },
+    { id: "morango", name: "Morango Bandeja 200g (Un)", type: "Ingrediente" },
+    { id: "leite_integral", name: "Leite Integral 1L (Un)", type: "Ingrediente" },
+    { id: "ovo", name: "Ovo 30Un (Un)", type: "Ingrediente" },
+    { id: "leite_condensado", name: "Leite Condensado (Un)", type: "Ingrediente" },
+    { id: "creme_leite", name: "Creme de Leite (Un)", type: "Ingrediente" },
+    { id: "essencia_baunilha", name: "Essência de Baunilha (g)", type: "Ingrediente" },
+    { id: "maracuja", name: "Maracujá Polpa (g)", type: "Ingrediente" },
+    { id: "saborizante_limao", name: "Saborizante de Limão 100g (g)", type: "Ingrediente" },
+    { id: "limao_fruta", name: "Limão Fruta (g)", type: "Ingrediente" },
+    { id: "oreo", name: "Biscoito Recheado Oreo 90g (Un)", type: "Ingrediente" },
+    { id: "laka", name: "Chocolate Branco Laka 80g (Un)", type: "Ingrediente" },
+    { id: "ninho", name: "Leite em Pó Ninho 380g (g)", type: "Ingrediente" },
+    { id: "leite_coco", name: "Leite de Coco 200ml (ml)", type: "Ingrediente" },
+    { id: "nutella", name: "Nutella (g)", type: "Ingrediente" },
+    { id: "ccgl", name: "Leite em pó CCGL 400g (g)", type: "Ingrediente" },
+    { id: "coco_fruta", name: "Coco (Fruta) (g)", type: "Ingrediente" },
+    { id: "coco_ralado", name: "Coco ralado 100g (g)", type: "Ingrediente" },
+    { id: "pacoquita", name: "Pacoquinha Paçoquita (Un)", type: "Ingrediente" },
+    { id: "choc_branco_genuine", name: "Chocolate Branco Genuine 2,05kg (g)", type: "Ingrediente" },
+    { id: "acai", name: "Açaí 5L (g)", type: "Ingrediente" },
+    { id: "sab_morango", name: "Saborizante de Morango 100g (g)", type: "Ingrediente" },
+    { id: "emb_termica", name: "Embalagem Viagem Térmica (Un)", type: "Embalagem" },
+    { id: "emb_higienica", name: "Embalagem Higiênica (Un)", type: "Embalagem" },
+    { id: "saquinho", name: "Saquinho Interno (Un)", type: "Embalagem" }
+  ];
+
+  const filteredAvailableItems = availableItems.filter(item => 
+    movementForm.itemType === "Todos" || item.type === movementForm.itemType
+  );
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
@@ -138,10 +217,8 @@ const GestaoEstoque = () => {
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Administração</span>
             <h1 className="text-xl font-bold leading-tight tracking-tight">Gestão de Estoque</h1>
           </div>
-          <Button size="sm" className="size-10 rounded-full p-0" asChild>
-            <Link to="/add-insumo">
-              <Plus size={24} />
-            </Link>
+          <Button size="sm" className="size-10 rounded-full p-0 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30" onClick={() => setIsMovementModalOpen(true)}>
+            <Plus size={24} />
           </Button>
         </div>
       </header>
@@ -314,6 +391,153 @@ const GestaoEstoque = () => {
           })
         )}
       </div>
+
+      {/* Movement Registration Modal */}
+      <Dialog open={isMovementModalOpen} onOpenChange={setIsMovementModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-surface-dark border-surface-dark-lighter">
+          <DialogHeader>
+            <DialogTitle className="text-white text-lg font-bold">Registrar Movimentação</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            {/* Item Type */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Tipo de Item</label>
+              <div className="flex p-1 bg-surface-dark-lighter rounded-lg">
+                <button
+                  onClick={() => setMovementForm(prev => ({ ...prev, itemType: "Ingrediente" }))}
+                  className={`flex-1 py-2 px-4 rounded text-sm font-medium transition-all ${
+                    movementForm.itemType === "Ingrediente" 
+                      ? "bg-primary text-white shadow-sm" 
+                      : "text-text-secondary hover:text-white"
+                  }`}
+                >
+                  Ingrediente
+                </button>
+                <button
+                  onClick={() => setMovementForm(prev => ({ ...prev, itemType: "Embalagem" }))}
+                  className={`flex-1 py-2 px-4 rounded text-sm font-medium transition-all ${
+                    movementForm.itemType === "Embalagem" 
+                      ? "bg-primary text-white shadow-sm" 
+                      : "text-text-secondary hover:text-white"
+                  }`}
+                >
+                  Embalagem
+                </button>
+              </div>
+            </div>
+
+            {/* Item Selection */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Item</label>
+              <Select value={movementForm.item} onValueChange={(value) => setMovementForm(prev => ({ ...prev, item: value }))}>
+                <SelectTrigger className="w-full bg-surface-dark-lighter border-transparent text-white focus:ring-primary focus:border-primary">
+                  <SelectValue placeholder="Selecione um insumo..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredAvailableItems.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Quantity */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Quantidade</label>
+              <Input
+                value={movementForm.quantity}
+                onChange={(e) => setMovementForm(prev => ({ ...prev, quantity: e.target.value }))}
+                placeholder="0"
+                type="number"
+                className="w-full bg-surface-dark-lighter border-transparent text-white focus:ring-primary focus:border-primary"
+              />
+            </div>
+
+            {/* Cost Type */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Tipo de Custo</label>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center p-3 border border-primary/50 bg-primary/10 rounded-lg cursor-pointer transition-all">
+                  <input
+                    type="radio"
+                    name="cost_type"
+                    checked={movementForm.costType === "unitario"}
+                    onChange={() => setMovementForm(prev => ({ ...prev, costType: "unitario" }))}
+                    className="w-4 h-4 text-primary bg-surface-dark border-text-secondary focus:ring-primary focus:ring-2"
+                  />
+                  <span className="ml-3 text-sm font-medium text-white">Custo Unitário</span>
+                </label>
+                <label className="flex items-center p-3 border border-surface-dark-lighter rounded-lg cursor-pointer hover:bg-surface-dark-lighter/50 transition-all">
+                  <input
+                    type="radio"
+                    name="cost_type"
+                    checked={movementForm.costType === "pacote"}
+                    onChange={() => setMovementForm(prev => ({ ...prev, costType: "pacote" }))}
+                    className="w-4 h-4 text-primary bg-surface-dark border-text-secondary focus:ring-primary focus:ring-2"
+                  />
+                  <span className="ml-3 text-sm font-medium text-text-secondary">Valor do Pacote</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Unit Value */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Valor Unitário (R$)</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="text-text-secondary text-sm">R$</span>
+                </div>
+                <Input
+                  value={movementForm.unitValue}
+                  onChange={(e) => setMovementForm(prev => ({ ...prev, unitValue: e.target.value }))}
+                  placeholder="0,00"
+                  step="0.01"
+                  type="number"
+                  className="w-full bg-surface-dark-lighter border-transparent text-white focus:ring-primary focus:border-primary pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Date */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Data da Movimentação</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="material-symbols-outlined text-text-secondary text-lg">calendar_today</span>
+                </div>
+                <Input
+                  value={movementForm.date}
+                  onChange={(e) => setMovementForm(prev => ({ ...prev, date: e.target.value }))}
+                  type="date"
+                  className="w-full bg-surface-dark-lighter border-transparent text-white focus:ring-primary focus:border-primary pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Descrição (Opcional)</label>
+              <Textarea
+                value={movementForm.description}
+                onChange={(e) => setMovementForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Ex: Reposição de emergência..."
+                rows={3}
+                className="w-full bg-surface-dark-lighter border-transparent text-white focus:ring-primary focus:border-primary resize-none"
+              />
+            </div>
+          </div>
+          <DialogFooter className="border-t border-surface-dark-lighter bg-surface-dark">
+            <Button 
+              onClick={handleSaveMovement}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all active:scale-[0.98]"
+            >
+              Salvar Movimentação
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 w-full bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
