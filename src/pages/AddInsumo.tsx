@@ -26,8 +26,8 @@ const AddInsumo = () => {
     e.preventDefault();
 
     // Validate required fields
-    if (!formData.name || !formData.category || !formData.quantity || !formData.unit) {
-      alert("Por favor, preencha todos os campos obrigatórios.");
+    if (!formData.name || !formData.category) {
+      alert("Por favor, preencha pelo menos o nome e a categoria do insumo.");
       return;
     }
 
@@ -36,8 +36,8 @@ const AddInsumo = () => {
       id: Date.now().toString(),
       name: formData.name,
       category: formData.category,
-      quantity: formData.quantity,
-      unit: formData.unit,
+      quantity: formData.quantity || "0",
+      unit: formData.unit || "un",
       minQuantity: formData.minQuantity || null,
       icon: formData.category === "Ingredientes" ? "Cookie" : "Package",
       status: "Em dia"
@@ -121,7 +121,7 @@ const AddInsumo = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="quantity">
-                Quantidade
+                Quantidade <span className="text-xs font-normal text-slate-400">(Opcional)</span>
               </label>
               <Input
                 id="quantity"
@@ -131,12 +131,11 @@ const AddInsumo = () => {
                 value={formData.quantity}
                 onChange={(e) => handleInputChange("quantity", e.target.value)}
                 className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-                required
               />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="unit">
-                Unidade
+                Unidade <span className="text-xs font-normal text-slate-400">(Opcional)</span>
               </label>
               <Select value={formData.unit} onValueChange={(value) => handleInputChange("unit", value)}>
                 <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
