@@ -18,8 +18,7 @@ const MainDrawer = () => {
     { icon: Plus, label: "Adicionar Produto", path: "/add-produto" },
     { icon: ChefHat, label: "Receitas", path: "/gestao-receitas" },
     { icon: Factory, label: "Produção", path: "/gestao-producao" },
-    { icon: Package, label: "Estoque", path: "/gestao-estoque" },
-    { icon: Package, label: "Insumos", path: "/gestao-insumos" },
+    { icon: Package, label: "Estoque/Insumos", path: "/gestao-estoque" }, // Rota atualizada
     { icon: Users, label: "Clientes", path: "/clientes" },
     { icon: BarChart, label: "Curva ABC", path: "/curva-abc" },
     { icon: FileText, label: "Relatórios", path: "/relatorios" },

@@ -16,8 +16,6 @@ import Perfil from "./pages/Perfil";
 import Enderecos from "./pages/Enderecos";
 import AddEndereco from "./pages/AddEndereco";
 import EditEndereco from "./pages/EditEndereco";
-import GestaoInsumos from "./pages/GestaoInsumos";
-import AddInsumo from "./pages/AddInsumo";
 import GestaoProdutos from "./pages/GestaoProdutos";
 import AddProduto from "./pages/AddProduto";
 import ConfiguracoesAdmin from "./pages/ConfiguracoesAdmin";
@@ -35,6 +33,7 @@ import DetalhesLote from "./pages/DetalhesLote";
 import CurvaABC from "./pages/CurvaABC";
 import GestaoEstoque from "./pages/GestaoEstoque";
 import DetalhesInsumo from "./pages/DetalhesInsumo";
+import AddInsumo from "./pages/AddInsumo";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -73,8 +72,10 @@ const App = () => (
                         <Route path="/enderecos" element={<Enderecos />} />
                         <Route path="/add-endereco" element={<AddEndereco />} />
                         <Route path="/edit-endereco" element={<EditEndereco />} />
-                        <Route path="/gestao-insumos" element={<GestaoInsumos />} />
+                        {/* Rota GestaoInsumos removida/substituída por GestaoEstoque */}
+                        <Route path="/gestao-estoque" element={<GestaoEstoque />} />
                         <Route path="/add-insumo" element={<AddInsumo />} />
+                        <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
                         <Route path="/gestao-produtos" element={<GestaoProdutos />} />
                         <Route path="/add-produto" element={<AddProduto />} />
                         <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
@@ -90,8 +91,6 @@ const App = () => (
                         <Route path="/add-producao" element={<AddProducao />} />
                         <Route path="/detalhes-lote" element={<DetalhesLote />} />
                         <Route path="/curva-abc" element={<CurvaABC />} />
-                        <Route path="/gestao-estoque" element={<GestaoEstoque />} />
-                        <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </BrowserRouter>

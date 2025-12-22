@@ -220,28 +220,24 @@ const GestaoProducao = () => {
       </Link>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 w-full max-w-md bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pb-safe z-40">
-        <div className="flex justify-around items-center h-16">
-          <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">dashboard</span>
-            <span className="text-[10px] font-medium">Início</span>
-          </Link>
-          <button className="flex flex-col items-center gap-1 p-2 w-16 text-primary">
-            <span className="material-symbols-outlined fill-current">conveyor_belt</span>
-            <span className="text-[10px] font-medium">Produção</span>
-          </button>
-          <Link to="/gestao-insumos" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">inventory_2</span>
-            <span className="text-[10px] font-medium">Estoque</span>
-          </Link>
-          <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">settings</span>
-            <span className="text-[10px] font-medium">Ajustes</span>
-          </Link>
-        </div>
+      <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800/80 backdrop-blur-lg bg-opacity-95">
+        <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+          <span className="material-symbols-outlined text-[24px]">dashboard</span>
+          <span className="text-[10px] font-medium">Início</span>
+        </Link>
+        <Link to="/gestao-producao" className="flex flex-col items-center gap-1 p-2 w-16 text-primary">
+          <span className="material-symbols-outlined fill-current text-[24px]">conveyor_belt</span>
+          <span className="text-[10px] font-medium">Produção</span>
+        </Link>
+        <Link to="/gestao-estoque" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+          <span className="material-symbols-outlined text-[24px]">inventory_2</span>
+          <span className="text-[10px] font-medium">Estoque</span>
+        </Link>
+        <Link to="/relatorios" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+          <span className="material-symbols-outlined text-[24px]">payments</span>
+          <span className="text-[10px] font-medium">Finanças</span>
+        </Link>
       </nav>
-      {/* Safe Area Spacer for Bottom Nav */}
-      <div className="h-[70px]"></div>
     </div>
   );
 };

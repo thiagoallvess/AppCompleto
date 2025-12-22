@@ -181,7 +181,7 @@ const AddProducao = () => {
           <span className="material-symbols-outlined fill-current text-[24px]">conveyor_belt</span>
           <span className="text-[10px] font-medium">Produção</span>
         </Link>
-        <Link to="/gestao-insumos" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+        <Link to="/gestao-estoque" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
           <span className="material-symbols-outlined text-[24px]">inventory_2</span>
           <span className="text-[10px] font-medium">Estoque</span>
         </Link>
