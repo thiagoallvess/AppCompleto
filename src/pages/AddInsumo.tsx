@@ -1,98 +1,191 @@
-import { ArrowLeft, Plus, Search, CheckCircle, AlertTriangle, MoreVertical, Cookie, Package, ChefHat, Archive, IceCream, Tag, X } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { showSuccess } from "@/utils/toast";
 
 const AddInsumo = () => {
-  const [insumoName, setInsumoName] = useState("");
-  const [category, setCategory] = useState("");
-  const [unit, setUnit] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    category: "",
+    quantity: "",
+    unit: "",
+    minQuantity: ""
+  });
 
-  const handleSave = () => {
-    // TODO: Implement save logic
-    console.log("Saving insumo:", { insumoName, category, unit });
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate required fields
+    if (!formData.name || !formData.category || !formData.quantity || !formData.unit) {
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    // Create new item
+    const newItem = {
+      id: Date.now().toString(),
+      name: formData.name,
+      category: formData.category,
+      quantity: formData.quantity,
+      unit: formData.unit,
+      minQuantity: formData.minQuantity || null,
+      icon: formData.category === "Ingredientes" ? "Cookie" : "Package",
+      status: "Em dia"
+    };
+
+    // Load existing items from localStorage
+    const existingItems = JSON.parse(localStorage.getItem('inventoryItems') || '[]');
+
+    // Add new item
+    const updatedItems = [...existingItems, newItem];
+
+    // Save to localStorage
+    localStorage.setItem('inventoryItems', JSON.stringify(updatedItems));
+
+    // Show success message
+    showSuccess(`"${formData.name}" foi adicionado ao estoque!`);
+
+    // Reset form
+    setFormData({
+      name: "",
+      category: "",
+      quantity: "",
+      unit: "",
+      minQuantity: ""
+    });
   };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
-        <div className="flex items-center gap-2">
+      <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
+        <div className="flex items-center gap-3 px-4 py-3">
           <Link
             to="/gestao-insumos"
-            className="flex items-center justify-center size-10 rounded-full text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+            className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft size={24} />
           </Link>
-        </div>
-        <h1 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Adicionar Insumo</h1>
-        <div className="flex items-center gap-2">
-          <div className="size-10"></div> {/* Spacer for centering */}
+          <div className="flex flex-col">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Insumos</span>
+            <h1 className="text-xl font-bold leading-tight tracking-tight">Adicionar Insumo</h1>
+          </div>
         </div>
       </header>
 
-      {/* Modal Content */}
-      <div className="px-5 py-6 space-y-6 bg-background-light dark:bg-background-dark">
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="insumo-name">
-            Nome do Insumo
-          </label>
-          <Input
-            id="insumo-name"
-            name="insumo-name"
-            placeholder="Ex: Leite em pó"
-            type="text"
-            value={insumoName}
-            onChange={(e) => setInsumoName(e.target.value)}
-            className="h-12 bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-700"
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="category">
-            Categoria
-          </label>
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="h-12 bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-700">
-              <SelectValue placeholder="Selecione uma categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ingredientes">Ingredientes</SelectItem>
-              <SelectItem value="embalagens">Embalagens</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="unit">
-            Unidade
-          </label>
-          <Select value={unit} onValueChange={setUnit}>
-            <SelectTrigger className="h-12 bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-700">
-              <SelectValue placeholder="Selecione uma unidade" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="kg">Kg</SelectItem>
-              <SelectItem value="g">Grama</SelectItem>
-              <SelectItem value="l">Litro</SelectItem>
-              <SelectItem value="ml">Mililitro</SelectItem>
-              <SelectItem value="un">Unidade</SelectItem>
-              <SelectItem value="cx">Caixa</SelectItem>
-              <SelectItem value="rolo">Rolo</SelectItem>
-              <SelectItem value="pacote">Pacote</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      {/* Form */}
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-32">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Nome do Insumo */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="name">
+              Nome do Insumo
+            </label>
+            <Input
+              id="name"
+              placeholder="Ex: Leite Condensado"
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+              required
+            />
+          </div>
 
-      {/* Bottom Action */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
-        <Button
-          onClick={handleSave}
-          className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-semibold text-sm shadow-lg shadow-primary/20"
-        >
-          Salvar
-        </Button>
+          {/* Categoria */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="category">
+              Categoria
+            </label>
+            <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
+              <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
+                <SelectValue placeholder="Selecione uma categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Ingredientes">Ingredientes</SelectItem>
+                <SelectItem value="Embalagens">Embalagens</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Quantidade e Unidade */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="quantity">
+                Quantidade
+              </label>
+              <Input
+                id="quantity"
+                placeholder="0"
+                type="number"
+                step="0.01"
+                value={formData.quantity}
+                onChange={(e) => handleInputChange("quantity", e.target.value)}
+                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="unit">
+                Unidade
+              </label>
+              <Select value={formData.unit} onValueChange={(value) => handleInputChange("unit", value)}>
+                <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kg">Kg</SelectItem>
+                  <SelectItem value="g">Grama</SelectItem>
+                  <SelectItem value="l">Litro</SelectItem>
+                  <SelectItem value="ml">Mililitro</SelectItem>
+                  <SelectItem value="un">Unidade</SelectItem>
+                  <SelectItem value="cx">Caixa</SelectItem>
+                  <SelectItem value="rolo">Rolo</SelectItem>
+                  <SelectItem value="pacote">Pacote</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Quantidade Mínima */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="minQuantity">
+              Quantidade Mínima <span className="text-xs font-normal text-slate-400">(Opcional)</span>
+            </label>
+            <Input
+              id="minQuantity"
+              placeholder="Ex: 10"
+              type="number"
+              step="0.01"
+              value={formData.minQuantity}
+              onChange={(e) => handleInputChange("minQuantity", e.target.value)}
+              className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+            />
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Quando o estoque atingir este valor, será marcado como "Baixo".
+            </p>
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-6">
+            <Button
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+            >
+              <Plus size={20} />
+              Adicionar Insumo
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );
