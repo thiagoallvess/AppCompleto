@@ -40,8 +40,11 @@ const GestaoEstoque = () => {
     loadInventoryItems();
   }, []);
 
-  // Combine ingredients and packaging items
-  const allItems = [...ingredients, ...packagingItems];
+  // Combine ingredients and packaging items with unique keys
+  const allItems = [
+    ...ingredients.map(item => ({ ...item, itemType: 'ingredient' as const })),
+    ...packagingItems.map(item => ({ ...item, itemType: 'packaging' as const }))
+  ];
 
   const filteredItems = allItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -248,10 +251,11 @@ const GestaoEstoque = () => {
               const unitCost = parseFloat(item.unitCost || "0");
               const totalValue = quantity * unitCost;
               const averageCost = unitCost;
+              const uniqueKey = `${item.itemType}-${item.id}`;
 
               return (
                 <Link
-                  key={item.id}
+                  key={uniqueKey}
                   to={`/detalhes-insumo?id=${item.id}`}
                   className="block"
                 >
