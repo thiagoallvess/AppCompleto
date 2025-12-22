@@ -89,15 +89,27 @@ const GestaoEstoque = () => {
     }
 
     const quantityToAdd = parseFloat(movementForm.quantity);
+    const unitValue = parseFloat(movementForm.unitValue);
+
     if (quantityToAdd <= 0) {
       showError("A quantidade deve ser maior que zero.");
+      return;
+    }
+
+    if (unitValue <= 0) {
+      showError("O valor deve ser maior que zero.");
       return;
     }
 
     // Find and update the inventory item
     const updatedItems = inventoryItems.map(item => {
       if (item.id === movementForm.item) {
-        const newQuantity = parseFloat(item.quantity) + quantityToAdd;
+        const currentQuantity = parseFloat(item.quantity || "0");
+        const currentTotalCost = currentQuantity * (item.unitCost || 0);
+        const newTotalCost = currentTotalCost + (quantityToAdd * unitValue);
+        const newQuantity = currentQuantity + quantityToAdd;
+        const newUnitCost = newTotalCost / newQuantity;
+
         let newStatus = "Em dia";
 
         // Update status based on minimum quantity
@@ -108,6 +120,8 @@ const GestaoEstoque = () => {
         return {
           ...item,
           quantity: newQuantity.toString(),
+          unitCost: newUnitCost,
+          lastUpdated: movementForm.date,
           status: newStatus
         };
       }
@@ -249,6 +263,9 @@ const GestaoEstoque = () => {
         <div className="flex flex-col pb-24">
           {filteredItems.map((item) => {
             const iconName = getIcon(item.icon);
+            const quantity = parseFloat(item.quantity || "0");
+            const unitCost = item.unitCost || 0;
+            const totalCost = quantity * unitCost;
             return (
               <div
                 key={item.id}
@@ -280,7 +297,7 @@ const GestaoEstoque = () => {
 
                 {/* Quantidade */}
                 <div className="flex items-center">
-                  <span className="text-sm font-medium text-slate-900 dark:text-white">{item.quantity} {item.unit}</span>
+                  <span className="text-sm font-medium text-slate-900 dark:text-white">{quantity.toFixed(2)} {item.unit}</span>
                   {item.minQuantity && (
                     <span className="text-xs text-slate-400 dark:text-slate-500 ml-1">
                       (Mín: {item.minQuantity})
@@ -291,14 +308,14 @@ const GestaoEstoque = () => {
                 {/* Custo */}
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-slate-900 dark:text-white">
-                    R$ {(parseFloat(item.quantity || "0") * (item.unitCost || 0)).toFixed(2)}
+                    R$ {totalCost.toFixed(2)}
                   </span>
                 </div>
 
                 {/* Custo Unitário */}
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-slate-900 dark:text-white">
-                    R$ {(item.unitCost || 0).toFixed(2)}
+                    R$ {unitCost.toFixed(2)}
                   </span>
                 </div>
 
@@ -364,6 +381,7 @@ const GestaoEstoque = () => {
               <Input
                 id="quantity"
                 type="number"
+                step="0.01"
                 value={movementForm.quantity}
                 onChange={(e) => setMovementForm(prev => ({ ...prev, quantity: e.target.value }))}
                 className="col-span-3"
@@ -386,7 +404,7 @@ const GestaoEstoque = () => {
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="unitValue" className="text-right text-sm font-medium">
-                Valor
+                Valor {movementForm.costType === "unitario" ? "Unitário" : "Total"} (R$)
               </label>
               <Input
                 id="unitValue"
