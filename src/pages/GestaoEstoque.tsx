@@ -113,6 +113,18 @@ const GestaoEstoque = () => {
     });
   }, [stockMovements, ingredients, packagingItems]);
 
+  const getIcon = (iconName: string) => {
+    const iconMap: { [key: string]: string } = {
+      Cookie: "🍪",
+      Package: "📦",
+      ChefHat: "👨‍🍳",
+      Archive: "📁",
+      IceCream: "🍦",
+      Tag: "🏷️"
+    };
+    return iconMap[iconName] || "📦";
+  };
+
   if (isLoadingIngredients || isLoadingPackaging || isLoadingStockMovements) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -137,7 +149,7 @@ const GestaoEstoque = () => {
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Administração</span>
             <h1 className="text-xl font-bold leading-tight tracking-tight">Gestão de Estoque</h1>
           </div>
-          <div className="size-10"></div> {/* Spacer for centering */}
+          <div className="size-10"></div>
         </div>
       </header>
 
@@ -201,8 +213,109 @@ const GestaoEstoque = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content - Inventory Items Grid */}
       <main className="flex-1 px-4 py-6 space-y-6 pb-32 w-full max-w-7xl mx-auto">
+        {/* Inventory Items */}
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Itens em Estoque</h3>
+          {filteredItems.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="flex items-center justify-center size-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
+                <Package className="text-slate-400 dark:text-slate-500" size={32} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Nenhum item encontrado</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 text-center max-w-xs mb-6">
+                Adicione ingredientes e embalagens para gerenciar o estoque.
+              </p>
+              <Button asChild className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30">
+                <Link to="/add-insumo" className="flex items-center gap-2">
+                  <Plus size={20} />
+                  Adicionar Primeiro Item
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredItems.map((item) => {
+                const totalValue = item.quantity * item.unitCost;
+                const averageCost = item.unitCost;
+
+                return (
+                  <Link
+                    key={item.id}
+                    to={`/detalhes-insumo?id=${item.id}`}
+                    className="block"
+                  >
+                    <div className="group relative rounded-2xl bg-gradient-to-br from-teal-700 to-teal-900 dark:from-teal-800 dark:to-teal-950 p-5 border-2 border-teal-600 dark:border-teal-700 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]">
+                      {/* Header with Icon and Name */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{getIcon(item.icon)}</span>
+                          <h3 className="text-white text-lg font-bold leading-tight">{item.name}</h3>
+                        </div>
+                        {(item.status === "Baixo" || item.status === "Crítico") && (
+                          <div className="flex items-center justify-center size-8 rounded-full bg-red-500/20 border border-red-400">
+                            <AlertTriangle className="text-red-300" size={16} />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Stats Grid */}
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        {/* Preço Total */}
+                        <div className="bg-teal-800/50 dark:bg-teal-900/50 rounded-xl p-3 border border-teal-600/30">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <DollarSign className="text-yellow-400" size={14} />
+                            <span className="text-yellow-400 text-[10px] font-bold uppercase tracking-wider">Preço Total</span>
+                          </div>
+                          <p className="text-emerald-300 text-lg font-bold">R$ {totalValue.toFixed(2)}</p>
+                        </div>
+
+                        {/* Custo Unidade */}
+                        <div className="bg-amber-900/30 dark:bg-amber-950/30 rounded-xl p-3 border border-amber-700/30">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-red-400 text-lg">🔴</span>
+                            <span className="text-red-400 text-[10px] font-bold uppercase tracking-wider">Custo Unidade</span>
+                          </div>
+                          <p className="text-yellow-300 text-lg font-bold">R$ {averageCost.toFixed(4)}</p>
+                        </div>
+
+                        {/* QTD */}
+                        <div className="bg-indigo-900/30 dark:bg-indigo-950/30 rounded-xl p-3 border border-indigo-700/30">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Package className="text-amber-400" size={14} />
+                            <span className="text-amber-400 text-[10px] font-bold uppercase tracking-wider">QTD</span>
+                          </div>
+                          <p className="text-white text-lg font-bold">{item.quantity}</p>
+                        </div>
+
+                        {/* Unidade */}
+                        <div className="bg-blue-900/30 dark:bg-blue-950/30 rounded-xl p-3 border border-blue-700/30">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-yellow-400 text-lg">⚡</span>
+                            <span className="text-yellow-400 text-[10px] font-bold uppercase tracking-wider">Unidade</span>
+                          </div>
+                          <p className="text-blue-200 text-lg font-bold">{item.unit}</p>
+                        </div>
+                      </div>
+
+                      {/* Custo Médio Badge */}
+                      <div className="flex items-center justify-center">
+                        <div className="bg-yellow-500/20 border border-yellow-400/40 rounded-full px-4 py-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-yellow-400 text-lg">🟡</span>
+                            <span className="text-yellow-300 text-xs font-bold uppercase tracking-wider">Custo Médio</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Recent Stock Movements */}
         <Card>
           <CardHeader>
@@ -218,7 +331,7 @@ const GestaoEstoque = () => {
         </Card>
       </main>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button with Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
           <button className="fixed bottom-6 right-6 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95">
