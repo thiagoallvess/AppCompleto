@@ -35,7 +35,7 @@ const GestaoEstoque = () => {
   const lowStockItems = allItems.filter(item => item.status === "Baixo" || item.status === "Crítico").length;
   const totalValue = allItems.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "Baixo":
         return "text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10";
@@ -46,7 +46,7 @@ const GestaoEstoque = () => {
     }
   };
 
-  const handleAddMovement = (formData) => {
+  const handleAddMovement = (formData: any) => {
     try {
       const movement = {
         id: Date.now().toString(),
@@ -68,7 +68,7 @@ const GestaoEstoque = () => {
     }
   };
 
-  const handleUpdateMovement = (formData) => {
+  const handleUpdateMovement = (formData: any) => {
     try {
       const updatedMovement = {
         id: movementToEdit.id,
@@ -91,7 +91,7 @@ const GestaoEstoque = () => {
     }
   };
 
-  const handleDeleteMovement = (movementId) => {
+  const handleDeleteMovement = (movementId: string) => {
     try {
       if (confirm("Tem certeza que deseja excluir esta movimentação?")) {
         deleteStockMovement(movementId);
@@ -103,7 +103,7 @@ const GestaoEstoque = () => {
     }
   };
 
-  const handleEditMovement = (movement) => {
+  const handleEditMovement = (movement: any) => {
     setMovementToEdit(movement);
     setIsMovementModalOpen(true);
   };
@@ -238,7 +238,7 @@ const GestaoEstoque = () => {
             const IconComponent = item.icon === "Cookie" ? "🍪" : item.icon === "Package" ? "📦" : "📦";
             return (
               <Link
-                key={item.id}
+                key={item.id} // Added key prop here
                 to={`/detalhes-insumo?id=${item.id}`}
                 className="block"
               >
