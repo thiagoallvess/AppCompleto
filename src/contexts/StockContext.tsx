@@ -70,6 +70,21 @@ interface StockProviderProps {
   children: ReactNode;
 }
 
+// Helper to generate unique ID if needed
+const generateUniqueId = () => Date.now().toString() + Math.random().toString(36).substring(2, 9);
+
+// Default mock data with unique string IDs
+const defaultIngredients: Ingredient[] = [
+  { id: 'ing-1', name: 'Leite Condensado', unit: 'un', quantity: 15, unitCost: 5.50, minQuantity: 5, category: 'Ingredientes', icon: 'Cookie', status: 'Em dia' },
+  { id: 'ing-2', name: 'Morango Congelado', unit: 'kg', quantity: 2.5, unitCost: 12.00, minQuantity: 3, category: 'Ingredientes', icon: 'Cookie', status: 'Baixo' },
+  { id: 'ing-3', name: 'Nutella', unit: 'kg', quantity: 0.1, unitCost: 45.00, minQuantity: 0.5, category: 'Ingredientes', icon: 'Cookie', status: 'Crítico' },
+];
+
+const defaultPackagingItems: PackagingItem[] = [
+  { id: 'pack-1', name: 'Saquinho 6x24', unit: 'un', quantity: 500, unitCost: 0.05, minQuantity: 100, category: 'Embalagens', icon: 'Package', status: 'Em dia' },
+  { id: 'pack-2', name: 'Adesivo Logo', unit: 'un', quantity: 80, unitCost: 0.10, minQuantity: 100, category: 'Embalagens', icon: 'Package', status: 'Baixo' },
+];
+
 export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [packagingItems, setPackagingItems] = useState<PackagingItem[]>([]);
@@ -83,27 +98,23 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
         const storedPackagingItems = localStorage.getItem('packagingItems');
         const storedMovements = localStorage.getItem('stockMovements');
 
-        if (storedIngredients) {
-          setIngredients(JSON.parse(storedIngredients));
-        } else {
-          setIngredients([]);
-        }
+        const loadedIngredients = storedIngredients ? JSON.parse(storedIngredients) : defaultIngredients;
+        const loadedPackagingItems = storedPackagingItems ? JSON.parse(storedPackagingItems) : defaultPackagingItems;
+        const loadedMovements = storedMovements ? JSON.parse(storedMovements) : [];
 
-        if (storedPackagingItems) {
-          setPackagingItems(JSON.parse(storedPackagingItems));
-        } else {
-          setPackagingItems([]);
-        }
+        // Normalize IDs to ensure they are strings and unique (if they came from old storage)
+        const normalizeItems = (items: (Ingredient | PackagingItem)[]) => items.map(item => ({
+          ...item,
+          id: item.id ? item.id.toString() : generateUniqueId()
+        }));
 
-        if (storedMovements) {
-          setStockMovements(JSON.parse(storedMovements));
-        } else {
-          setStockMovements([]);
-        }
+        setIngredients(normalizeItems(loadedIngredients) as Ingredient[]);
+        setPackagingItems(normalizeItems(loadedPackagingItems) as PackagingItem[]);
+        setStockMovements(loadedMovements);
       } catch (error) {
         console.error('Error loading stock data:', error);
-        setIngredients([]);
-        setPackagingItems([]);
+        setIngredients(defaultIngredients);
+        setPackagingItems(defaultPackagingItems);
         setStockMovements([]);
       }
     };
@@ -185,6 +196,10 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
           if (item.minQuantity && newQuantity <= item.minQuantity) {
             newStatus = "Baixo";
           }
+          if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) {
+            newStatus = "Crítico";
+          }
+
 
           return {
             ...item,
@@ -219,6 +234,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
           let newStatus = "Em dia";
           if (item.minQuantity && newQuantity <= item.minQuantity) {
             newStatus = "Baixo";
+          }
+          if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) {
+            newStatus = "Crítico";
           }
 
           return {
@@ -262,6 +280,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
             if (item.minQuantity && newQuantity <= item.minQuantity) {
               newStatus = "Baixo";
             }
+            if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) {
+              newStatus = "Crítico";
+            }
 
             return {
               ...item,
@@ -294,6 +315,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
             let newStatus = "Em dia";
             if (item.minQuantity && newQuantity <= item.minQuantity) {
               newStatus = "Baixo";
+            }
+            if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) {
+              newStatus = "Crítico";
             }
 
             return {
@@ -345,6 +369,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
             if (item.minQuantity && newQuantity <= item.minQuantity) {
               newStatus = "Baixo";
             }
+            if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) {
+              newStatus = "Crítico";
+            }
 
             return {
               ...item,
@@ -378,6 +405,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
             if (item.minQuantity && newQuantity <= item.minQuantity) {
               newStatus = "Baixo";
             }
+            if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) {
+              newStatus = "Crítico";
+            }
 
             return {
               ...item,
@@ -395,23 +425,12 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
   };
 
   const getStockMovementsForDisplay = (): StockMovementForDisplay[] => {
-    return stockMovements.map(movement => {
-      let itemName = "";
-      let itemUnit = "";
+    const allItemsMap = new Map([...ingredients, ...packagingItems].map(item => [item.id, item]));
 
-      if (movement.item_type === "ingredient") {
-        const ingredient = ingredients.find(i => i.id === movement.item_id);
-        if (ingredient) {
-          itemName = ingredient.name;
-          itemUnit = ingredient.unit;
-        }
-      } else {
-        const packagingItem = packagingItems.find(p => p.id === movement.item_id);
-        if (packagingItem) {
-          itemName = packagingItem.name;
-          itemUnit = packagingItem.unit;
-        }
-      }
+    return stockMovements.map(movement => {
+      const item = allItemsMap.get(movement.item_id);
+      let itemName = item?.name || "Item Desconhecido";
+      let itemUnit = item?.unit || "un";
 
       return {
         ...movement,

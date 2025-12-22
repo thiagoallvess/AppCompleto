@@ -36,6 +36,7 @@ const AddInsumo = () => {
 
     // Create new item
     const newItem = {
+      id: Date.now().toString(), // Ensure unique string ID
       name: formData.name,
       unit: formData.unit || "un",
       quantity: parseFloat(formData.quantity || "0"),
