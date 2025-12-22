@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { showSuccess } from "@/utils/toast";
 import { useProducts } from "@/contexts/ProductsContext";
+import { useStock } from "@/contexts/StockContext"; // Importando useStock
 
 const AddReceita = () => {
   const [recipeName, setRecipeName] = useState("");
@@ -13,73 +14,43 @@ const AddReceita = () => {
   const [laborTime, setLaborTime] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [linkedProduct, setLinkedProduct] = useState("");
-  const [availableIngredients, setAvailableIngredients] = useState([]);
+  
   const { products } = useProducts();
+  const { ingredients: availableIngredients, packagingItems: availablePackagingItems } = useStock(); // Usando useStock
 
-  // Ingredients state - removed mock data
-  const [ingredients, setIngredients] = useState([]);
+  // Ingredients state
+  const [ingredients, setIngredients] = useState<any[]>([]);
   const [selectedIngredient, setSelectedIngredient] = useState("");
   const [ingredientQuantity, setIngredientQuantity] = useState("");
 
   // Packaging state
-  const [packaging, setPackaging] = useState([]);
+  const [packaging, setPackaging] = useState<any[]>([]);
   const [selectedPackaging, setSelectedPackaging] = useState("");
   const [packagingQuantity, setPackagingQuantity] = useState("");
 
   // Equipment state
-  const [equipment, setEquipment] = useState([]);
+  const [equipment, setEquipment] = useState<any[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState("");
   const [equipmentMinTime, setEquipmentMinTime] = useState("");
-
-  const availablePackaging = [
-    { id: "1", name: "Saquinho 6x24" },
-    { id: "2", name: "Adesivo Logo" },
-    { id: "3", name: "Fita de Cetim" }
-  ];
 
   const availableEquipment = [
     { id: "1", name: "Liquidificador 1400w" },
     { id: "2", name: "Seladora" }
   ];
 
-  // Load ingredients from localStorage
-  useEffect(() => {
-    const loadIngredients = () => {
-      try {
-        const storedItems = localStorage.getItem('inventoryItems');
-        if (storedItems) {
-          const items = JSON.parse(storedItems);
-          const ingredientsList = items
-            .filter(item => item.category === "Ingredientes")
-            .map(item => ({
-              id: item.id,
-              name: `${item.name} (${item.quantity} ${item.unit})`
-            }));
-          setAvailableIngredients(ingredientsList);
-        } else {
-          setAvailableIngredients([]);
-        }
-      } catch (error) {
-        console.error('Error loading ingredients:', error);
-        setAvailableIngredients([]);
-      }
-    };
-
-    loadIngredients();
-  }, []);
-
   const addIngredient = () => {
     if (selectedIngredient && ingredientQuantity) {
       const ingredient = availableIngredients.find(i => i.id === selectedIngredient);
       if (ingredient) {
-        // Mock cost calculation - in real app this would come from database
-        const unitCost = selectedIngredient === "1" ? 6.50 : selectedIngredient === "2" ? 4.80 : 15.00;
+        // Use unitCost from StockContext if available, otherwise mock
+        const unitCost = ingredient.unitCost || 0;
         const totalCost = parseFloat(ingredientQuantity) * unitCost;
+        
         const newIngredient = {
           id: Date.now(),
-          name: ingredient.name.split(" (")[0],
+          name: ingredient.name,
           quantity: parseFloat(ingredientQuantity),
-          unit: ingredient.name.split(" (")[1].replace(")", ""),
+          unit: ingredient.unit,
           unitCost,
           totalCost
         };
@@ -96,14 +67,19 @@ const AddReceita = () => {
 
   const addPackaging = () => {
     if (selectedPackaging && packagingQuantity) {
-      const pack = availablePackaging.find(p => p.id === selectedPackaging);
+      const pack = availablePackagingItems.find(p => p.id === selectedPackaging);
       if (pack) {
+        // Use unitCost from StockContext if available, otherwise mock
+        const unitCost = pack.unitCost || 0;
+        const totalCost = parseFloat(packagingQuantity) * unitCost;
+
         const newPackaging = {
           id: Date.now(),
           name: pack.name,
           quantity: parseFloat(packagingQuantity),
-          unitCost: 0, // Mock
-          totalCost: 0
+          unit: pack.unit,
+          unitCost,
+          totalCost
         };
         setPackaging([...packaging, newPackaging]);
         setSelectedPackaging("");
@@ -163,6 +139,7 @@ const AddReceita = () => {
       packaging,
       equipment
     });
+    showSuccess("Receita salva com sucesso!");
   };
 
   return (
@@ -285,7 +262,7 @@ const AddReceita = () => {
                     <SelectContent>
                       {availableIngredients.map((ingredient) => (
                         <SelectItem key={ingredient.id} value={ingredient.id}>
-                          {ingredient.name}
+                          {ingredient.name} ({ingredient.quantity.toFixed(2)} {ingredient.unit})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -312,24 +289,31 @@ const AddReceita = () => {
             </div>
             {/* Added Items */}
             <div className="space-y-3 mb-2">
-              {ingredients.map((ingredient) => (
-                <div key={ingredient.id} className="flex items-center justify-between bg-white dark:bg-surface-dark/50 border border-slate-200 dark:border-slate-700 rounded-lg p-3 shadow-sm">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">{ingredient.name}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">{ingredient.quantity} {ingredient.unit} x R$ {ingredient.unitCost.toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">R$ {ingredient.totalCost.toFixed(2)}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeIngredient(ingredient.id)}
-                      className="text-red-500 dark:text-red-400 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">delete</span>
-                    </button>
-                  </div>
+              {ingredients.length === 0 ? (
+                <div className="text-center py-6 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg bg-white/5 dark:bg-transparent">
+                  <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 text-3xl mb-1">grocery</span>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Nenhum ingrediente adicionado.</p>
                 </div>
-              ))}
+              ) : (
+                ingredients.map((ingredient) => (
+                  <div key={ingredient.id} className="flex items-center justify-between bg-white dark:bg-surface-dark/50 border border-slate-200 dark:border-slate-700 rounded-lg p-3 shadow-sm">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white">{ingredient.name}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{ingredient.quantity} {ingredient.unit} x R$ {ingredient.unitCost.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">R$ {ingredient.totalCost.toFixed(2)}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeIngredient(ingredient.id)}
+                        className="text-red-500 dark:text-red-400 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -349,9 +333,9 @@ const AddReceita = () => {
                       <SelectValue placeholder="Selecione..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {availablePackaging.map((pack) => (
+                      {availablePackagingItems.map((pack) => (
                         <SelectItem key={pack.id} value={pack.id}>
-                          {pack.name}
+                          {pack.name} ({pack.quantity} {pack.unit})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -387,7 +371,7 @@ const AddReceita = () => {
                   <div key={pack.id} className="flex items-center justify-between bg-white dark:bg-surface-dark/50 border border-slate-200 dark:border-slate-700 rounded-lg p-3 shadow-sm">
                     <div className="flex flex-col">
                       <span className="text-sm font-semibold text-slate-900 dark:text-white">{pack.name}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{pack.quantity} un</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{pack.quantity} {pack.unit}</span>
                     </div>
                     <button
                       type="button"
@@ -532,6 +516,26 @@ const AddReceita = () => {
           </div>
         </form>
       </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 backdrop-blur-lg bg-opacity-95">
+        <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">dashboard</span>
+          <span className="text-[10px] font-medium">Início</span>
+        </Link>
+        <Link to="/gestao-pedidos" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">list_alt</span>
+          <span className="text-[10px] font-medium">Pedidos</span>
+        </Link>
+        <Link to="/gestao-produtos" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">inventory</span>
+          <span className="text-[10px] font-medium">Produtos</span>
+        </Link>
+        <button className="flex flex-col items-center gap-1 p-2 w-16 text-primary">
+          <span className="material-symbols-outlined fill-current">settings</span>
+          <span className="text-[10px] font-medium">Ajustes</span>
+        </button>
+      </nav>
     </div>
   );
 };
