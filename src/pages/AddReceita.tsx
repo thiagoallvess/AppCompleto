@@ -1,9 +1,10 @@
 import { ArrowLeft, Plus, Save } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { showSuccess } from "@/utils/toast";
 
 const AddReceita = () => {
   const [recipeName, setRecipeName] = useState("");
@@ -11,6 +12,7 @@ const AddReceita = () => {
   const [laborTime, setLaborTime] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [linkedProduct, setLinkedProduct] = useState("");
+  const [availableIngredients, setAvailableIngredients] = useState([]);
 
   // Ingredients state
   const [ingredients, setIngredients] = useState([
@@ -36,12 +38,6 @@ const AddReceita = () => {
     { id: "2", name: "Geladinho Gourmet Morango" }
   ];
 
-  const availableIngredients = [
-    { id: "1", name: "Leite Condensado (395g)" },
-    { id: "2", name: "Leite Integral (1L)" },
-    { id: "3", name: "Nutella (Pote 3kg)" }
-  ];
-
   const availablePackaging = [
     { id: "1", name: "Saquinho 6x24" },
     { id: "2", name: "Adesivo Logo" },
@@ -49,9 +45,35 @@ const AddReceita = () => {
   ];
 
   const availableEquipment = [
-    { id: "1", name: "Liquidificador Industrial" },
+    { id: "1", name: "Liquidificador 1400w" },
     { id: "2", name: "Seladora" }
   ];
+
+  // Load ingredients from localStorage
+  useEffect(() => {
+    const loadIngredients = () => {
+      try {
+        const storedItems = localStorage.getItem('inventoryItems');
+        if (storedItems) {
+          const items = JSON.parse(storedItems);
+          const ingredientsList = items
+            .filter(item => item.category === "Ingredientes")
+            .map(item => ({
+              id: item.id,
+              name: `${item.name} (${item.quantity} ${item.unit})`
+            }));
+          setAvailableIngredients(ingredientsList);
+        } else {
+          setAvailableIngredients([]);
+        }
+      } catch (error) {
+        console.error('Error loading ingredients:', error);
+        setAvailableIngredients([]);
+      }
+    };
+
+    loadIngredients();
+  }, []);
 
   const addIngredient = () => {
     if (selectedIngredient && ingredientQuantity) {
@@ -251,7 +273,7 @@ const AddReceita = () => {
           </div>
 
           <div className="h-4 bg-transparent"></div>
-          <div className="h-px bg-slate-200 dark:bg-slate-700 mx-4"></div>
+          <div className="h-px bg-slate-200 dark:bg-slate-800 mx-4"></div>
           <div className="h-4 bg-transparent"></div>
 
           {/* Ingredientes */}
@@ -318,7 +340,7 @@ const AddReceita = () => {
           </div>
 
           <div className="h-4 bg-transparent"></div>
-          <div className="h-px bg-slate-200 dark:bg-slate-700 mx-4"></div>
+          <div className="h-px bg-slate-200 dark:bg-slate-800 mx-4"></div>
           <div className="h-4 bg-transparent"></div>
 
           {/* Embalagens */}
@@ -387,7 +409,7 @@ const AddReceita = () => {
           </div>
 
           <div className="h-4 bg-transparent"></div>
-          <div className="h-px bg-slate-200 dark:bg-slate-700 mx-4"></div>
+          <div className="h-px bg-slate-200 dark:bg-slate-800 mx-4"></div>
           <div className="h-4 bg-transparent"></div>
 
           {/* Equipamentos */}
@@ -479,7 +501,7 @@ const AddReceita = () => {
                   <span>Custo Mão de Obra</span>
                   <span className="text-slate-900 dark:text-white font-medium">R$ {laborCost.toFixed(2)}</span>
                 </div>
-                <div className="border-t border-slate-200 dark:border-slate-700 my-3 pt-3 flex justify-between font-bold text-base">
+                <div className="h-px w-full bg-slate-200 dark:bg-slate-700 my-3 pt-3 flex justify-between font-bold text-base">
                   <span className="text-slate-900 dark:text-white">Custo Total Receita</span>
                   <span className="text-slate-900 dark:text-white">R$ {totalCost.toFixed(2)}</span>
                 </div>
