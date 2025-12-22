@@ -109,14 +109,14 @@ const GestaoEstoque = () => {
       return;
     }
 
-    const movementData = { 
+    const movementData = {
       item_id: data.itemId,
       item_type: data.itemType,
       quantity: data.quantity,
       cost_type: data.cost_type,
       cost_value: data.cost_value,
       description: data.description,
-      date: data.date.toISOString() 
+      date: data.date.toISOString()
     };
 
     if (editingMovement) {
@@ -275,8 +275,8 @@ const GestaoEstoque = () => {
             <CardTitle>Últimas Movimentações de Estoque</CardTitle>
           </CardHeader>
           <CardContent>
-            <RecentStockMovements 
-              movements={movementsForDisplay} 
+            <RecentStockMovements
+              movements={movementsForDisplay}
               onEdit={handleEditMovement}
               onDelete={handleDeleteMovement}
             />
@@ -379,113 +379,33 @@ const GestaoEstoque = () => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor<dyad-write path="src/App.tsx">
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import ProductDetails from "./pages/ProductDetails";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import Cashback from "./pages/Cashback";
-import Indicacao from "./pages/Indicacao";
-import MeusPedidos from "./pages/MeusPedidos";
-import DetalhesPedido from "./pages/DetalhesPedido";
-import DetalhesPedidoCliente from "./pages/DetalhesPedidoCliente";
-import Perfil from "./pages/Perfil";
-import Enderecos from "./pages/Enderecos";
-import AddEndereco from "./pages/AddEndereco";
-import EditEndereco from "./pages/EditEndereco";
-import GestaoInsumos from "./pages/GestaoInsumos";
-import AddInsumo from "./pages/AddInsumo";
-import GestaoProdutos from "./pages/GestaoProdutos";
-import AddProduto from "./pages/AddProduto";
-import ConfiguracoesAdmin from "./pages/ConfiguracoesAdmin";
-import GestaoPedidos from "./pages/GestaoPedidos";
-import Relatorios from "./pages/Relatorios";
-import Clientes from "./pages/Clientes";
-import DetalhesCliente from "./pages/DetalhesCliente";
-import VisaoGeral from "./pages/VisaoGeral";
-import GestaoReceitas from "./pages/GestaoReceitas";
-import AddReceita from "./pages/AddReceita";
-import DetalhesReceita from "./pages/DetalhesReceita";
-import GestaoProducao from "./pages/GestaoProducao";
-import AddProducao from "./pages/AddProducao";
-import DetalhesLote from "./pages/DetalhesLote";
-import CurvaABC from "./pages/CurvaABC";
-import GestaoEstoque from "./pages/GestaoEstoque";
-import DetalhesInsumo from "./pages/DetalhesInsumo";
-import NotFound from "./pages/NotFound";
-import { CartProvider } from "./contexts/CartContext";
-import { StoreProvider } from "./contexts/StoreContext";
-import { ProductsProvider } from "./contexts/ProductsContext";
-import { OrdersProvider } from "./contexts/OrdersContext";
-import { ClientsProvider } from "./contexts/ClientsContext";
-import { RecipesProvider } from "./contexts/RecipesContext";
-import { StockProvider } from "./contexts/StockContext";
+              <label htmlFor="description" className="text-right text-sm font-medium">
+                Descrição
+              </label>
+              <Input
+                id="description"
+                value={movementForm.description}
+                onChange={(e) => setMovementForm(prev => ({ ...prev, description: e.target.value }))}
+                className="col-span-3"
+                placeholder="Opcional"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsMovementModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={() => {
+              // Handle form submission
+              setIsMovementModalOpen(false);
+            }}>
+              Registrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <StoreProvider>
-      <ProductsProvider>
-        <OrdersProvider>
-          <ClientsProvider>
-            <RecipesProvider>
-              <StockProvider>
-                <CartProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                      <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/product-details" element={<ProductDetails />} />
-                        <Route path="/cart" element={<Cart />} />
-                        <Route path="/checkout" element={<Checkout />} />
-                        <Route path="/cashback" element={<Cashback />} />
-                        <Route path="/indicacao" element={<Indicacao />} />
-                        <Route path="/meus-pedidos" element={<MeusPedidos />} />
-                        <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
-                        <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
-                        <Route path="/perfil" element={<Perfil />} />
-                        <Route path="/enderecos" element={<Enderecos />} />
-                        <Route path="/add-endereco" element={<AddEndereco />} />
-                        <Route path="/edit-endereco" element={<EditEndereco />} />
-                        <Route path="/gestao-insumos" element={<GestaoInsumos />} />
-                        <Route path="/add-insumo" element={<AddInsumo />} />
-                        <Route path="/gestao-produtos" element={<GestaoProdutos />} />
-                        <Route path="/add-produto" element={<AddProduto />} />
-                        <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
-                        <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
-                        <Route path="/relatorios" element={<Relatorios />} />
-                        <Route path="/clientes" element={<Clientes />} />
-                        <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
-                        <Route path="/visao-geral" element={<VisaoGeral />} />
-                        <Route path="/gestao-receitas" element={<GestaoReceitas />} />
-                        <Route path="/add-receita" element={<AddReceita />} />
-                        <Route path="/detalhes-receita" element={<DetalhesReceita />} />
-                        <Route path="/gestao-producao" element={<GestaoProducao />} />
-                        <Route path="/add-producao" element={<AddProducao />} />
-                        <Route path="/detalhes-lote" element={<DetalhesLote />} />
-                        <Route path="/curva-abc" element={<CurvaABC />} />
-                        <Route path="/gestao-estoque" element={<GestaoEstoque />} />
-                        <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </BrowserRouter>
-                  </TooltipProvider>
-                </CartProvider>
-              </StockProvider>
-            </RecipesProvider>
-          </ClientsProvider>
-        </OrdersProvider>
-      </ProductsProvider>
-    </StoreProvider>
-  </QueryClientProvider>
-);
-
-export default App;
+export default GestaoEstoque;
