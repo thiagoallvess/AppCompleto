@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { showSuccess, showError } from "@/utils/toast";
+import { useRecipes } from "@/contexts/RecipesContext";
 
 const GestaoReceitas = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,50 +21,9 @@ const GestaoReceitas = () => {
     cost: ""
   });
 
-  const recipes = [
-    {
-      id: 1,
-      name: "Ninho com Nutella",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDQI5Bd-HQhMa0roL66f0M780HWmmqj98bmIZaQjBCeGYe5rZ31qkJu43AOVL3u8tAt_AWdZ_tAhbDsirOp9nG8KG_S_Sc0AraSlLL5HDsJg6pkxcfIxrGbnsJrrpRxgWxiLWlOT1-m21pyJhpZEsu1JDIZt-ewzQQ8Ng8B93krfEByXuYSH5XCAwVUVSJ0BUkY5K1lNRYF1Jokck2SkgLRA9Iw28BqZB63RyZloSS3PukeRI-NHlmXR3NulS-tiLx-fi6mm71LjQ",
-      time: "45 min",
-      quantity: 20,
-      cost: 1.50,
-      isTop: true
-    },
-    {
-      id: 2,
-      name: "Morango Cremoso",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCM3cfAeatmEUtNaDEnz796M7L7_1N-EtyXmykGuHogX2Bqw0GLmlvYa3HPA8Wz1_4o9F5wPSUrzWkU8Yp7doalaFscT5306YI3bZgNz9gTLuFuBl4eyymE72I2oud60ide53rz4tw6ycGt2mAau951TpWIjxrfxMQg_NpEJUwcm1qol_S5JpSoZbGnw8au7eUWzH4lvezL2wocDTs541UOAWtFuVwleVW5xacABNhs7r5_Xla2rV2_GgGzX6Ol3wbDpTujEKBi_A",
-      time: "30 min",
-      quantity: 25,
-      cost: 1.20
-    },
-    {
-      id: 3,
-      name: "Maracujá Trufado",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBoZ4WrJnviJNuxDALva68IEx8BdGnHIjNAHbiCD9c4LdL8-hJlme5-_jxH6yK45w60ONtc-wS1X4YRBtWIaMoT-ulkjkHFRp2qqXBLfOkCCCkwdQaWLx2-89611q0649qzVgnLg86WrY-Ea70L22N2sX9RqBAfGRPY9V-lGLiw6-mIc2syzuhmzeimcROK7NbRdCxSJMIFrOkJSzh4puGnvIZiAPSOVeuwwrqMUlMvOWxuvH8MJKoEM1-UH9iaFBbmLGPUy3smQQ",
-      time: "40 min",
-      quantity: 18,
-      cost: 1.35
-    },
-    {
-      id: 4,
-      name: "Paçoca (Rascunho)",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuUrbHMUtHkPnVX8zU4WTK_fS48HXn4xbB-GWsANxTetZelRGWCv8GGtFbOW1rSMzJMmjpipwp7Gl3gqsCOYYVDWAUiyeWGqZJxNjQXnkAHeP7S_ZqXwSDjg4JVnouLg6AfqUFvjhUweXGJ0kw1ToEhnvATVYkwQW7s9pw03oj-2z3_hwbeSleVWMqoVSXzli2QKu6II52TermU5LB1vtYSEPTyigw2rxM9sS-RcxsSJw9On0AT31sB50pWY5wpP81CCHvt0E32Q",
-      time: "-- min",
-      quantity: 0,
-      cost: 0.90,
-      isDraft: true
-    },
-    {
-      id: 5,
-      name: "Coco Cremoso",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAeVtLOwl0ATHwAcr5evKM61DHAzUInDA4rNayZup2RLN2_bQCfTnVNR_l-DTdXOBvhL9WAaX87UftAK2U7sB2U6JTa7r8wpWfiDPIEbAtGGv-5CrecYaZuuD9l1b4s01XjoNpc5t9qaYh4dzSCTxZXGQq2UVC2yLgyUnmioy-w9jEP6S31faZwIlo68d951DTN_-oos0ZbKhyHyEGxSHXFfW4gxKyg2e9ICHwtS3Beq_3-2wSvZVjYKvOLPZI2_nP6TbsWYvi__Q",
-      time: "35 min",
-      quantity: 22,
-      cost: 1.15
-    }
-  ];
+  const { recipes, updateRecipe, removeRecipe } = useRecipes();
+
+  const filters = ["Todos", "Em estoque", "Esgotado", "Rascunhos"];
 
   const filteredRecipes = recipes.filter(recipe => {
     const matchesSearch = recipe.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -75,7 +35,7 @@ const GestaoReceitas = () => {
   });
 
   const totalRecipes = recipes.length;
-  const averageCost = recipes.reduce((sum, recipe) => sum + recipe.cost, 0) / recipes.length;
+  const averageCost = recipes.length > 0 ? recipes.reduce((sum, recipe) => sum + recipe.cost, 0) / recipes.length : 0;
 
   const handleEdit = (recipe) => {
     setEditingRecipe(recipe);
@@ -90,17 +50,23 @@ const GestaoReceitas = () => {
 
   const handleDelete = (recipe) => {
     if (confirm(`Tem certeza que deseja excluir a receita "${recipe.name}"?`)) {
-      // In a real app, this would call an API to delete the recipe
+      removeRecipe(recipe.id);
       showSuccess(`"${recipe.name}" foi excluída`);
-      // For now, we'll just show the success message
-      // In a real implementation, you'd update the state or refetch data
     }
   };
 
   const handleSaveEdit = () => {
     if (!editingRecipe) return;
 
-    // In a real app, this would call an API to update the recipe
+    const updatedRecipe = {
+      ...editingRecipe,
+      name: editForm.name,
+      time: editForm.time,
+      quantity: parseInt(editForm.quantity) || 0,
+      cost: parseFloat(editForm.cost) || 0
+    };
+
+    updateRecipe(editingRecipe.id, updatedRecipe);
     showSuccess(`"${editForm.name}" foi atualizada`);
     setIsEditModalOpen(false);
     setEditingRecipe(null);
