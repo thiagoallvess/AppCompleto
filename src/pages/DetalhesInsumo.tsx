@@ -1,14 +1,16 @@
-import { ArrowLeft, Edit, Trash2, TrendingUp, AlertTriangle, CheckCircle, Calendar, DollarSign, Package } from "lucide-react";
+import { ArrowLeft, Edit, Trash2, TrendingUp, AlertTriangle, CheckCircle, Calendar, DollarSign, Package, History, Plus, Minus } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { showSuccess, showError } from "@/utils/toast";
+import { useStock } from "@/contexts/StockContext";
 
 const DetalhesInsumo = () => {
   const [searchParams] = useSearchParams();
   const itemId = searchParams.get('id');
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { stockMovements } = useStock();
 
   useEffect(() => {
     const loadItem = () => {
@@ -52,6 +54,29 @@ const DetalhesInsumo = () => {
         showError('Erro ao excluir item');
       }
     }
+  };
+
+  // Get movement history for this item
+  const itemMovements = stockMovements
+    .filter(movement => movement.item_id === itemId)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
   };
 
   if (loading) {
@@ -121,7 +146,7 @@ const DetalhesInsumo = () => {
       case "Crítico":
         return "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-500/10";
       default:
-        return "text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10";
+        return "";
     }
   };
 
@@ -132,15 +157,15 @@ const DetalhesInsumo = () => {
   };
 
   const getIcon = (iconName) => {
-    const icons = {
-      Cookie: "cookie",
-      Package: "inventory_2",
-      ChefHat: "restaurant",
-      Archive: "archive",
-      IceCream: "icecream",
-      Tag: "tag"
+    const iconMap: { [key: string]: string } = {
+      Cookie: "🍪",
+      Package: "📦",
+      ChefHat: "👨‍🍳",
+      Archive: "📁",
+      IceCream: "🍦",
+      Tag: "🏷️"
     };
-    return icons[iconName] || "inventory_2";
+    return iconMap[iconName] || "📦";
   };
 
   return (
@@ -183,9 +208,11 @@ const DetalhesInsumo = () => {
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">{item.name}</h2>
                   <p className="text-sm text-slate-500 dark:text-slate-400">{item.category}</p>
                 </div>
-                <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${getStatusColor(getStatusText())}`}>
-                  {getStatusText()}
-                </span>
+                {(isLowStock || isCriticalStock) && (
+                  <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${getStatusColor(getStatusText())}`}>
+                    {getStatusText()}
+                  </span>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="flex items-center gap-2">
@@ -270,6 +297,93 @@ const DetalhesInsumo = () => {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Movement History */}
+        <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h3 className="text-slate-900 dark:text-white text-base font-bold mb-4 flex items-center gap-2">
+            <History className="text-slate-500 dark:text-slate-400" size={20} />
+            Histórico de Movimentações
+          </h3>
+
+          {itemMovements.length === 0 ? (
+            <div className="text-center py-8">
+              <History className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500 mb-4" />
+              <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
+                Nenhuma movimentação registrada
+              </h4>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">
+                As movimentações de estoque aparecerão aqui após serem registradas.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {itemMovements.map((movement, index) => {
+                const isEntry = movement.quantity > 0;
+                const unitCost = movement.cost_type === "unitario"
+                  ? movement.cost_value
+                  : movement.cost_value / movement.quantity;
+
+                return (
+                  <div key={movement.id} className="flex items-start gap-4 p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                    <div className={`flex items-center justify-center size-10 rounded-full ${
+                      isEntry
+                        ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
+                        : 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                    }`}>
+                      {isEntry ? <Plus size={20} /> : <Minus size={20} />}
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
+                          {isEntry ? 'Entrada' : 'Saída'} de Estoque
+                        </h4>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          {formatDate(movement.date)}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Quantidade</p>
+                          <p className={`text-sm font-medium ${
+                            isEntry ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                          }`}>
+                            {isEntry ? '+' : ''}{movement.quantity} {item.unit}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Custo Unitário</p>
+                          <p className="text-sm font-medium text-slate-900 dark:text-white">
+                            {formatCurrency(unitCost)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {movement.description && (
+                        <div className="mt-2">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Descrição</p>
+                          <p className="text-sm text-slate-700 dark:text-slate-300">
+                            {movement.description}
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-slate-500 dark:text-slate-400">Valor Total</span>
+                          <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                            {formatCurrency(movement.cost_value)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Quick Actions */}
