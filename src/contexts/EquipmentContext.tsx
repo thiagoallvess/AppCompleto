@@ -31,7 +31,7 @@ interface EquipmentProviderProps {
   children: ReactNode;
 }
 
-// Mock data initialization
+// Mock data initialization (used only if localStorage is empty initially)
 const defaultEquipment: Equipment[] = [
   { id: 'eq-1', name: 'Freezer Vertical 500L', powerType: 'eletrico', powerValue: 250, icon: 'kitchen', costPerHour: 0.20 },
   { id: 'eq-2', name: 'Fogão Industrial 4 Bocas', powerType: 'gas', powerValue: 0, icon: 'skillet', costPerHour: 0.74 },
@@ -47,10 +47,17 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
       try {
         const storedEquipment = localStorage.getItem('equipment');
         if (storedEquipment) {
-          setEquipment(JSON.parse(storedEquipment));
+          const parsedEquipment = JSON.parse(storedEquipment);
+          // If data exists, use it. If it's empty, use the default mock data once.
+          if (parsedEquipment.length > 0) {
+            setEquipment(parsedEquipment);
+          } else {
+            // If storage exists but is empty, initialize with default mocks for demonstration
+            setEquipment(defaultEquipment);
+          }
         } else {
+          // If no storage exists, initialize with default mocks
           setEquipment(defaultEquipment);
-          localStorage.setItem('equipment', JSON.stringify(defaultEquipment));
         }
       } catch (error) {
         console.error('Error loading equipment data:', error);
@@ -96,7 +103,10 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
         const updatedItem = { ...item, ...updates };
         // Recalculate cost if power type or value changes
         if (updates.powerType !== undefined || updates.powerValue !== undefined) {
-          updatedItem.costPerHour = calculateCostPerHour(updatedItem.powerType, updatedItem.powerValue);
+          // Ensure powerValue is 0 if powerType is gas
+          const finalPowerValue = updatedItem.powerType === 'gas' ? 0 : updatedItem.powerValue;
+          updatedItem.powerValue = finalPowerValue;
+          updatedItem.costPerHour = calculateCostPerHour(updatedItem.powerType, finalPowerValue);
         }
         return updatedItem;
       }

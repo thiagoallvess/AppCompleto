@@ -22,13 +22,14 @@ const GestaoEquipamentos = () => {
     }
 
     const powerValue = parseFloat(newPowerValue) || 0;
+    const finalPowerValue = newPowerType === 'eletrico' ? powerValue : 0;
 
     if (editingEquipment) {
       // Update existing equipment
       updateEquipment(editingEquipment.id, {
         name: newEquipmentName,
         powerType: newPowerType,
-        powerValue: powerType === 'eletrico' ? powerValue : 0,
+        powerValue: finalPowerValue,
       });
       showSuccess(`Equipamento "${newEquipmentName}" atualizado!`);
       setEditingEquipment(null);
@@ -37,8 +38,8 @@ const GestaoEquipamentos = () => {
       addEquipment({
         name: newEquipmentName,
         powerType: newPowerType,
-        powerValue: powerType === 'eletrico' ? powerValue : 0,
-        icon: newPowerType === 'eletrico' ? 'bolt' : 'propane', // Default icon logic
+        powerValue: finalPowerValue,
+        icon: getIconName(newEquipmentName), // Use name to determine icon
       });
       showSuccess(`Equipamento "${newEquipmentName}" adicionado!`);
     }
