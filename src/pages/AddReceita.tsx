@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { showSuccess } from "@/utils/toast";
 import { useProducts } from "@/contexts/ProductsContext";
-import { useStock } from "@/contexts/StockContext"; // Importando useStock
+import { useStock } from "@/contexts/StockContext";
+import { useEquipment } from "@/contexts/EquipmentContext"; // Importando useEquipment
 
 const AddReceita = () => {
   const [recipeName, setRecipeName] = useState("");
@@ -16,7 +17,8 @@ const AddReceita = () => {
   const [linkedProduct, setLinkedProduct] = useState("");
   
   const { products } = useProducts();
-  const { ingredients: availableIngredients, packagingItems: availablePackagingItems } = useStock(); // Usando useStock
+  const { ingredients: availableIngredients, packagingItems: availablePackagingItems } = useStock();
+  const { equipment: availableEquipment } = useEquipment(); // Usando useEquipment
 
   // Ingredients state
   const [ingredients, setIngredients] = useState<any[]>([]);
@@ -33,10 +35,7 @@ const AddReceita = () => {
   const [selectedEquipment, setSelectedEquipment] = useState("");
   const [equipmentMinTime, setEquipmentMinTime] = useState("");
 
-  const availableEquipment = [
-    { id: "1", name: "Liquidificador 1400w" },
-    { id: "2", name: "Seladora" }
-  ];
+  // Removendo a lista mockada, agora usamos availableEquipment do contexto
 
   const addIngredient = () => {
     if (selectedIngredient && ingredientQuantity) {
@@ -96,12 +95,16 @@ const AddReceita = () => {
     if (selectedEquipment && equipmentMinTime) {
       const equip = availableEquipment.find(e => e.id === selectedEquipment);
       if (equip) {
+        // Mock cost calculation for equipment usage time
+        const costPerHour = equip.costPerHour || 0;
+        const totalCost = (parseFloat(equipmentMinTime) / 60) * costPerHour;
+
         const newEquipment = {
           id: Date.now(),
           name: equip.name,
           minTime: parseFloat(equipmentMinTime),
-          unitCost: 0, // Mock
-          totalCost: 0
+          unitCost: costPerHour,
+          totalCost: totalCost
         };
         setEquipment([...equipment, newEquipment]);
         setSelectedEquipment("");
@@ -404,7 +407,7 @@ const AddReceita = () => {
                     <SelectContent>
                       {availableEquipment.map((equip) => (
                         <SelectItem key={equip.id} value={equip.id}>
-                          {equip.name}
+                          {equip.name} ({equip.powerType === 'eletrico' ? `${equip.powerValue}W` : 'A Gás'})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -440,15 +443,18 @@ const AddReceita = () => {
                   <div key={equip.id} className="flex items-center justify-between bg-white dark:bg-surface-dark/50 border border-slate-200 dark:border-slate-700 rounded-lg p-3 shadow-sm">
                     <div className="flex flex-col">
                       <span className="text-sm font-semibold text-slate-900 dark:text-white">{equip.name}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{equip.minTime} min</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{equip.minTime} min (Custo/h: R$ {equip.unitCost.toFixed(2)})</span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => removeEquipment(equip.id)}
-                      className="text-red-500 dark:text-red-400 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">delete</span>
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">R$ {equip.totalCost.toFixed(2)}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeEquipment(equip.id)}
+                        className="text-red-500 dark:text-red-400 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
