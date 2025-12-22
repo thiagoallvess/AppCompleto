@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { showSuccess, showError } from "@/utils/toast";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { StockMovementForm, StockMovementFormData } from "@/components/StockMovementForm";
+import { RecentStockMovements, StockMovementForDisplay } from "@/components/RecentStockMovements";
+import { useStock } from "@/contexts/StockContext";
+import { Loader2 } from "lucide-react";
 
 const GestaoEstoque = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,6 +25,9 @@ const GestaoEstoque = () => {
     date: new Date().toISOString().split('T')[0],
     description: ""
   });
+  const [editingMovement, setEditingMovement] = useState<StockMovementForDisplay | null>(null);
+
+  const { ingredients, packagingItems, stockMovements, addStockMovement, updateStockMovement, deleteStockMovement, isLoadingIngredients, isLoadingPackaging, isLoadingStockMovements } = useStock();
 
   const filters = ["Todos", "Ingredientes", "Embalagens", "Baixo Estoque"];
 
@@ -81,73 +88,87 @@ const GestaoEstoque = () => {
     }
   };
 
-  const handleSaveMovement = () => {
-    // Validate required fields
-    if (!movementForm.item || !movementForm.quantity || !movementForm.unitValue) {
-      showError("Por favor, preencha todos os campos obrigatórios.");
+  const handleFormSubmit = async (data: StockMovementFormData) => {
+    console.log("GestaoEstoque.tsx - handleFormSubmit - Data received from form:", data);
+    console.log("GestaoEstoque.tsx - handleFormSubmit - data.itemId:", data.itemId);
+
+    if (!data.itemId || data.itemId.trim() === "") {
+      alert("Por favor, selecione um item válido para a movimentação.");
+      console.error("GestaoEstoque.tsx - Attempted to add/update movement with empty itemId.");
       return;
     }
 
-    const quantityToAdd = parseFloat(movementForm.quantity);
-    const unitValue = parseFloat(movementForm.unitValue);
+    const selectedItem =
+      data.itemType === "ingredient"
+        ? ingredients.find((ing) => ing.id === data.itemId)
+        : packagingItems.find((pkg) => pkg.id === data.itemId);
 
-    if (quantityToAdd <= 0) {
-      showError("A quantidade deve ser maior que zero.");
+    if (!selectedItem) {
+      alert("Item selecionado não encontrado. Por favor, selecione um item válido.");
+      console.error("GestaoEstoque.tsx - Selected item not found for ID:", data.itemId, "Type:", data.itemType);
       return;
     }
 
-    if (unitValue <= 0) {
-      showError("O valor deve ser maior que zero.");
-      return;
+    const movementData = { 
+      item_id: data.itemId,
+      item_type: data.itemType,
+      quantity: data.quantity,
+      cost_type: data.cost_type,
+      cost_value: data.cost_value,
+      description: data.description,
+      date: data.date.toISOString() 
+    };
+
+    if (editingMovement) {
+      await updateStockMovement(editingMovement.id, movementData);
+      setEditingMovement(null);
+    } else {
+      await addStockMovement(movementData);
     }
-
-    // Find and update the inventory item
-    const updatedItems = inventoryItems.map(item => {
-      if (item.id === movementForm.item) {
-        const currentQuantity = parseFloat(item.quantity || "0");
-        const currentTotalCost = currentQuantity * (item.unitCost || 0);
-        const newTotalCost = currentTotalCost + (quantityToAdd * unitValue);
-        const newQuantity = currentQuantity + quantityToAdd;
-        const newUnitCost = newTotalCost / newQuantity;
-
-        let newStatus = "Em dia";
-
-        // Update status based on minimum quantity
-        if (item.minQuantity && newQuantity <= parseFloat(item.minQuantity)) {
-          newStatus = "Baixo";
-        }
-
-        return {
-          ...item,
-          quantity: newQuantity.toString(),
-          unitCost: newUnitCost,
-          lastUpdated: movementForm.date,
-          status: newStatus
-        };
-      }
-      return item;
-    });
-
-    // Update state and localStorage
-    setInventoryItems(updatedItems);
-
-    showSuccess(`Estoque atualizado com sucesso! Adicionados ${quantityToAdd} unidades.`);
-
-    // Reset form and close modal
-    setMovementForm({
-      itemType: "Ingredientes",
-      item: "",
-      quantity: "",
-      costType: "unitario",
-      unitValue: "",
-      date: new Date().toISOString().split('T')[0],
-      description: ""
-    });
-    setIsMovementModalOpen(false);
   };
 
-  const totalItems = inventoryItems.length;
-  const lowStockItems = inventoryItems.filter(item => item.status === "Baixo" || item.status === "Crítico").length;
+  const handleEditMovement = (movement: StockMovementForDisplay) => {
+    setEditingMovement(movement);
+  };
+
+  const handleDeleteMovement = async (movementId: string) => {
+    await deleteStockMovement(movementId);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMovement(null);
+  };
+
+  // Prepare movements for RecentStockMovements component, adding itemName, itemUnit, and unitCost for display
+  const movementsForDisplay = stockMovements.map(movement => {
+    const item = movement.item_type === "ingredient"
+      ? ingredients.find(ing => ing.id === movement.item_id)
+      : packagingItems.find(pkg => pkg.id === movement.item_id);
+
+    let unitCost = 0;
+    if (movement.cost_type === "unitario") {
+      unitCost = movement.cost_value;
+    } else if (movement.cost_type === "pacote" && movement.quantity > 0) {
+      unitCost = movement.cost_value / movement.quantity;
+    }
+
+    return {
+      ...movement,
+      itemName: item?.name || "Item Desconhecido",
+      itemUnit: item?.unit || "",
+      date: new Date(movement.date),
+      unitCost: unitCost,
+    };
+  });
+
+  if (isLoadingIngredients || isLoadingPackaging || isLoadingStockMovements) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-muted-foreground">Carregando dados de estoque...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
@@ -215,7 +236,7 @@ const GestaoEstoque = () => {
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Em dia</span>
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{totalItems - lowStockItems}</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{inventoryItems.length - inventoryItems.filter(item => item.status === "Baixo" || item.status === "Crítico").length}</p>
             </div>
           </div>
           <div className="flex flex-1 flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-slate-200 dark:border-slate-700">
@@ -224,118 +245,44 @@ const GestaoEstoque = () => {
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Repor</span>
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{lowStockItems}</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{inventoryItems.filter(item => item.status === "Baixo" || item.status === "Crítico").length}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Table Header */}
-      <div className="px-4 mt-4">
-        <div className="grid grid-cols-6 gap-4 px-4 py-3 bg-slate-50 dark:bg-surface-dark border-b border-slate-200 dark:border-slate-700 rounded-t-lg">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Item</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tipo</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Quantidade</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Custo</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Custo Unitário</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Data</div>
-        </div>
-      </div>
+      {/* Main Content */}
+      <main className="flex-1 px-4 py-6 space-y-6 pb-32 w-full max-w-7xl mx-auto">
+        {/* Stock Movement Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{editingMovement ? "Editar Movimentação de Estoque" : "Registrar Nova Movimentação de Estoque"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <StockMovementForm
+              ingredients={ingredients}
+              packagingItems={packagingItems}
+              onSubmit={handleFormSubmit}
+              movementToEdit={editingMovement}
+              onCancelEdit={handleCancelEdit}
+            />
+          </CardContent>
+        </Card>
 
-      {/* Inventory List */}
-      {filteredItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-4">
-          <div className="flex items-center justify-center size-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
-            <Package className="text-slate-400 dark:text-slate-500" size={32} />
-          </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Nenhum item cadastrado</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 text-center max-w-xs mb-6">
-            Comece adicionando seus itens de estoque para gerenciar o inventário.
-          </p>
-          <Button asChild className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30">
-            <Link to="/add-insumo" className="flex items-center gap-2">
-              <Plus size={20} />
-              Adicionar Primeiro Item
-            </Link>
-          </Button>
-        </div>
-      ) : (
-        <div className="flex flex-col pb-24">
-          {filteredItems.map((item) => {
-            const iconName = getIcon(item.icon);
-            const quantity = parseFloat(item.quantity || "0");
-            const unitCost = item.unitCost || 0;
-            const totalCost = quantity * unitCost;
-            return (
-              <Link
-                key={item.id}
-                to={`/detalhes-insumo?id=${item.id}`}
-                className="block"
-              >
-                <div className="grid grid-cols-6 gap-4 px-4 py-4 border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-surface-dark/50 transition-colors cursor-pointer">
-                  {/* Item */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shrink-0 size-10 text-slate-500 dark:text-slate-400">
-                      <span className="material-symbols-outlined text-[20px]">{iconName}</span>
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <p className={`text-sm font-semibold truncate ${
-                        item.status === "Esgotado" ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
-                      }`}>
-                        {item.name}
-                      </p>
-                      {(item.status === "Baixo" || item.status === "Crítico") && (
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap mt-1 ${getStatusColor(item.status)}`}>
-                          {item.status}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Tipo */}
-                  <div className="flex items-center">
-                    <span className="text-sm text-slate-600 dark:text-slate-300">{item.category}</span>
-                  </div>
-
-                  {/* Quantidade */}
-                  <div className="flex items-center">
-                    <span className="text-sm font-medium text-slate-900 dark:text-white">{quantity.toFixed(2)} {item.unit}</span>
-                    {item.minQuantity && (
-                      <span className="text-xs text-slate-400 dark:text-slate-500 ml-1">
-                        (Mín: {item.minQuantity})
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Custo */}
-                  <div className="flex items-center">
-                    <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      R$ {totalCost.toFixed(2)}
-                    </span>
-                  </div>
-
-                  {/* Custo Unitário */}
-                  <div className="flex items-center">
-                    <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      R$ {unitCost.toFixed(2)}
-                    </span>
-                  </div>
-
-                  {/* Data */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-500 dark:text-slate-400">
-                      {item.lastUpdated ? new Date(item.lastUpdated).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')}
-                    </span>
-                    <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">
-                      <MoreVertical size={16} />
-                    </button>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
+        {/* Recent Stock Movements */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Últimas Movimentações de Estoque</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RecentStockMovements 
+              movements={movementsForDisplay} 
+              onEdit={handleEditMovement}
+              onDelete={handleDeleteMovement}
+            />
+          </CardContent>
+        </Card>
+      </main>
 
       {/* Movement Modal */}
       <Dialog open={isMovementModalOpen} onOpenChange={setIsMovementModalOpen}>
@@ -401,7 +348,7 @@ const GestaoEstoque = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="unitario">Unitário</SelectItem>
-                  <SelectItem value="total">Total</SelectItem>
+                  <SelectItem value="pacote">Total do Pacote</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -432,50 +379,113 @@ const GestaoEstoque = () => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="description" className="text-right text-sm font-medium">
-                Descrição
-              </label>
-              <Input
-                id="description"
-                value={movementForm.description}
-                onChange={(e) => setMovementForm(prev => ({ ...prev, description: e.target.value }))}
-                className="col-span-3"
-                placeholder="Opcional"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsMovementModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSaveMovement}>
-              Registrar Movimento
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <label htmlFor<dyad-write path="src/App.tsx">
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import ProductDetails from "./pages/ProductDetails";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Cashback from "./pages/Cashback";
+import Indicacao from "./pages/Indicacao";
+import MeusPedidos from "./pages/MeusPedidos";
+import DetalhesPedido from "./pages/DetalhesPedido";
+import DetalhesPedidoCliente from "./pages/DetalhesPedidoCliente";
+import Perfil from "./pages/Perfil";
+import Enderecos from "./pages/Enderecos";
+import AddEndereco from "./pages/AddEndereco";
+import EditEndereco from "./pages/EditEndereco";
+import GestaoInsumos from "./pages/GestaoInsumos";
+import AddInsumo from "./pages/AddInsumo";
+import GestaoProdutos from "./pages/GestaoProdutos";
+import AddProduto from "./pages/AddProduto";
+import ConfiguracoesAdmin from "./pages/ConfiguracoesAdmin";
+import GestaoPedidos from "./pages/GestaoPedidos";
+import Relatorios from "./pages/Relatorios";
+import Clientes from "./pages/Clientes";
+import DetalhesCliente from "./pages/DetalhesCliente";
+import VisaoGeral from "./pages/VisaoGeral";
+import GestaoReceitas from "./pages/GestaoReceitas";
+import AddReceita from "./pages/AddReceita";
+import DetalhesReceita from "./pages/DetalhesReceita";
+import GestaoProducao from "./pages/GestaoProducao";
+import AddProducao from "./pages/AddProducao";
+import DetalhesLote from "./pages/DetalhesLote";
+import CurvaABC from "./pages/CurvaABC";
+import GestaoEstoque from "./pages/GestaoEstoque";
+import DetalhesInsumo from "./pages/DetalhesInsumo";
+import NotFound from "./pages/NotFound";
+import { CartProvider } from "./contexts/CartContext";
+import { StoreProvider } from "./contexts/StoreContext";
+import { ProductsProvider } from "./contexts/ProductsContext";
+import { OrdersProvider } from "./contexts/OrdersContext";
+import { ClientsProvider } from "./contexts/ClientsContext";
+import { RecipesProvider } from "./contexts/RecipesContext";
+import { StockProvider } from "./contexts/StockContext";
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 w-full bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
-        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <ArrowLeft size={20} />
-          <span className="text-[10px] font-medium">Início</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-primary">
-          <Package size={20} />
-          <span className="text-[10px] font-medium">Estoque</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <CheckCircle size={20} />
-          <span className="text-[10px] font-medium">Pedidos</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <MoreVertical size={20} />
-          <span className="text-[10px] font-medium">Ajustes</span>
-        </button>
-      </nav>
-    </div>
-  );
-};
+const queryClient = new QueryClient();
 
-export default GestaoEstoque;
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <StoreProvider>
+      <ProductsProvider>
+        <OrdersProvider>
+          <ClientsProvider>
+            <RecipesProvider>
+              <StockProvider>
+                <CartProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/product-details" element={<ProductDetails />} />
+                        <Route path="/cart" element={<Cart />} />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route path="/cashback" element={<Cashback />} />
+                        <Route path="/indicacao" element={<Indicacao />} />
+                        <Route path="/meus-pedidos" element={<MeusPedidos />} />
+                        <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
+                        <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
+                        <Route path="/perfil" element={<Perfil />} />
+                        <Route path="/enderecos" element={<Enderecos />} />
+                        <Route path="/add-endereco" element={<AddEndereco />} />
+                        <Route path="/edit-endereco" element={<EditEndereco />} />
+                        <Route path="/gestao-insumos" element={<GestaoInsumos />} />
+                        <Route path="/add-insumo" element={<AddInsumo />} />
+                        <Route path="/gestao-produtos" element={<GestaoProdutos />} />
+                        <Route path="/add-produto" element={<AddProduto />} />
+                        <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
+                        <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
+                        <Route path="/relatorios" element={<Relatorios />} />
+                        <Route path="/clientes" element={<Clientes />} />
+                        <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
+                        <Route path="/visao-geral" element={<VisaoGeral />} />
+                        <Route path="/gestao-receitas" element={<GestaoReceitas />} />
+                        <Route path="/add-receita" element={<AddReceita />} />
+                        <Route path="/detalhes-receita" element={<DetalhesReceita />} />
+                        <Route path="/gestao-producao" element={<GestaoProducao />} />
+                        <Route path="/add-producao" element={<AddProducao />} />
+                        <Route path="/detalhes-lote" element={<DetalhesLote />} />
+                        <Route path="/curva-abc" element={<CurvaABC />} />
+                        <Route path="/gestao-estoque" element={<GestaoEstoque />} />
+                        <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </BrowserRouter>
+                  </TooltipProvider>
+                </CartProvider>
+              </StockProvider>
+            </RecipesProvider>
+          </ClientsProvider>
+        </OrdersProvider>
+      </ProductsProvider>
+    </StoreProvider>
+  </QueryClientProvider>
+);
+
+export default App;
