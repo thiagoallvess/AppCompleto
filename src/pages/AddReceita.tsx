@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { showSuccess } from "@/utils/toast";
+import { useProducts } from "@/contexts/ProductsContext";
 
 const AddReceita = () => {
   const [recipeName, setRecipeName] = useState("");
@@ -13,6 +14,7 @@ const AddReceita = () => {
   const [sellingPrice, setSellingPrice] = useState("");
   const [linkedProduct, setLinkedProduct] = useState("");
   const [availableIngredients, setAvailableIngredients] = useState([]);
+  const { products } = useProducts();
 
   // Ingredients state - removed mock data
   const [ingredients, setIngredients] = useState([]);
@@ -28,12 +30,6 @@ const AddReceita = () => {
   const [equipment, setEquipment] = useState([]);
   const [selectedEquipment, setSelectedEquipment] = useState("");
   const [equipmentMinTime, setEquipmentMinTime] = useState("");
-
-  const products = [
-    { id: "none", name: "Nenhum Produto" },
-    { id: "1", name: "Geladinho Gourmet Ninho" },
-    { id: "2", name: "Geladinho Gourmet Morango" }
-  ];
 
   const availablePackaging = [
     { id: "1", name: "Saquinho 6x24" },
@@ -257,6 +253,7 @@ const AddReceita = () => {
                     <SelectValue placeholder="Nenhum Produto" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none">Nenhum Produto</SelectItem>
                     {products.map((product) => (
                       <SelectItem key={product.id} value={product.id}>
                         {product.name}
