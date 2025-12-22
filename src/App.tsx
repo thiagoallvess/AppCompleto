@@ -34,6 +34,7 @@ import AddProducao from "./pages/AddProducao";
 import DetalhesLote from "./pages/DetalhesLote";
 import CurvaABC from "./pages/CurvaABC";
 import GestaoEstoque from "./pages/GestaoEstoque";
+import DetalhesInsumo from "./pages/DetalhesInsumo";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -88,6 +89,7 @@ const App = () => (
                       <Route path="/detalhes-lote" element={<DetalhesLote />} />
                       <Route path="/curva-abc" element={<CurvaABC />} />
                       <Route path="/gestao-estoque" element={<GestaoEstoque />} />
+                      <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </BrowserRouter>

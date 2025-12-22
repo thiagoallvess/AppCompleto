@@ -267,68 +267,71 @@ const GestaoEstoque = () => {
             const unitCost = item.unitCost || 0;
             const totalCost = quantity * unitCost;
             return (
-              <div
+              <Link
                 key={item.id}
-                className="grid grid-cols-6 gap-4 px-4 py-4 border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-surface-dark/50 transition-colors"
+                to={`/detalhes-insumo?id=${item.id}`}
+                className="block"
               >
-                {/* Item */}
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shrink-0 size-10 text-slate-500 dark:text-slate-400">
-                    <span className="material-symbols-outlined text-[20px]">{iconName}</span>
+                <div className="grid grid-cols-6 gap-4 px-4 py-4 border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-surface-dark/50 transition-colors cursor-pointer">
+                  {/* Item */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shrink-0 size-10 text-slate-500 dark:text-slate-400">
+                      <span className="material-symbols-outlined text-[20px]">{iconName}</span>
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <p className={`text-sm font-semibold truncate ${
+                        item.status === "Esgotado" ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
+                      }`}>
+                        {item.name}
+                      </p>
+                      {(item.status === "Baixo" || item.status === "Crítico") && (
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap mt-1 ${getStatusColor(item.status)}`}>
+                          {item.status}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex flex-col min-w-0">
-                    <p className={`text-sm font-semibold truncate ${
-                      item.status === "Esgotado" ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
-                    }`}>
-                      {item.name}
-                    </p>
-                    {(item.status === "Baixo" || item.status === "Crítico") && (
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap mt-1 ${getStatusColor(item.status)}`}>
-                        {item.status}
+
+                  {/* Tipo */}
+                  <div className="flex items-center">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">{item.category}</span>
+                  </div>
+
+                  {/* Quantidade */}
+                  <div className="flex items-center">
+                    <span className="text-sm font-medium text-slate-900 dark:text-white">{quantity.toFixed(2)} {item.unit}</span>
+                    {item.minQuantity && (
+                      <span className="text-xs text-slate-400 dark:text-slate-500 ml-1">
+                        (Mín: {item.minQuantity})
                       </span>
                     )}
                   </div>
-                </div>
 
-                {/* Tipo */}
-                <div className="flex items-center">
-                  <span className="text-sm text-slate-600 dark:text-slate-300">{item.category}</span>
-                </div>
-
-                {/* Quantidade */}
-                <div className="flex items-center">
-                  <span className="text-sm font-medium text-slate-900 dark:text-white">{quantity.toFixed(2)} {item.unit}</span>
-                  {item.minQuantity && (
-                    <span className="text-xs text-slate-400 dark:text-slate-500 ml-1">
-                      (Mín: {item.minQuantity})
+                  {/* Custo */}
+                  <div className="flex items-center">
+                    <span className="text-sm font-medium text-slate-900 dark:text-white">
+                      R$ {totalCost.toFixed(2)}
                     </span>
-                  )}
-                </div>
+                  </div>
 
-                {/* Custo */}
-                <div className="flex items-center">
-                  <span className="text-sm font-medium text-slate-900 dark:text-white">
-                    R$ {totalCost.toFixed(2)}
-                  </span>
-                </div>
+                  {/* Custo Unitário */}
+                  <div className="flex items-center">
+                    <span className="text-sm font-medium text-slate-900 dark:text-white">
+                      R$ {unitCost.toFixed(2)}
+                    </span>
+                  </div>
 
-                {/* Custo Unitário */}
-                <div className="flex items-center">
-                  <span className="text-sm font-medium text-slate-900 dark:text-white">
-                    R$ {unitCost.toFixed(2)}
-                  </span>
+                  {/* Data */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                      {item.lastUpdated ? new Date(item.lastUpdated).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')}
+                    </span>
+                    <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">
+                      <MoreVertical size={16} />
+                    </button>
+                  </div>
                 </div>
-
-                {/* Data */}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500 dark:text-slate-400">
-                    {item.lastUpdated || new Date().toLocaleDateString('pt-BR')}
-                  </span>
-                  <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">
-                    <MoreVertical size={16} />
-                  </button>
-                </div>
-              </div>
+              </Link>
             );
           })}
         </div>
