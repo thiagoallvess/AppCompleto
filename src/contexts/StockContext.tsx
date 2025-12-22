@@ -54,6 +54,12 @@ interface StockContextType {
   updateStockMovement: (id: string, movement: Omit<StockMovement, 'id'>) => Promise<void>;
   deleteStockMovement: (id: string) => Promise<void>;
   refreshData: () => void;
+  addIngredient: (ingredient: Omit<Ingredient, 'id'>) => void;
+  addPackagingItem: (packagingItem: Omit<PackagingItem, 'id'>) => void;
+  updateIngredient: (id: string, updates: Partial<Ingredient>) => void;
+  updatePackagingItem: (id: string, updates: Partial<PackagingItem>) => void;
+  removeIngredient: (id: string) => void;
+  removePackagingItem: (id: string) => void;
 }
 
 const StockContext = createContext<StockContextType | undefined>(undefined);
@@ -82,9 +88,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
   useEffect(() => {
     const loadIngredients = () => {
       try {
-        const storedIngredients = localStorage.getItem('inventoryItems');
-        if (storedIngredients) {
-          const items = JSON.parse(storedIngredients);
+        const storedItems = localStorage.getItem('inventoryItems');
+        if (storedItems) {
+          const items = JSON.parse(storedItems);
           const ingredientsList = items
             .filter((item: any) => item.category === "Ingredientes")
             .map((item: any) => ({
@@ -113,9 +119,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
 
     const loadPackagingItems = () => {
       try {
-        const storedPackaging = localStorage.getItem('inventoryItems');
-        if (storedPackaging) {
-          const items = JSON.parse(storedPackaging);
+        const storedItems = localStorage.getItem('inventoryItems');
+        if (storedItems) {
+          const items = JSON.parse(storedItems);
           const packagingList = items
             .filter((item: any) => item.category === "Embalagens")
             .map((item: any) => ({
@@ -176,6 +182,42 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
       localStorage.setItem('stockMovements', JSON.stringify(stockMovements));
     }
   }, [stockMovements]);
+
+  const addIngredient = (ingredient: Omit<Ingredient, 'id'>) => {
+    const newIngredient: Ingredient = {
+      ...ingredient,
+      id: Date.now().toString()
+    };
+    setIngredients(prev => [...prev, newIngredient]);
+  };
+
+  const addPackagingItem = (packagingItem: Omit<PackagingItem, 'id'>) => {
+    const newPackagingItem: PackagingItem = {
+      ...packagingItem,
+      id: Date.now().toString()
+    };
+    setPackagingItems(prev => [...prev, newPackagingItem]);
+  };
+
+  const updateIngredient = (id: string, updates: Partial<Ingredient>) => {
+    setIngredients(prev => prev.map(item =>
+      item.id === id ? { ...item, ...updates } : item
+    ));
+  };
+
+  const updatePackagingItem = (id: string, updates: Partial<PackagingItem>) => {
+    setPackagingItems(prev => prev.map(item =>
+      item.id === id ? { ...item, ...updates } : item
+    ));
+  };
+
+  const removeIngredient = (id: string) => {
+    setIngredients(prev => prev.filter(item => item.id !== id));
+  };
+
+  const removePackagingItem = (id: string) => {
+    setPackagingItems(prev => prev.filter(item => item.id !== id));
+  };
 
   const addStockMovement = async (movement: Omit<StockMovement, 'id'>) => {
     const newMovement: StockMovement = {
@@ -361,9 +403,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
     // Reload data from localStorage
     const loadIngredients = () => {
       try {
-        const storedIngredients = localStorage.getItem('inventoryItems');
-        if (storedIngredients) {
-          const items = JSON.parse(storedIngredients);
+        const storedItems = localStorage.getItem('inventoryItems');
+        if (storedItems) {
+          const items = JSON.parse(storedItems);
           const ingredientsList = items
             .filter((item: any) => item.category === "Ingredientes")
             .map((item: any) => ({
@@ -387,9 +429,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
 
     const loadPackagingItems = () => {
       try {
-        const storedPackaging = localStorage.getItem('inventoryItems');
-        if (storedPackaging) {
-          const items = JSON.parse(storedPackaging);
+        const storedItems = localStorage.getItem('inventoryItems');
+        if (storedItems) {
+          const items = JSON.parse(storedItems);
           const packagingList = items
             .filter((item: any) => item.category === "Embalagens")
             .map((item: any) => ({
@@ -438,7 +480,13 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
       addStockMovement,
       updateStockMovement,
       deleteStockMovement,
-      refreshData
+      refreshData,
+      addIngredient,
+      addPackagingItem,
+      updateIngredient,
+      updatePackagingItem,
+      removeIngredient,
+      removePackagingItem
     }}>
       {children}
     </StockContext.Provider>

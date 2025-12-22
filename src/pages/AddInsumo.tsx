@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { showSuccess } from "@/utils/toast";
+import { useStock } from "@/contexts/StockContext";
 
 const AddInsumo = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ const AddInsumo = () => {
     unit: "",
     minQuantity: ""
   });
+
+  const { addIngredient, addPackagingItem } = useStock();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -33,24 +36,22 @@ const AddInsumo = () => {
 
     // Create new item
     const newItem = {
-      id: Date.now().toString(),
       name: formData.name,
-      category: formData.category,
-      quantity: formData.quantity || "0",
       unit: formData.unit || "un",
-      minQuantity: formData.minQuantity || null,
+      quantity: parseFloat(formData.quantity || "0"),
+      unitCost: 0, // Will be updated when stock movements are added
+      minQuantity: formData.minQuantity ? parseFloat(formData.minQuantity) : undefined,
+      category: formData.category,
       icon: formData.category === "Ingredientes" ? "Cookie" : "Package",
       status: "Em dia"
     };
 
-    // Load existing items from localStorage
-    const existingItems = JSON.parse(localStorage.getItem('inventoryItems') || '[]');
-
-    // Add new item
-    const updatedItems = [...existingItems, newItem];
-
-    // Save to localStorage
-    localStorage.setItem('inventoryItems', JSON.stringify(updatedItems));
+    // Add to the appropriate context
+    if (formData.category === "Ingredientes") {
+      addIngredient(newItem);
+    } else if (formData.category === "Embalagens") {
+      addPackagingItem(newItem);
+    }
 
     // Show success message
     showSuccess(`"${formData.name}" foi adicionado ao estoque!`);

@@ -13,38 +13,16 @@ import { Loader2 } from "lucide-react";
 const GestaoEstoque = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const [inventoryItems, setInventoryItems] = useState([]);
   const [editingMovement, setEditingMovement] = useState<StockMovementForDisplay | null>(null);
 
   const { ingredients, packagingItems, stockMovements, addStockMovement, updateStockMovement, deleteStockMovement, isLoadingIngredients, isLoadingPackaging, isLoadingStockMovements } = useStock();
 
   const filters = ["Todos", "Ingredientes", "Embalagens", "Baixo Estoque"];
 
-  // Load inventory items from localStorage on mount
-  useEffect(() => {
-    const loadInventoryItems = () => {
-      try {
-        const storedItems = localStorage.getItem('inventoryItems');
-        if (storedItems) {
-          setInventoryItems(JSON.parse(storedItems));
-        } else {
-          setInventoryItems([]);
-        }
-      } catch (error) {
-        console.error('Error loading inventory items:', error);
-        setInventoryItems([]);
-      }
-    };
-
-    loadInventoryItems();
-  }, []);
-
-  // Save to localStorage whenever inventoryItems changes
-  useEffect(() => {
-    if (inventoryItems.length >= 0) {
-      localStorage.setItem('inventoryItems', JSON.stringify(inventoryItems));
-    }
-  }, [inventoryItems]);
+  // Combine ingredients and packaging items for display
+  const inventoryItems = useMemo(() => {
+    return [...ingredients, ...packagingItems];
+  }, [ingredients, packagingItems]);
 
   const filteredItems = inventoryItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
