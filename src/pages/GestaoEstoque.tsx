@@ -310,14 +310,6 @@ const GestaoEstoque = () => {
         </div>
       )}
 
-      {/* Floating Action Button */}
-      <button
-        onClick={() => setIsMovementModalOpen(true)}
-        className="fixed bottom-6 right-6 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95"
-      >
-        <Plus size={28} />
-      </button>
-
       {/* Stock Movement Modal */}
       <Dialog open={isMovementModalOpen} onOpenChange={setIsMovementModalOpen}>
         <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-slate-200 dark:border-slate-800 p-0 max-h-[90vh] overflow-hidden">
