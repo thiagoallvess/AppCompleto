@@ -14,11 +14,8 @@ const AddReceita = () => {
   const [linkedProduct, setLinkedProduct] = useState("");
   const [availableIngredients, setAvailableIngredients] = useState([]);
 
-  // Ingredients state
-  const [ingredients, setIngredients] = useState([
-    { id: 1, name: "Leite Condensado", quantity: 1.5, unit: "un (395g)", unitCost: 6.50, totalCost: 9.75 },
-    { id: 2, name: "Leite Integral", quantity: 0.5, unit: "L", unitCost: 4.80, totalCost: 2.40 }
-  ]);
+  // Ingredients state - removed mock data
+  const [ingredients, setIngredients] = useState([]);
   const [selectedIngredient, setSelectedIngredient] = useState("");
   const [ingredientQuantity, setIngredientQuantity] = useState("");
 
