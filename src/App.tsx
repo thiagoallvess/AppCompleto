@@ -34,6 +34,7 @@ import CurvaABC from "./pages/CurvaABC";
 import GestaoEstoque from "./pages/GestaoEstoque";
 import DetalhesInsumo from "./pages/DetalhesInsumo";
 import AddInsumo from "./pages/AddInsumo";
+import GestaoEquipamentos from "./pages/GestaoEquipamentos"; // Novo
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -42,6 +43,7 @@ import { OrdersProvider } from "./contexts/OrdersContext";
 import { ClientsProvider } from "./contexts/ClientsContext";
 import { RecipesProvider } from "./contexts/RecipesContext";
 import { StockProvider } from "./contexts/StockContext";
+import { EquipmentProvider } from "./contexts/EquipmentContext"; // Novo
 
 const queryClient = new QueryClient();
 
@@ -53,49 +55,51 @@ const App = () => (
           <OrdersProvider>
             <ClientsProvider>
               <RecipesProvider>
-                <CartProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                      <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/product-details" element={<ProductDetails />} />
-                        <Route path="/cart" element={<Cart />} />
-                        <Route path="/checkout" element={<Checkout />} />
-                        <Route path="/cashback" element={<Cashback />} />
-                        <Route path="/indicacao" element={<Indicacao />} />
-                        <Route path="/meus-pedidos" element={<MeusPedidos />} />
-                        <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
-                        <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
-                        <Route path="/perfil" element={<Perfil />} />
-                        <Route path="/enderecos" element={<Enderecos />} />
-                        <Route path="/add-endereco" element={<AddEndereco />} />
-                        <Route path="/edit-endereco" element={<EditEndereco />} />
-                        {/* Rota GestaoInsumos removida/substituída por GestaoEstoque */}
-                        <Route path="/gestao-estoque" element={<GestaoEstoque />} />
-                        <Route path="/add-insumo" element={<AddInsumo />} />
-                        <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
-                        <Route path="/gestao-produtos" element={<GestaoProdutos />} />
-                        <Route path="/add-produto" element={<AddProduto />} />
-                        <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
-                        <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
-                        <Route path="/relatorios" element={<Relatorios />} />
-                        <Route path="/clientes" element={<Clientes />} />
-                        <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
-                        <Route path="/visao-geral" element={<VisaoGeral />} />
-                        <Route path="/gestao-receitas" element={<GestaoReceitas />} />
-                        <Route path="/add-receita" element={<AddReceita />} />
-                        <Route path="/detalhes-receita" element={<DetalhesReceita />} />
-                        <Route path="/gestao-producao" element={<GestaoProducao />} />
-                        <Route path="/add-producao" element={<AddProducao />} />
-                        <Route path="/detalhes-lote" element={<DetalhesLote />} />
-                        <Route path="/curva-abc" element={<CurvaABC />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </BrowserRouter>
-                  </TooltipProvider>
-                </CartProvider>
+                <EquipmentProvider> {/* Novo Provider */}
+                  <CartProvider>
+                    <TooltipProvider>
+                      <Toaster />
+                      <Sonner />
+                      <BrowserRouter>
+                        <Routes>
+                          <Route path="/" element={<Index />} />
+                          <Route path="/product-details" element={<ProductDetails />} />
+                          <Route path="/cart" element={<Cart />} />
+                          <Route path="/checkout" element={<Checkout />} />
+                          <Route path="/cashback" element={<Cashback />} />
+                          <Route path="/indicacao" element={<Indicacao />} />
+                          <Route path="/meus-pedidos" element={<MeusPedidos />} />
+                          <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
+                          <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
+                          <Route path="/perfil" element={<Perfil />} />
+                          <Route path="/enderecos" element={<Enderecos />} />
+                          <Route path="/add-endereco" element={<AddEndereco />} />
+                          <Route path="/edit-endereco" element={<EditEndereco />} />
+                          <Route path="/gestao-estoque" element={<GestaoEstoque />} />
+                          <Route path="/add-insumo" element={<AddInsumo />} />
+                          <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
+                          <Route path="/gestao-produtos" element={<GestaoProdutos />} />
+                          <Route path="/add-produto" element={<AddProduto />} />
+                          <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
+                          <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
+                          <Route path="/relatorios" element={<Relatorios />} />
+                          <Route path="/clientes" element={<Clientes />} />
+                          <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
+                          <Route path="/visao-geral" element={<VisaoGeral />} />
+                          <Route path="/gestao-receitas" element={<GestaoReceitas />} />
+                          <Route path="/add-receita" element={<AddReceita />} />
+                          <Route path="/detalhes-receita" element={<DetalhesReceita />} />
+                          <Route path="/gestao-producao" element={<GestaoProducao />} />
+                          <Route path="/add-producao" element={<AddProducao />} />
+                          <Route path="/detalhes-lote" element={<DetalhesLote />} />
+                          <Route path="/curva-abc" element={<CurvaABC />} />
+                          <Route path="/gestao-equipamentos" element={<GestaoEquipamentos />} /> {/* Nova Rota */}
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </BrowserRouter>
+                    </TooltipProvider>
+                  </CartProvider>
+                </EquipmentProvider>
               </RecipesProvider>
             </ClientsProvider>
           </OrdersProvider>

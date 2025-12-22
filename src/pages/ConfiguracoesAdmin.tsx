@@ -136,6 +136,25 @@ const ConfiguracoesAdmin = () => {
           </div>
         </div>
 
+        {/* Link para Gestão de Equipamentos */}
+        <Link
+          to="/gestao-equipamentos"
+          className="flex items-center gap-4 bg-white dark:bg-surface-dark hover:bg-gray-50 dark:hover:bg-surface-dark/50 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 transition-colors group"
+        >
+          <div className="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-10 group-hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined">factory</span>
+          </div>
+          <div className="flex flex-col items-start flex-1">
+            <p className="text-base font-semibold leading-normal">Gestão de Equipamentos</p>
+            <p className="text-xs text-gray-400 dark:text-slate-400">Custos de energia e gás por equipamento</p>
+          </div>
+          <div className="text-gray-400">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </Link>
+
         {/* Configurações de Gás */}
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
