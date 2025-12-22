@@ -15,7 +15,8 @@ export const RecentStockMovements: React.FC<RecentStockMovementsProps> = ({
   onEdit,
   onDelete
 }) => {
-  const formatDate = (date: Date) => {
+  const formatDate = (dateInput: string) => {
+    const date = new Date(dateInput);
     return date.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
@@ -90,7 +91,7 @@ export const RecentStockMovements: React.FC<RecentStockMovementsProps> = ({
                         Valor Unitário
                       </p>
                       <p className="text-sm font-medium text-slate-900 dark:text-white">
-                        {formatCurrency(movement.unitCost)}
+                        {formatCurrency(movement.cost_value)}
                       </p>
                     </div>
                     <div>
