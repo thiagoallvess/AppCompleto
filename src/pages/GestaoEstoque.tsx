@@ -1,10 +1,9 @@
 import { ArrowLeft, Plus, Search, MoreVertical, Package, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Calendar, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { StockMovementForm, StockMovementFormData } from "@/components/StockMovementForm";
 import { RecentStockMovements, StockMovementForDisplay } from "@/components/RecentStockMovements";
@@ -15,16 +14,6 @@ const GestaoEstoque = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [inventoryItems, setInventoryItems] = useState([]);
-  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
-  const [movementForm, setMovementForm] = useState({
-    itemType: "Ingredientes",
-    item: "",
-    quantity: "",
-    costType: "unitario",
-    unitValue: "",
-    date: new Date().toISOString().split('T')[0],
-    description: ""
-  });
   const [editingMovement, setEditingMovement] = useState<StockMovementForDisplay | null>(null);
 
   const { ingredients, packagingItems, stockMovements, addStockMovement, updateStockMovement, deleteStockMovement, isLoadingIngredients, isLoadingPackaging, isLoadingStockMovements } = useStock();
@@ -64,29 +53,6 @@ const GestaoEstoque = () => {
                          item.category === activeFilter;
     return matchesSearch && matchesFilter;
   });
-
-  const getIcon = (iconName) => {
-    const icons = {
-      Cookie: "cookie",
-      Package: "inventory_2",
-      ChefHat: "restaurant",
-      Archive: "archive",
-      IceCream: "icecream",
-      Tag: "tag"
-    };
-    return icons[iconName] || "inventory_2";
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Baixo":
-        return "text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10";
-      case "Crítico":
-        return "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-500/10";
-      default:
-        return "";
-    }
-  };
 
   const handleFormSubmit = async (data: StockMovementFormData) => {
     console.log("GestaoEstoque.tsx - handleFormSubmit - Data received from form:", data);
@@ -140,26 +106,28 @@ const GestaoEstoque = () => {
   };
 
   // Prepare movements for RecentStockMovements component, adding itemName, itemUnit, and unitCost for display
-  const movementsForDisplay = stockMovements.map(movement => {
-    const item = movement.item_type === "ingredient"
-      ? ingredients.find(ing => ing.id === movement.item_id)
-      : packagingItems.find(pkg => pkg.id === movement.item_id);
+  const movementsForDisplay = useMemo(() => {
+    return stockMovements.map(movement => {
+      const item = movement.item_type === "ingredient"
+        ? ingredients.find(ing => ing.id === movement.item_id)
+        : packagingItems.find(pkg => pkg.id === movement.item_id);
 
-    let unitCost = 0;
-    if (movement.cost_type === "unitario") {
-      unitCost = movement.cost_value;
-    } else if (movement.cost_type === "pacote" && movement.quantity > 0) {
-      unitCost = movement.cost_value / movement.quantity;
-    }
+      let unitCost = 0;
+      if (movement.cost_type === "unitario") {
+        unitCost = movement.cost_value;
+      } else if (movement.cost_type === "pacote" && movement.quantity > 0) {
+        unitCost = movement.cost_value / movement.quantity;
+      }
 
-    return {
-      ...movement,
-      itemName: item?.name || "Item Desconhecido",
-      itemUnit: item?.unit || "",
-      date: new Date(movement.date),
-      unitCost: unitCost,
-    };
-  });
+      return {
+        ...movement,
+        itemName: item?.name || "Item Desconhecido",
+        itemUnit: item?.unit || "",
+        date: new Date(movement.date),
+        unitCost: unitCost,
+      };
+    });
+  }, [stockMovements, ingredients, packagingItems]);
 
   if (isLoadingIngredients || isLoadingPackaging || isLoadingStockMovements) {
     return (
@@ -185,9 +153,7 @@ const GestaoEstoque = () => {
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Administração</span>
             <h1 className="text-xl font-bold leading-tight tracking-tight">Gestão de Estoque</h1>
           </div>
-          <Button size="sm" className="size-10 rounded-full p-0" onClick={() => setIsMovementModalOpen(true)}>
-            <Plus size={24} />
-          </Button>
+          <div className="size-10"></div> {/* Spacer for centering */}
         </div>
       </header>
 
@@ -283,127 +249,6 @@ const GestaoEstoque = () => {
           </CardContent>
         </Card>
       </main>
-
-      {/* Movement Modal */}
-      <Dialog open={isMovementModalOpen} onOpenChange={setIsMovementModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Registrar Movimento de Estoque</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="itemType" className="text-right text-sm font-medium">
-                Tipo
-              </label>
-              <Select value={movementForm.itemType} onValueChange={(value) => setMovementForm(prev => ({ ...prev, itemType: value }))}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Ingredientes">Ingredientes</SelectItem>
-                  <SelectItem value="Embalagens">Embalagens</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="item" className="text-right text-sm font-medium">
-                Item
-              </label>
-              <Select value={movementForm.item} onValueChange={(value) => setMovementForm(prev => ({ ...prev, item: value }))}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Selecione um item" />
-                </SelectTrigger>
-                <SelectContent>
-                  {inventoryItems
-                    .filter(item => item.category === movementForm.itemType)
-                    .map((item) => (
-                      <SelectItem key={item.id} value={item.id}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="quantity" className="text-right text-sm font-medium">
-                Quantidade
-              </label>
-              <Input
-                id="quantity"
-                type="number"
-                step="0.01"
-                value={movementForm.quantity}
-                onChange={(e) => setMovementForm(prev => ({ ...prev, quantity: e.target.value }))}
-                className="col-span-3"
-                placeholder="0"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="costType" className="text-right text-sm font-medium">
-                Tipo Custo
-              </label>
-              <Select value={movementForm.costType} onValueChange={(value) => setMovementForm(prev => ({ ...prev, costType: value }))}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unitario">Unitário</SelectItem>
-                  <SelectItem value="pacote">Total do Pacote</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="unitValue" className="text-right text-sm font-medium">
-                Valor {movementForm.costType === "unitario" ? "Unitário" : "Total"} (R$)
-              </label>
-              <Input
-                id="unitValue"
-                type="number"
-                step="0.01"
-                value={movementForm.unitValue}
-                onChange={(e) => setMovementForm(prev => ({ ...prev, unitValue: e.target.value }))}
-                className="col-span-3"
-                placeholder="0,00"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="date" className="text-right text-sm font-medium">
-                Data
-              </label>
-              <Input
-                id="date"
-                type="date"
-                value={movementForm.date}
-                onChange={(e) => setMovementForm(prev => ({ ...prev, date: e.target.value }))}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="description" className="text-right text-sm font-medium">
-                Descrição
-              </label>
-              <Input
-                id="description"
-                value={movementForm.description}
-                onChange={(e) => setMovementForm(prev => ({ ...prev, description: e.target.value }))}
-                className="col-span-3"
-                placeholder="Opcional"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsMovementModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={() => {
-              // Handle form submission
-              setIsMovementModalOpen(false);
-            }}>
-              Registrar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
