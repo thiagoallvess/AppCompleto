@@ -315,20 +315,6 @@ const GestaoEstoque = () => {
             </div>
           )}
         </div>
-
-        {/* Recent Stock Movements */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Últimas Movimentações de Estoque</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RecentStockMovements
-              movements={movementsForDisplay}
-              onEdit={handleEditMovement}
-              onDelete={handleDeleteMovement}
-            />
-          </CardContent>
-        </Card>
       </main>
 
       {/* Floating Action Button with Modal */}
