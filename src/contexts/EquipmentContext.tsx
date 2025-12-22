@@ -31,13 +31,6 @@ interface EquipmentProviderProps {
   children: ReactNode;
 }
 
-// Mock data initialization (used only if localStorage is empty initially)
-const defaultEquipment: Equipment[] = [
-  { id: 'eq-1', name: 'Freezer Vertical 500L', powerType: 'eletrico', powerValue: 250, icon: 'kitchen', costPerHour: 0.20 },
-  { id: 'eq-2', name: 'Fogão Industrial 4 Bocas', powerType: 'gas', powerValue: 0, icon: 'skillet', costPerHour: 0.74 },
-  { id: 'eq-3', name: 'Liquidificador Industrial', powerType: 'eletrico', powerValue: 800, icon: 'blender', costPerHour: 0.64 },
-];
-
 export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }) => {
   const [equipment, setEquipment] = useState<Equipment[]>([]);
 
@@ -47,21 +40,14 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
       try {
         const storedEquipment = localStorage.getItem('equipment');
         if (storedEquipment) {
-          const parsedEquipment = JSON.parse(storedEquipment);
-          // If data exists, use it. If it's empty, use the default mock data once.
-          if (parsedEquipment.length > 0) {
-            setEquipment(parsedEquipment);
-          } else {
-            // If storage exists but is empty, initialize with default mocks for demonstration
-            setEquipment(defaultEquipment);
-          }
+          setEquipment(JSON.parse(storedEquipment));
         } else {
-          // If no storage exists, initialize with default mocks
-          setEquipment(defaultEquipment);
+          // Start with an empty array if nothing is saved
+          setEquipment([]);
         }
       } catch (error) {
         console.error('Error loading equipment data:', error);
-        setEquipment(defaultEquipment);
+        setEquipment([]);
       }
     };
     loadEquipmentData();
