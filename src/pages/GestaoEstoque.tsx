@@ -1,4 +1,4 @@
-import { ArrowLeft, Search, Package, AlertTriangle, CheckCircle, MoreVertical, Edit, Trash2, Plus } from "lucide-react";
+import { ArrowLeft, Search, Package, AlertTriangle, CheckCircle, MoreVertical, Edit, Trash2, Plus, IceCream } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -49,11 +49,14 @@ const GestaoEstoque = () => {
   const filteredItems = () => {
     let items = [];
     if (activeTab === "Todos") {
-      items = [...inventoryItems, ...products];
+      items = [
+        ...inventoryItems.map(item => ({ ...item, type: 'insumo' })),
+        ...products.map(product => ({ ...product, type: 'produto' }))
+      ];
     } else if (activeTab === "Insumos") {
-      items = inventoryItems;
+      items = inventoryItems.map(item => ({ ...item, type: 'insumo' }));
     } else if (activeTab === "Produtos") {
-      items = products;
+      items = products.map(product => ({ ...product, type: 'produto' }));
     }
 
     return items.filter(item => {
@@ -62,7 +65,10 @@ const GestaoEstoque = () => {
     });
   };
 
-  const getIcon = (iconName) => {
+  const getIcon = (item) => {
+    if (item.type === 'produto') {
+      return "icecream";
+    }
     const icons = {
       Cookie: "cookie",
       Package: "inventory_2",
@@ -71,11 +77,18 @@ const GestaoEstoque = () => {
       IceCream: "icecream",
       Tag: "tag"
     };
-    return icons[iconName] || "inventory_2";
+    return icons[item.icon] || "inventory_2";
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
+  const getStatusColor = (item) => {
+    if (item.type === 'produto') {
+      if (item.stock === 0) {
+        return "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-500/10";
+      }
+      return "text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10";
+    }
+    
+    switch (item.status) {
       case "Baixo":
         return "text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10";
       case "Crítico":
@@ -85,11 +98,25 @@ const GestaoEstoque = () => {
     }
   };
 
-  const getStatusIcon = (status) => {
-    if (status === "Baixo" || status === "Crítico") {
+  const getStatusIcon = (item) => {
+    if (item.type === 'produto') {
+      if (item.stock === 0) {
+        return <AlertTriangle className="w-3 h-3" />;
+      }
+      return null;
+    }
+    
+    if (item.status === "Baixo" || item.status === "Crítico") {
       return <AlertTriangle className="w-3 h-3" />;
     }
     return null;
+  };
+
+  const getStatusText = (item) => {
+    if (item.type === 'produto') {
+      return item.stock === 0 ? "Esgotado" : "Em estoque";
+    }
+    return item.status || "Em dia";
   };
 
   const totalItems = inventoryItems.length + products.length;
@@ -216,8 +243,7 @@ const GestaoEstoque = () => {
           </div>
         ) : (
           filteredItems().map((item) => {
-            const isProduct = item.hasOwnProperty('stock');
-            const IconComponent = getIcon(item.icon);
+            const IconComponent = getIcon(item);
             return (
               <div
                 key={item.id}
@@ -227,30 +253,30 @@ const GestaoEstoque = () => {
                   <div className="flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shrink-0 size-14 text-slate-500 dark:text-slate-400">
                     <span className="material-symbols-outlined text-[24px]">{IconComponent}</span>
                   </div>
-                  {(item.status === "Baixo" || item.status === "Crítico" || (isProduct && item.stock === 0)) && (
+                  {(item.type === 'produto' ? item.stock === 0 : (item.status === "Baixo" || item.status === "Crítico")) && (
                     <div className={`absolute -bottom-1 -right-1 size-5 rounded-full flex items-center justify-center border-2 border-white dark:border-background-dark ${
-                      item.status === "Crítico" || (isProduct && item.stock === 0) ? "bg-red-500" : "bg-amber-500"
+                      item.type === 'produto' ? (item.stock === 0 ? "bg-red-500" : "") : (item.status === "Crítico" ? "bg-red-500" : "bg-amber-500")
                     }`}>
-                      {getStatusIcon(item.status)}
+                      {getStatusIcon(item)}
                     </div>
                   )}
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-start">
                     <p className={`text-base font-semibold truncate pr-2 ${
-                      (item.status === "Esgotado" || (isProduct && item.stock === 0)) ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
+                      (item.type === 'produto' ? item.stock === 0 : item.status === "Esgotado") ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
                     }`}>
                       {item.name}
                     </p>
-                    {(item.status === "Baixo" || item.status === "Crítico" || (isProduct && item.stock === 0)) && (
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${getStatusColor(item.status || "Crítico")}`}>
-                        {item.status || "Esgotado"}
+                    {(item.type === 'produto' ? item.stock === 0 : (item.status === "Baixo" || item.status === "Crítico")) && (
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${getStatusColor(item)}`}>
+                        {getStatusText(item)}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-                      {isProduct ? `${item.stock} un` : `${item.quantity} ${item.unit}`}
+                      {item.type === 'produto' ? `${item.stock} un` : `${item.quantity} ${item.unit}`}
                     </p>
                     {item.minQuantity && (
                       <>
@@ -259,6 +285,12 @@ const GestaoEstoque = () => {
                       </>
                     )}
                   </div>
+                  {item.type === 'produto' && (
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="text-xs text-slate-400 font-normal">Preço:</span>
+                      <span className="text-sm font-bold text-primary">R$ {item.price?.toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
