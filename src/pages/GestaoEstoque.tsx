@@ -168,39 +168,24 @@ const GestaoEstoque = () => {
   const lowStockItems = inventoryItems.filter(item => item.status === "Baixo" || item.status === "Crítico").length;
   const outOfStockProducts = products.filter(product => product.stock === 0).length;
 
-  const availableItems = [
-    { id: "liga_neutra", name: "Liga Neutra (g)", type: "Ingrediente" },
-    { id: "chocolate_genuine", name: "Chocolate Preto Genuine 2,05kg (g)", type: "Ingrediente" },
-    { id: "acucar", name: "Açúcar 5kg (g)", type: "Ingrediente" },
-    { id: "morango", name: "Morango Bandeja 200g (Un)", type: "Ingrediente" },
-    { id: "leite_integral", name: "Leite Integral 1L (Un)", type: "Ingrediente" },
-    { id: "ovo", name: "Ovo 30Un (Un)", type: "Ingrediente" },
-    { id: "leite_condensado", name: "Leite Condensado (Un)", type: "Ingrediente" },
-    { id: "creme_leite", name: "Creme de Leite (Un)", type: "Ingrediente" },
-    { id: "essencia_baunilha", name: "Essência de Baunilha (g)", type: "Ingrediente" },
-    { id: "maracuja", name: "Maracujá Polpa (g)", type: "Ingrediente" },
-    { id: "saborizante_limao", name: "Saborizante de Limão 100g (g)", type: "Ingrediente" },
-    { id: "limao_fruta", name: "Limão Fruta (g)", type: "Ingrediente" },
-    { id: "oreo", name: "Biscoito Recheado Oreo 90g (Un)", type: "Ingrediente" },
-    { id: "laka", name: "Chocolate Branco Laka 80g (Un)", type: "Ingrediente" },
-    { id: "ninho", name: "Leite em Pó Ninho 380g (g)", type: "Ingrediente" },
-    { id: "leite_coco", name: "Leite de Coco 200ml (ml)", type: "Ingrediente" },
-    { id: "nutella", name: "Nutella (g)", type: "Ingrediente" },
-    { id: "ccgl", name: "Leite em pó CCGL 400g (g)", type: "Ingrediente" },
-    { id: "coco_fruta", name: "Coco (Fruta) (g)", type: "Ingrediente" },
-    { id: "coco_ralado", name: "Coco ralado 100g (g)", type: "Ingrediente" },
-    { id: "pacoquita", name: "Pacoquinha Paçoquita (Un)", type: "Ingrediente" },
-    { id: "choc_branco_genuine", name: "Chocolate Branco Genuine 2,05kg (g)", type: "Ingrediente" },
-    { id: "acai", name: "Açaí 5L (g)", type: "Ingrediente" },
-    { id: "sab_morango", name: "Saborizante de Morango 100g (g)", type: "Ingrediente" },
-    { id: "emb_termica", name: "Embalagem Viagem Térmica (Un)", type: "Embalagem" },
-    { id: "emb_higienica", name: "Embalagem Higiênica (Un)", type: "Embalagem" },
-    { id: "saquinho", name: "Saquinho Interno (Un)", type: "Embalagem" }
-  ];
-
-  const filteredAvailableItems = availableItems.filter(item => 
-    movementForm.itemType === "Todos" || item.type === movementForm.itemType
-  );
+  // Get available items based on selected type
+  const getAvailableItems = () => {
+    if (movementForm.itemType === "Todos") {
+      return inventoryItems.map(item => ({
+        id: item.id,
+        name: `${item.name} (${item.quantity} ${item.unit})`,
+        category: item.category
+      }));
+    } else {
+      return inventoryItems
+        .filter(item => item.category === movementForm.itemType)
+        .map(item => ({
+          id: item.id,
+          name: `${item.name} (${item.quantity} ${item.unit})`,
+          category: item.category
+        }));
+    }
+  };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
@@ -404,24 +389,24 @@ const GestaoEstoque = () => {
               <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Tipo de Item</label>
               <div className="flex p-1 bg-surface-dark-lighter rounded-lg">
                 <button
-                  onClick={() => setMovementForm(prev => ({ ...prev, itemType: "Ingrediente" }))}
+                  onClick={() => setMovementForm(prev => ({ ...prev, itemType: "Ingredientes" }))}
                   className={`flex-1 py-2 px-4 rounded text-sm font-medium transition-all ${
-                    movementForm.itemType === "Ingrediente" 
+                    movementForm.itemType === "Ingredientes" 
                       ? "bg-primary text-white shadow-sm" 
                       : "text-text-secondary hover:text-white"
                   }`}
                 >
-                  Ingrediente
+                  Ingredientes
                 </button>
                 <button
-                  onClick={() => setMovementForm(prev => ({ ...prev, itemType: "Embalagem" }))}
+                  onClick={() => setMovementForm(prev => ({ ...prev, itemType: "Embalagens" }))}
                   className={`flex-1 py-2 px-4 rounded text-sm font-medium transition-all ${
-                    movementForm.itemType === "Embalagem" 
+                    movementForm.itemType === "Embalagens" 
                       ? "bg-primary text-white shadow-sm" 
                       : "text-text-secondary hover:text-white"
                   }`}
                 >
-                  Embalagem
+                  Embalagens
                 </button>
               </div>
             </div>
@@ -434,7 +419,7 @@ const GestaoEstoque = () => {
                   <SelectValue placeholder="Selecione um insumo..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {filteredAvailableItems.map((item) => (
+                  {getAvailableItems().map((item) => (
                     <SelectItem key={item.id} value={item.id}>
                       {item.name}
                     </SelectItem>
