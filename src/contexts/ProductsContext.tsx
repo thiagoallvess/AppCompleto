@@ -10,6 +10,7 @@ export interface Product {
   reviews: number;
   stock: number;
   isActive: boolean;
+  recipeId?: string;
 }
 
 interface ProductsContextType {
@@ -39,7 +40,6 @@ interface ProductsProviderProps {
 export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Load products from localStorage on mount
   useEffect(() => {
     const loadProducts = () => {
       try {
@@ -47,7 +47,6 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
         if (storedProducts) {
           setProducts(JSON.parse(storedProducts));
         } else {
-          // Inicia vazio conforme solicitado pelo usuário
           setProducts([]);
         }
       } catch (error) {
@@ -59,7 +58,6 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
     loadProducts();
   }, []);
 
-  // Save to localStorage whenever products change
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
@@ -84,7 +82,9 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
 
   const updateStock = (productId: string, quantity: number) => {
     setProducts(prev => prev.map(product =>
-      product.id === productId ? { ...product, stock: Math.max(0, product.stock + quantity) } : product
+      product.id === productId 
+        ? { ...product, stock: (product.stock || 0) + quantity } 
+        : product
     ));
   };
 

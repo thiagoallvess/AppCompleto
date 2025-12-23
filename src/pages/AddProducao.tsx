@@ -4,19 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRecipes } from "@/contexts/RecipesContext";
+import { useProducts } from "@/contexts/ProductsContext";
 import { showSuccess, showError } from "@/utils/toast";
 
 const AddProducao = () => {
   const navigate = useNavigate();
   const { recipes } = useRecipes();
+  const { products, updateStock } = useProducts();
   const [selectedRecipeId, setSelectedRecipeId] = useState("");
   const [batchQuantity, setBatchQuantity] = useState("1");
 
-  // Encontra a receita selecionada na lista real
   const selectedRecipe = recipes.find(r => r.id.toString() === selectedRecipeId);
   
-  // Lógica baseada em lotes
-  const recipeYield = selectedRecipe?.quantity || 0; // Rendimento de 1 lote
+  const recipeYield = selectedRecipe?.quantity || 0;
   const numBatches = parseInt(batchQuantity) || 0;
   const totalProducedUnits = recipeYield * numBatches;
   
@@ -35,7 +35,6 @@ const AddProducao = () => {
       return;
     }
 
-    // Criar o novo lote com metadados detalhados
     const newLot = {
       id: Math.floor(1000 + Math.random() * 9000).toString(),
       recipeId: selectedRecipeId,
@@ -57,12 +56,18 @@ const AddProducao = () => {
       }
     };
 
-    // Salvar no localStorage
     try {
+      // 1. Salvar o lote de produção
       const storedLots = localStorage.getItem('productionLots');
       const currentLots = storedLots ? JSON.parse(storedLots) : [];
       const updatedLots = [newLot, ...currentLots];
       localStorage.setItem('productionLots', JSON.stringify(updatedLots));
+      
+      // 2. Atualizar o estoque do produto vinculado
+      const linkedProductId = (selectedRecipe as any).linkedProductId;
+      if (linkedProductId && linkedProductId !== "none") {
+        updateStock(linkedProductId, totalProducedUnits);
+      }
       
       showSuccess(`Produção de ${numBatches} lote(s) (${totalProducedUnits} unidades) de ${selectedRecipe.name} registrada!`);
       navigate("/gestao-producao");
@@ -74,7 +79,6 @@ const AddProducao = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased">
-      {/* Header */}
       <header className="sticky top-0 z-30 flex items-center justify-between bg-white/90 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-slate-200 dark:border-slate-800">
         <Link
           to="/gestao-producao"
@@ -86,10 +90,8 @@ const AddProducao = () => {
         <div className="size-10"></div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Form Section */}
           <div className="space-y-6">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="recipe">
@@ -109,7 +111,6 @@ const AddProducao = () => {
               </Select>
             </div>
 
-            {/* Quantity Input (Batches) */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="batches">
                 Quantidade de Lotes
@@ -135,7 +136,6 @@ const AddProducao = () => {
               )}
             </div>
 
-            {/* Register Button */}
             <div className="pt-4">
               <Button
                 onClick={handleSubmit}
@@ -148,7 +148,6 @@ const AddProducao = () => {
             </div>
           </div>
 
-          {/* Cost Preview Section */}
           <div className="space-y-6">
             <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-700/50">
@@ -174,7 +173,6 @@ const AddProducao = () => {
               </div>
             </div>
 
-            {/* Impact Card */}
             <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-700/50">
                 <span className="material-symbols-outlined text-primary text-xl">info</span>
@@ -203,7 +201,6 @@ const AddProducao = () => {
         </div>
       </main>
 
-      {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800/80 backdrop-blur-lg bg-opacity-95">
         <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
           <span className="material-symbols-outlined text-[24px]">dashboard</span>
