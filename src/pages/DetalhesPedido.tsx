@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowLeft, Printer, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useOrders } from "@/contexts/OrdersContext";
@@ -7,6 +9,7 @@ const DetalhesPedido = () => {
   const orderId = searchParams.get('id');
   const { getOrderById } = useOrders();
 
+  // Busca o pedido real no contexto
   const order = getOrderById(orderId || '');
 
   if (!order) {
@@ -25,7 +28,7 @@ const DetalhesPedido = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <span className="material-symbols-outlined text-slate-400 text-6xl mb-4">receipt_long</span>
-            <p className="text-slate-500 dark:text-slate-400 mb-4">Pedido não encontrado</p>
+            <p className="text-slate-500 dark:text-slate-400 mb-4">Não encontramos este pedido no sistema.</p>
             <Link
               to="/gestao-pedidos"
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
@@ -38,6 +41,17 @@ const DetalhesPedido = () => {
       </div>
     );
   }
+
+  const getStatusColor = (color: string) => {
+    switch (color) {
+      case "primary": return "bg-primary/10 text-primary";
+      case "orange": return "bg-orange-500/10 text-orange-500";
+      case "blue": return "bg-blue-500/10 text-blue-500";
+      case "green": return "bg-green-500/10 text-green-500";
+      case "red": return "bg-red-500/10 text-red-500";
+      default: return "bg-gray-500/10 text-gray-500";
+    }
+  };
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-6 bg-background-light dark:bg-background-dark">
@@ -66,18 +80,12 @@ const DetalhesPedido = () => {
         <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <span className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Status do Pedido</span>
-            <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${
-              order.statusColor === "primary" ? "bg-primary/10 text-primary" :
-              order.statusColor === "orange" ? "bg-orange-500/10 text-orange-500" :
-              order.statusColor === "blue" ? "bg-blue-500/10 text-blue-500" :
-              order.statusColor === "green" ? "bg-green-500/10 text-green-500" :
-              "bg-red-500/10 text-red-500"
-            }`}>
+            <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${getStatusColor(order.statusColor)}`}>
               {order.status}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0 size-14">
+            <div className={`flex items-center justify-center rounded-xl shrink-0 size-14 ${getStatusColor(order.statusColor)}`}>
               <span className="material-symbols-outlined text-[28px]">{order.statusIcon}</span>
             </div>
             <div>
@@ -89,11 +97,11 @@ const DetalhesPedido = () => {
                  "Cancelado"}
               </p>
               <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-                {order.status === "Novo" ? "Criado há 15 min" :
-                 order.status === "Preparo" ? "Iniciado há 10 min" :
+                {order.status === "Novo" ? "Recebido recentemente" :
+                 order.status === "Preparo" ? "Sendo preparado na cozinha" :
                  order.status === "Rota" ? "Saiu para entrega" :
-                 order.status === "Entregue" ? `Entregue às ${order.time}` :
-                 "Cancelado pelo cliente"}
+                 order.status === "Entregue" ? `Finalizado às ${order.time}` :
+                 "Pedido cancelado"}
               </p>
             </div>
           </div>
@@ -127,7 +135,7 @@ const DetalhesPedido = () => {
               <p className="text-slate-900 dark:text-white font-bold text-base">{order.customer}</p>
               <div className="flex items-center gap-1 mt-1 text-slate-500 dark:text-slate-400 text-sm">
                 <span className="material-symbols-outlined text-base text-yellow-500">star</span>
-                <span>4.9 (12 pedidos)</span>
+                <span>4.9 (Histórico positivo)</span>
               </div>
             </div>
           </div>
@@ -140,37 +148,6 @@ const DetalhesPedido = () => {
               <MessageCircle size={18} />
               WhatsApp
             </button>
-          </div>
-        </div>
-
-        {/* Delivery Info */}
-        <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-slate-900 dark:text-white text-base font-bold flex items-center gap-2">
-              <MapPin className="text-slate-500 dark:text-slate-400" size={20} />
-              Entrega
-            </h3>
-            <button className="text-primary text-xs font-bold uppercase tracking-wider hover:underline">Ver no Mapa</button>
-          </div>
-          <div className="space-y-3">
-            <div className="flex gap-3">
-              <div className="flex flex-col items-center gap-1 pt-1">
-                <div className="size-2 rounded-full bg-slate-400 dark:bg-slate-500"></div>
-                <div className="w-0.5 h-12 bg-slate-200 dark:bg-slate-700"></div>
-                <div className="size-2 rounded-full bg-primary"></div>
-              </div>
-              <div className="flex-1 space-y-4">
-                <div>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs uppercase font-bold tracking-wider mb-0.5">Origem</p>
-                  <p className="text-slate-900 dark:text-white text-sm font-medium">Loja Gourmet Ice - Centro</p>
-                </div>
-                <div>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs uppercase font-bold tracking-wider mb-0.5">Destino</p>
-                  <p className="text-slate-900 dark:text-white text-sm font-medium leading-relaxed">Rua das Acácias, 450, Apto 32<br/>Jardim das Flores, São Paulo - SP</p>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Distância: 3.2 km • Est. 15-20 min</p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -206,10 +183,6 @@ const DetalhesPedido = () => {
               <span className="text-slate-500 dark:text-slate-400">Taxa de Entrega</span>
               <span className="text-slate-900 dark:text-white font-medium">R$ 5,00</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500 dark:text-slate-400">Desconto</span>
-              <span className="text-green-500 font-medium">- R$ 0,00</span>
-            </div>
             <div className="flex justify-between text-base pt-2 border-t border-slate-200 dark:border-slate-800 mt-2">
               <span className="font-bold text-slate-900 dark:text-white">Total</span>
               <span className="font-bold text-primary text-lg">R$ {(order.total + 5).toFixed(2)}</span>
@@ -226,11 +199,11 @@ const DetalhesPedido = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                <span className="material-symbols-outlined text-slate-600 dark:text-slate-300">photos</span>
+                <span className="material-symbols-outlined text-slate-600 dark:text-slate-300">payments</span>
               </div>
               <div>
-                <p className="text-slate-900 dark:text-white text-sm font-bold">Pix</p>
-                <p className="text-slate-500 dark:text-slate-400 text-xs">Pago no app</p>
+                <p className="text-slate-900 dark:text-white text-sm font-bold">Método de Pagamento</p>
+                <p className="text-slate-500 dark:text-slate-400 text-xs">Confirmado pelo sistema</p>
               </div>
             </div>
             <span className="rounded-md bg-green-500/10 px-2 py-1 text-xs font-bold uppercase tracking-wide text-green-600">Pago</span>
@@ -246,24 +219,16 @@ const DetalhesPedido = () => {
           <div className="relative pl-4 border-l-2 border-slate-200 dark:border-slate-800 space-y-6">
             <div className="relative">
               <div className="absolute -left-[21px] top-1 size-3 rounded-full bg-primary ring-4 ring-white dark:ring-surface-dark"></div>
-              <p className="text-slate-900 dark:text-white text-sm font-bold">Novo Pedido</p>
-              <p className="text-slate-500 dark:text-slate-400 text-xs">14:32 • Cliente realizou o pedido</p>
+              <p className="text-slate-900 dark:text-white text-sm font-bold">Pedido Criado</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs">{order.date || 'Hoje'} • {order.time}</p>
             </div>
             {order.status !== "Novo" && (
               <div className="relative">
                 <div className="absolute -left-[21px] top-1 size-3 rounded-full bg-primary ring-4 ring-white dark:ring-surface-dark"></div>
                 <p className="text-slate-900 dark:text-white text-sm font-bold">
-                  {order.status === "Preparo" ? "Em Preparo" :
-                   order.status === "Rota" ? "Saiu para Entrega" :
-                   order.status === "Entregue" ? "Entregue" :
-                   "Cancelado"}
+                  {order.status}
                 </p>
-                <p className="text-slate-500 dark:text-slate-400 text-xs">
-                  {order.status === "Preparo" ? "Iniciado há 10 min" :
-                   order.status === "Rota" ? "Saiu para entrega" :
-                   order.status === "Entregue" ? `Entregue às ${order.time}` :
-                   "Cancelado pelo cliente"}
-                </p>
+                <p className="text-slate-500 dark:text-slate-400 text-xs">Atualizado pelo sistema</p>
               </div>
             )}
           </div>
