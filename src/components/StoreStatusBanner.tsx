@@ -2,8 +2,9 @@ import { Store, Clock } from "lucide-react";
 import { useStore } from "../contexts/StoreContext";
 
 const StoreStatusBanner = () => {
-  const { storeOpen, getCurrentDayHours } = useStore();
+  const { storeOpen, getCurrentDayHours, getNextOpenTime } = useStore();
   const dayHours = getCurrentDayHours();
+  const nextOpen = getNextOpenTime();
 
   const getDayName = () => {
     const daysMap = [
@@ -25,6 +26,12 @@ const StoreStatusBanner = () => {
             <p className="text-xs text-red-700 dark:text-red-400 mt-0.5">
               Não estamos aceitando pedidos no momento
             </p>
+            {nextOpen && (
+              <p className="text-xs text-red-700 dark:text-red-400 mt-1 flex items-center gap-1 font-medium">
+                <Clock size={12} />
+                Abre {nextOpen.dayName} às {nextOpen.time}
+              </p>
+            )}
           </div>
         </div>
       </div>

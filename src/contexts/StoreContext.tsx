@@ -17,6 +17,7 @@ interface StoreContextType {
   setBusinessHours: (hours: BusinessHours) => void;
   getCurrentDayHours: () => { open: string; close: string } | null;
   isWithinBusinessHours: () => boolean;
+  getNextOpenTime: () => { dayName: string; time: string } | null;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -24,7 +25,7 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 export const useStore = () => {
   const context = useContext(StoreContext);
   if (!context) {
-    throw new Error('useStore must be used within a StoreProvider');
+    throw new Error('useStore must be used within a CartProvider');
   }
   return context;
 };
@@ -33,7 +34,10 @@ interface StoreProviderProps {
   children: ReactNode;
 }
 
-export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
+const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+const dayNamesMap = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+export const CartProvider: React.FC<StoreProviderProps> = ({ children }) => {
   const [storeOpen, setStoreOpenState] = useState<boolean>(() => {
     const saved = localStorage.getItem('storeOpen');
     return saved !== null ? JSON.parse(saved) : true;
@@ -63,8 +67,8 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
   };
 
   const getCurrentDayHours = () => {
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const today = days[new Date().getDay()];
+    const todayIndex = new Date().getDay();
+    const today = daysOfWeek[todayIndex];
     return businessHours[today as keyof BusinessHours];
   };
 
@@ -78,6 +82,34 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
     return currentTime >= dayHours.open && currentTime <= dayHours.close;
   };
 
+  const getNextOpenTime = () => {
+    const now = new Date();
+    const currentDayIndex = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    // 1. Check if the store opens later today
+    const todayKey = daysOfWeek[currentDayIndex] as keyof BusinessHours;
+    const todayHours = businessHours[todayKey];
+
+    if (todayHours.open !== todayHours.close && todayHours.open > currentTime) {
+      return { dayName: 'Hoje', time: todayHours.open };
+    }
+
+    // 2. Check subsequent days
+    for (let i = 1; i <= 7; i++) {
+      const nextDayIndex = (currentDayIndex + i) % 7;
+      const nextDayKey = daysOfWeek[nextDayIndex] as keyof BusinessHours;
+      const nextDayHours = businessHours[nextDayKey];
+
+      if (nextDayHours.open !== nextDayHours.close) {
+        const dayName = i === 1 ? 'Amanhã' : dayNamesMap[nextDayIndex];
+        return { dayName, time: nextDayHours.open };
+      }
+    }
+
+    return null; // Never opens
+  };
+
   return (
     <StoreContext.Provider value={{
       storeOpen,
@@ -85,7 +117,8 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
       businessHours,
       setBusinessHours,
       getCurrentDayHours,
-      isWithinBusinessHours
+      isWithinBusinessHours,
+      getNextOpenTime
     }}>
       {children}
     </StoreContext.Provider>
