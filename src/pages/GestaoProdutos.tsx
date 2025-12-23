@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Search, MoreVertical, IceCream, Receipt, Settings, Edi
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useProducts } from "@/contexts/ProductsContext";
+import { useProducts, Product } from "@/contexts/ProductsContext";
 import AddProdutoModal from "@/components/AddProdutoModal";
 import {
   DropdownMenu,
@@ -18,6 +18,7 @@ const GestaoProdutos = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const { products, removeProduct } = useProducts();
 
   const filters = ["Todos", "Em estoque", "Esgotado", "Inativos"];
@@ -35,6 +36,16 @@ const GestaoProdutos = () => {
       
     return matchesSearch && matchesFilter;
   });
+
+  const handleAddClick = () => {
+    setProductToEdit(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (product: Product) => {
+    setProductToEdit(product);
+    setIsModalOpen(true);
+  };
 
   const handleDelete = (id: string, name: string) => {
     if (confirm(`Tem certeza que deseja excluir o produto "${name}"?`)) {
@@ -79,7 +90,7 @@ const GestaoProdutos = () => {
           <Button 
             size="sm" 
             className="size-10 rounded-full p-0 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30" 
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleAddClick}
           >
             <Plus size={24} />
           </Button>
@@ -161,7 +172,10 @@ const GestaoProdutos = () => {
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
-                        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
+                        <DropdownMenuItem 
+                          onClick={() => handleEditClick(product)}
+                          className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800"
+                        >
                           <Edit size={16} className="text-slate-500" />
                           <span>Editar</span>
                         </DropdownMenuItem>
@@ -214,7 +228,11 @@ const GestaoProdutos = () => {
         </Link>
       </nav>
       
-      <AddProdutoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddProdutoModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        productToEdit={productToEdit}
+      />
     </div>
   );
 };

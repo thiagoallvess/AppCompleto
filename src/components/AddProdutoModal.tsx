@@ -1,20 +1,23 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Plus } from "lucide-react";
-import { useProducts } from "@/contexts/ProductsContext";
+import { ArrowLeft, Plus, Save } from "lucide-react";
+import { useProducts, Product } from "@/contexts/ProductsContext";
 import { showSuccess } from "@/utils/toast";
 
 interface AddProdutoModalProps {
   isOpen: boolean;
   onClose: () => void;
+  productToEdit?: Product | null;
 }
 
-const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
+const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProps) => {
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -22,7 +25,27 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
   const [imageUrl, setImageUrl] = useState("");
   const [recipeId, setRecipeId] = useState("");
   const [isActive, setIsActive] = useState(true);
-  const { addProduct } = useProducts();
+  const { addProduct, updateProduct } = useProducts();
+
+  useEffect(() => {
+    if (productToEdit) {
+      setProductName(productToEdit.name);
+      setDescription(productToEdit.description);
+      setPrice(productToEdit.price.toString());
+      setImageUrl(productToEdit.image);
+      setIsActive(productToEdit.isActive);
+      // Nota: isPromotion e recipeId não existem no tipo Product atual, 
+      // mas mantemos os estados para consistência da UI
+    } else {
+      setProductName("");
+      setDescription("");
+      setPrice("");
+      setIsPromotion(false);
+      setImageUrl("");
+      setRecipeId("");
+      setIsActive(true);
+    }
+  }, [productToEdit, isOpen]);
 
   const recipes = [
     { id: "none", name: "Nenhuma Receita" },
@@ -40,33 +63,36 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newProduct = {
-      id: Date.now().toString(),
+    
+    const productData = {
       name: productName,
       price: parseFloat(price) || 0,
       image: imageUrl || "https://via.placeholder.com/300x200?text=Produto",
       description: description,
-      rating: 0,
-      reviews: 0
+      isActive: isActive,
     };
-    addProduct(newProduct);
-    showSuccess(`${productName} adicionado com sucesso!`);
+
+    if (productToEdit) {
+      updateProduct(productToEdit.id, productData);
+      showSuccess(`${productName} atualizado com sucesso!`);
+    } else {
+      const newProduct = {
+        ...productData,
+        id: Date.now().toString(),
+        rating: 0,
+        reviews: 0,
+        stock: 0
+      };
+      addProduct(newProduct);
+      showSuccess(`${productName} adicionado com sucesso!`);
+    }
     
-    // Reset form and close modal
-    setProductName("");
-    setDescription("");
-    setPrice("");
-    setIsPromotion(false);
-    setImageUrl("");
-    setRecipeId("");
-    setIsActive(true);
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-slate-200 dark:border-slate-800 p-0 max-h-[90vh] overflow-hidden">
-        {/* Header */}
         <DialogHeader className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3">
           <div className="flex items-center gap-3">
             <Button
@@ -79,12 +105,13 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
             </Button>
             <div className="flex flex-col">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Produtos</span>
-              <DialogTitle className="text-xl font-bold leading-tight tracking-tight text-left">Adicionar Novo</DialogTitle>
+              <DialogTitle className="text-xl font-bold leading-tight tracking-tight text-left">
+                {productToEdit ? "Editar Produto" : "Adicionar Novo"}
+              </DialogTitle>
             </div>
           </div>
         </DialogHeader>
 
-        {/* Form */}
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent max-h-[calc(90vh-120px)]">
           <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-5">
             <div className="flex flex-col gap-4">
@@ -206,8 +233,8 @@ const AddProdutoModal = ({ isOpen, onClose }: AddProdutoModalProps) => {
               type="submit"
               className="mt-4 w-full bg-primary hover:bg-blue-700 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              <Plus size={20} />
-              Adicionar Produto
+              {productToEdit ? <Save size={20} /> : <Plus size={20} />}
+              {productToEdit ? "Salvar Alterações" : "Adicionar Produto"}
             </Button>
           </form>
         </div>
