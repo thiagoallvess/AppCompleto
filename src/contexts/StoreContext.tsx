@@ -15,6 +15,10 @@ interface StoreContextType {
   setStoreOpen: (open: boolean) => void;
   businessHours: BusinessHours;
   setBusinessHours: (hours: BusinessHours) => void;
+  referralRewardYou: string;
+  setReferralRewardYou: (value: string) => void;
+  referralRewardThem: string;
+  setReferralRewardThem: (value: string) => void;
   getCurrentDayHours: () => { open: string; close: string } | null;
   isWithinBusinessHours: () => boolean;
   getNextOpenTime: () => { dayName: string; time: string } | null;
@@ -25,7 +29,7 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 export const useStore = () => {
   const context = useContext(StoreContext);
   if (!context) {
-    throw new Error('useStore must be used within a CartProvider');
+    throw new Error('useStore must be used within a StoreProvider');
   }
   return context;
 };
@@ -56,6 +60,14 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
     };
   });
 
+  const [referralRewardYou, setReferralRewardYouState] = useState<string>(() => {
+    return localStorage.getItem('referralRewardYou') || "10";
+  });
+
+  const [referralRewardThem, setReferralRewardThemState] = useState<string>(() => {
+    return localStorage.getItem('referralRewardThem') || "5";
+  });
+
   const setStoreOpen = (open: boolean) => {
     setStoreOpenState(open);
     localStorage.setItem('storeOpen', JSON.stringify(open));
@@ -64,6 +76,16 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
   const setBusinessHours = (hours: BusinessHours) => {
     setBusinessHoursState(hours);
     localStorage.setItem('businessHours', JSON.stringify(hours));
+  };
+
+  const setReferralRewardYou = (value: string) => {
+    setReferralRewardYouState(value);
+    localStorage.setItem('referralRewardYou', value);
+  };
+
+  const setReferralRewardThem = (value: string) => {
+    setReferralRewardThemState(value);
+    localStorage.setItem('referralRewardThem', value);
   };
 
   const getCurrentDayHours = () => {
@@ -84,10 +106,9 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
 
   const getNextOpenTime = () => {
     const now = new Date();
-    const currentDayIndex = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const currentDayIndex = now.getDay();
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    // 1. Check if the store opens later today
     const todayKey = daysOfWeek[currentDayIndex] as keyof BusinessHours;
     const todayHours = businessHours[todayKey];
 
@@ -95,7 +116,6 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
       return { dayName: 'Hoje', time: todayHours.open };
     }
 
-    // 2. Check subsequent days
     for (let i = 1; i <= 7; i++) {
       const nextDayIndex = (currentDayIndex + i) % 7;
       const nextDayKey = daysOfWeek[nextDayIndex] as keyof BusinessHours;
@@ -107,7 +127,7 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
       }
     }
 
-    return null; // Never opens
+    return null;
   };
 
   return (
@@ -116,6 +136,10 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
       setStoreOpen,
       businessHours,
       setBusinessHours,
+      referralRewardYou,
+      setReferralRewardYou,
+      referralRewardThem,
+      setReferralRewardThem,
       getCurrentDayHours,
       isWithinBusinessHours,
       getNextOpenTime

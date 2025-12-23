@@ -1,8 +1,10 @@
 import { ArrowLeft, Gift, Tag, Users, Copy, Share, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useStore } from "../contexts/StoreContext";
 
 const Indicacao = () => {
+  const { referralRewardYou, referralRewardThem } = useStore();
   const [copied, setCopied] = useState(false);
   const referralCode = "GELA-GOURMET-92";
 
@@ -19,7 +21,7 @@ const Indicacao = () => {
   const handleShare = async () => {
     const shareData = {
       title: 'Geladinhos Gourmet',
-      text: `Use meu código ${referralCode} e ganhe 5% OFF na primeira compra! Baixe o app: [link]`,
+      text: `Use meu código ${referralCode} e ganhe ${referralRewardThem}% OFF na primeira compra! Baixe o app: [link]`,
       url: window.location.origin
     };
 
@@ -30,7 +32,6 @@ const Indicacao = () => {
         console.error('Error sharing:', err);
       }
     } else {
-      // Fallback: copy to clipboard
       try {
         await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
         alert('Link copiado para compartilhar!');
@@ -96,7 +97,7 @@ const Indicacao = () => {
             </div>
             <div className="flex flex-col gap-1">
               <h2 className="text-slate-900 dark:text-text-primary text-base font-bold leading-tight">Para você</h2>
-              <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-normal">10% OFF</p>
+              <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-normal">{referralRewardYou}% OFF</p>
             </div>
           </div>
           {/* Card 2 */}
@@ -106,7 +107,7 @@ const Indicacao = () => {
             </div>
             <div className="flex flex-col items-start flex-1">
               <h2 className="text-slate-900 dark:text-text-primary text-base font-bold leading-tight">Para eles</h2>
-              <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-normal">5% OFF</p>
+              <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-normal">{referralRewardThem}% OFF</p>
             </div>
           </div>
         </div>
