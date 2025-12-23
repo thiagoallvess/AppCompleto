@@ -172,7 +172,6 @@ const Cart = () => {
                 <p className="text-base font-bold text-gray-900 dark:text-white">Total</p>
                 <div className="text-right">
                   <p className="text-2xl font-extrabold text-primary tracking-tight">R$ {total.toFixed(2)}</p>
-                  <p className="text-xs text-gray-400 font-medium">em até 2x s/ juros</p>
                 </div>
               </div>
             </div>
