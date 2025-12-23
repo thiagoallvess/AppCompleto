@@ -1,8 +1,16 @@
-import { ArrowLeft, Plus, Search, MoreVertical, Package, TrendingUp, DollarSign, Calendar } from "lucide-react";
+"use client";
+
+import { ArrowLeft, Plus, Search, MoreVertical, Package, TrendingUp, DollarSign, Calendar, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { showSuccess } from "@/utils/toast";
 
 const GestaoProducao = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -10,7 +18,8 @@ const GestaoProducao = () => {
 
   const filters = ["Todos", "Em Produção", "Finalizado", "Em Estoque"];
 
-  const productionLots = [
+  // Mock data - em uma aplicação real viria do contexto/API
+  const [productionLots, setProductionLots] = useState([
     {
       id: "8349",
       name: "Ninho com Nutella",
@@ -44,7 +53,14 @@ const GestaoProducao = () => {
       totalCost: 0.00,
       unitCost: 0.00
     }
-  ];
+  ]);
+
+  const handleDelete = (id: string, name: string) => {
+    if (confirm(`Deseja realmente excluir o lote de "${name}"?`)) {
+      setProductionLots(prev => prev.filter(lot => lot.id !== id));
+      showSuccess(`Lote #${id} excluído com sucesso.`);
+    }
+  };
 
   const filteredLots = productionLots.filter(lot => {
     const matchesSearch = lot.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -76,7 +92,7 @@ const GestaoProducao = () => {
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
             to="/visao-geral"
-            className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="flex items-center justify-center size-10 rounded-full text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft size={24} />
           </Link>
@@ -165,49 +181,73 @@ const GestaoProducao = () => {
       <div className="flex-1 px-4 pb-20 space-y-3">
         <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 mt-2">Lotes Recentes</h3>
         {filteredLots.map((lot) => (
-          <Link
-            key={lot.id}
-            to={`/detalhes-lote?id=${lot.id}`}
-            className="block"
-          >
-            <div className="bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 flex gap-4 items-start active:scale-[0.99] transition-transform cursor-pointer group">
-              <div className="relative shrink-0 w-[72px] h-[72px]">
-                <div
-                  className="w-full h-full rounded-lg bg-gray-200 dark:bg-gray-700 bg-cover bg-center"
-                  style={{ backgroundImage: `url('${lot.image}')` }}
-                ></div>
+          <div key={lot.id} className="relative">
+            <Link
+              to={`/detalhes-lote?id=${lot.id}`}
+              className="block"
+            >
+              <div className="bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 flex gap-4 items-start active:scale-[0.99] transition-transform cursor-pointer group">
+                <div className="relative shrink-0 w-[72px] h-[72px]">
+                  <div
+                    className="w-full h-full rounded-lg bg-gray-200 dark:bg-gray-700 bg-cover bg-center"
+                    style={{ backgroundImage: `url('${lot.image}')` }}
+                  ></div>
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                  <div className="flex justify-between items-start">
+                    <h3 className={`text-base font-semibold text-slate-800 dark:text-white truncate pr-8`}>
+                      {lot.name}
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-1">
+                      <Calendar size={14} />
+                      <span>{lot.date}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Package size={14} />
+                      <span>{lot.produced} un</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className={`inline-flex items-center rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wide ${getStatusColor(lot.statusColor)}`}>
+                      {lot.status}
+                    </span>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">R$ {lot.totalCost.toFixed(2)}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">R$ {lot.unitCost.toFixed(2)}/un</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-                <div className="flex justify-between items-start">
-                  <h3 className={`text-base font-semibold text-slate-800 dark:text-white truncate pr-2`}>
-                    {lot.name}
-                  </h3>
-                  <button className="text-gray-400 hover:text-primary transition-colors p-1 -m-1 -mt-2">
+            </Link>
+            
+            {/* Menu de Opções (Três Pontinhos) */}
+            <div className="absolute top-2 right-2 z-10">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center justify-center size-8 rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors outline-none">
                     <MoreVertical size={20} />
                   </button>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <Calendar size={14} />
-                    <span>{lot.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Package size={14} />
-                    <span>{lot.produced} un</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className={`inline-flex items-center rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wide ${getStatusColor(lot.statusColor)}`}>
-                    {lot.status}
-                  </span>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">R$ {lot.totalCost.toFixed(2)}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">R$ {lot.unitCost.toFixed(2)}/un</p>
-                  </div>
-                </div>
-              </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
+                  <DropdownMenuItem asChild className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
+                    <Link to={`/detalhes-lote?id=${lot.id}`}>
+                      <Edit size={16} className="text-slate-500" />
+                      <span>Editar</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleDelete(lot.id, lot.name)}
+                    className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
+                  >
+                    <Trash2 size={16} />
+                    <span>Excluir</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
