@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowLeft, Menu, Bell, Plus, Search, TrendingUp, DollarSign, Check, ChevronRight, ChefHat, Bike, CheckCircle, X, Phone, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -157,7 +159,7 @@ const GestaoPedidos = () => {
             {openOrders.map((order) => (
               <Link
                 key={order.id}
-                to={`/detalhes-pedido?id=${order.id}`}
+                to={`/detalhes-pedido?id=${encodeURIComponent(order.id)}`}
                 className="block"
               >
                 <article
@@ -233,7 +235,7 @@ const GestaoPedidos = () => {
             {finishedOrders.map((order) => (
               <Link
                 key={order.id}
-                to={`/detalhes-pedido?id=${order.id}`}
+                to={`/detalhes-pedido?id=${encodeURIComponent(order.id)}`}
                 className="block"
               >
                 <article
