@@ -1,13 +1,20 @@
 import { ArrowLeft, Home, IceCream, Receipt, Settings, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useRecipes } from "@/contexts/RecipesContext";
+import { useProducts } from "@/contexts/ProductsContext";
+import { showSuccess } from "@/utils/toast";
 
 const AddProduto = () => {
+  const navigate = useNavigate();
+  const { recipes } = useRecipes();
+  const { addProduct } = useProducts();
+
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -16,32 +23,24 @@ const AddProduto = () => {
   const [recipeId, setRecipeId] = useState("");
   const [isActive, setIsActive] = useState(true);
 
-  const recipes = [
-    { id: "none", name: "Nenhuma Receita" },
-    { id: "1", name: "Ninho com Calda de Morango" },
-    { id: "2", name: "Geladinho de Sensacao com Calda de Morango" },
-    { id: "3", name: "Geladinho de Sensacao com Chocolate" },
-    { id: "4", name: "Geladinho de Pudim" },
-    { id: "5", name: "Geladinho de Prestigio" },
-    { id: "6", name: "Geladinho de Maracuja com Calda de Maracuja" },
-    { id: "7", name: "Ninho com Nutella" },
-    { id: "8", name: "Laka com Oreo" },
-    { id: "9", name: "Geladinho de Coco" },
-    { id: "10", name: "Acai com Leite Condensado" }
-  ];
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement product creation logic
-    console.log({
-      productName,
-      description,
-      price,
-      isPromotion,
-      imageUrl,
-      recipeId,
-      isActive
-    });
+    
+    const newProduct = {
+      id: Date.now().toString(),
+      name: productName,
+      price: parseFloat(price) || 0,
+      image: imageUrl || "https://via.placeholder.com/300x200?text=Produto",
+      description: description,
+      rating: 0,
+      reviews: 0,
+      stock: 0,
+      isActive: isActive
+    };
+
+    addProduct(newProduct);
+    showSuccess(`${productName} adicionado com sucesso!`);
+    navigate("/gestao-produtos");
   };
 
   return (
@@ -77,6 +76,7 @@ const AddProduto = () => {
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
                 className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+                required
               />
             </div>
 
@@ -110,6 +110,7 @@ const AddProduto = () => {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pl-10 font-medium"
+                  required
                 />
               </div>
             </div>
@@ -157,11 +158,12 @@ const AddProduto = () => {
               </label>
               <Select value={recipeId} onValueChange={setRecipeId}>
                 <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
-                  <SelectValue placeholder="Nenhuma Receita" />
+                  <SelectValue placeholder={recipes.length > 0 ? "Selecione uma receita" : "Nenhuma receita cadastrada"} />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">Nenhuma Receita</SelectItem>
                   {recipes.map((recipe) => (
-                    <SelectItem key={recipe.id} value={recipe.id}>
+                    <SelectItem key={recipe.id} value={recipe.id.toString()}>
                       {recipe.name}
                     </SelectItem>
                   ))}

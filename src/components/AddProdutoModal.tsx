@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Plus, Save } from "lucide-react";
 import { useProducts, Product } from "@/contexts/ProductsContext";
+import { useRecipes } from "@/contexts/RecipesContext";
 import { showSuccess } from "@/utils/toast";
 
 interface AddProdutoModalProps {
@@ -25,7 +26,9 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
   const [imageUrl, setImageUrl] = useState("");
   const [recipeId, setRecipeId] = useState("");
   const [isActive, setIsActive] = useState(true);
+  
   const { addProduct, updateProduct } = useProducts();
+  const { recipes } = useRecipes();
 
   useEffect(() => {
     if (productToEdit) {
@@ -46,20 +49,6 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
       setIsActive(true);
     }
   }, [productToEdit, isOpen]);
-
-  const recipes = [
-    { id: "none", name: "Nenhuma Receita" },
-    { id: "1", name: "Ninho com Calda de Morango" },
-    { id: "2", name: "Geladinho de Sensacao com Calda de Morango" },
-    { id: "3", name: "Geladinho de Sensacao com Chocolate" },
-    { id: "4", name: "Geladinho de Pudim" },
-    { id: "5", name: "Geladinho de Prestigio" },
-    { id: "6", name: "Geladinho de Maracuja com Calda de Maracuja" },
-    { id: "7", name: "Ninho com Nutella" },
-    { id: "8", name: "Laka com Oreo" },
-    { id: "9", name: "Geladinho de Coco" },
-    { id: "10", name: "Acai com Leite Condensado" }
-  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -205,11 +194,12 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                 </label>
                 <Select value={recipeId} onValueChange={setRecipeId}>
                   <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
-                    <SelectValue placeholder="Nenhuma Receita" />
+                    <SelectValue placeholder={recipes.length > 0 ? "Selecione uma receita" : "Nenhuma receita cadastrada"} />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none">Nenhuma Receita</SelectItem>
                     {recipes.map((recipe) => (
-                      <SelectItem key={recipe.id} value={recipe.id}>
+                      <SelectItem key={recipe.id} value={recipe.id.toString()}>
                         {recipe.name}
                       </SelectItem>
                     ))}
