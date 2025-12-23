@@ -3,11 +3,12 @@
 import { ArrowLeft, Printer, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useOrders } from "@/contexts/OrdersContext";
+import { showSuccess } from "@/utils/toast";
 
 const DetalhesPedido = () => {
   const [searchParams] = useSearchParams();
   const orderIdParam = searchParams.get('id');
-  const { getOrderById } = useOrders();
+  const { getOrderById, updateOrder } = useOrders();
 
   // Decodifica o ID da URL e garante que o prefixo # seja tratado corretamente
   const decodedId = orderIdParam ? decodeURIComponent(orderIdParam) : '';
@@ -43,6 +44,30 @@ const DetalhesPedido = () => {
       </div>
     );
   }
+
+  const handleAcceptOrder = () => {
+    updateOrder(order.id, {
+      status: "Preparo",
+      statusColor: "orange",
+      statusIcon: "soup_kitchen",
+      isNew: false
+    });
+    showSuccess("Pedido aceito! Iniciando preparo.");
+  };
+
+  const handleRejectOrder = () => {
+    if (confirm("Tem certeza que deseja rejeitar este pedido?")) {
+      updateOrder(order.id, {
+        status: "Cancelado",
+        statusColor: "red",
+        statusIcon: "cancel",
+        isNew: false,
+        section: "finished",
+        cancelled: true
+      });
+      showSuccess("Pedido rejeitado.");
+    }
+  };
 
   const getStatusColor = (color: string) => {
     switch (color) {
@@ -109,11 +134,17 @@ const DetalhesPedido = () => {
           </div>
           {order.status === "Novo" && (
             <div className="mt-5 grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-2 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+              <button 
+                onClick={handleRejectOrder}
+                className="flex items-center justify-center gap-2 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              >
                 <X size={18} />
                 Rejeitar
               </button>
-              <button className="flex items-center justify-center gap-2 h-10 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+              <button 
+                onClick={handleAcceptOrder}
+                className="flex items-center justify-center gap-2 h-10 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+              >
                 <Check size={18} />
                 Aceitar
               </button>
