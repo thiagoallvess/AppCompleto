@@ -10,16 +10,18 @@ const AddProducao = () => {
   const navigate = useNavigate();
   const { recipes } = useRecipes();
   const [selectedRecipeId, setSelectedRecipeId] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [batchQuantity, setBatchQuantity] = useState("1");
 
   // Encontra a receita selecionada na lista real
   const selectedRecipe = recipes.find(r => r.id.toString() === selectedRecipeId);
   
-  // O custo unitário da receita já deve vir calculado do contexto de receitas
-  // que engloba ingredientes, embalagens, equipamentos e mão de obra.
+  // Lógica baseada em lotes
+  const recipeYield = selectedRecipe?.quantity || 0; // Rendimento de 1 lote
+  const numBatches = parseInt(batchQuantity) || 0;
+  const totalProducedUnits = recipeYield * numBatches;
+  
   const unitCost = selectedRecipe?.cost || 0;
-  const qty = parseInt(quantity) || 0;
-  const totalCost = unitCost * qty;
+  const totalCost = unitCost * totalProducedUnits;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +30,8 @@ const AddProducao = () => {
       showError("Por favor, selecione uma receita.");
       return;
     }
-    if (qty <= 0) {
-      showError("A quantidade deve ser maior que zero.");
+    if (numBatches <= 0) {
+      showError("A quantidade de lotes deve ser maior que zero.");
       return;
     }
 
@@ -39,14 +41,14 @@ const AddProducao = () => {
       recipeId: selectedRecipeId,
       name: selectedRecipe.name,
       image: selectedRecipe.image,
-      quantity: qty,
-      produced: qty,
+      batches: numBatches,
+      yieldPerBatch: recipeYield,
+      produced: totalProducedUnits,
       unitCost: unitCost,
       totalCost: totalCost,
       status: "Finalizado",
       statusColor: "green",
       date: new Date().toISOString(),
-      // Armazenamos um snapshot dos custos no momento da produção
       costBreakdown: {
         ingredients: (selectedRecipe as any).ingredientsList || [],
         packaging: (selectedRecipe as any).packagingList || [],
@@ -62,7 +64,7 @@ const AddProducao = () => {
       const updatedLots = [newLot, ...currentLots];
       localStorage.setItem('productionLots', JSON.stringify(updatedLots));
       
-      showSuccess(`Produção de ${qty} unidades de ${selectedRecipe.name} registrada com sucesso!`);
+      showSuccess(`Produção de ${numBatches} lote(s) (${totalProducedUnits} unidades) de ${selectedRecipe.name} registrada!`);
       navigate("/gestao-producao");
     } catch (error) {
       console.error("Erro ao salvar produção:", error);
@@ -71,7 +73,7 @@ const AddProducao = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
+    <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased">
       {/* Header */}
       <header className="sticky top-0 z-30 flex items-center justify-between bg-white/90 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-slate-200 dark:border-slate-800">
         <Link
@@ -100,36 +102,37 @@ const AddProducao = () => {
                 <SelectContent>
                   {recipes.map((recipe) => (
                     <SelectItem key={recipe.id} value={recipe.id.toString()}>
-                      {recipe.name}
+                      {recipe.name} (Rende {recipe.quantity} un)
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {recipes.length === 0 && (
-                <p className="text-xs text-red-500 px-1">
-                  Você precisa cadastrar uma receita em "Gestão de Receitas" primeiro.
-                </p>
-              )}
             </div>
 
-            {/* Quantity Input */}
+            {/* Quantity Input (Batches) */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="quantity">
-                Quantidade a Produzir
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="batches">
+                Quantidade de Lotes
               </label>
               <div className="relative">
                 <Input
-                  id="quantity"
+                  id="batches"
                   type="number"
-                  placeholder="0"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  className="w-full h-14 bg-white dark:bg-surface-dark border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary pr-12"
+                  placeholder="1"
+                  min="1"
+                  value={batchQuantity}
+                  onChange={(e) => setBatchQuantity(e.target.value)}
+                  className="w-full h-14 bg-white dark:bg-surface-dark border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary pr-16"
                 />
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4">
-                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">un</span>
+                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">lote(s)</span>
                 </div>
               </div>
+              {selectedRecipe && (
+                <p className="text-xs text-primary font-medium px-1">
+                  Total a produzir: <span className="font-bold">{totalProducedUnits} unidades</span>
+                </p>
+              )}
             </div>
 
             {/* Register Button */}
@@ -156,47 +159,42 @@ const AddProducao = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Custo Unitário Base</span>
+                  <span className="text-slate-600 dark:text-slate-400">Custo Unitário</span>
                   <span className="text-slate-900 dark:text-white font-medium">R$ {unitCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Quantidade</span>
-                  <span className="text-slate-900 dark:text-white font-medium">{qty}</span>
+                  <span className="text-slate-600 dark:text-slate-400">Total de Unidades ({numBatches} lotes)</span>
+                  <span className="text-slate-900 dark:text-white font-medium">{totalProducedUnits}</span>
                 </div>
                 <div className="h-px w-full bg-slate-100 dark:bg-slate-700 my-2"></div>
                 <div className="flex justify-between items-end pt-1">
-                  <span className="text-base font-bold text-slate-800 dark:text-white">Custo Total do Lote</span>
+                  <span className="text-base font-bold text-slate-800 dark:text-white">Custo Total da Produção</span>
                   <span className="text-xl font-bold text-primary">R$ {totalCost.toFixed(2)}</span>
                 </div>
               </div>
-              <div className="rounded-lg bg-slate-50 p-3 dark:bg-black/20">
-                <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400">
-                  * Este valor inclui: Ingredientes, Embalagens, Equipamentos e Mão de Obra conforme definido na receita.
-                </p>
-              </div>
             </div>
 
-            {/* Additional Info Card */}
+            {/* Impact Card */}
             <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-700/50">
                 <span className="material-symbols-outlined text-primary text-xl">info</span>
                 <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
-                  Impacto no Negócio
+                  Resumo da Operação
                 </h3>
               </div>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">analytics</span>
+                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">inventory_2</span>
                   <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">Custo de Produção</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">O custo total será refletido nos seus relatórios financeiros e análise de margem.</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">Entrada no Estoque</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Serão adicionadas {totalProducedUnits} unidades ao estoque de produtos prontos.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">inventory_2</span>
+                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">layers</span>
                   <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">Atualização de Estoque</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">As {qty || 0} unidades serão adicionadas ao estoque do produto vinculado.</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">Consumo de Insumos</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">O sistema baixará proporcionalmente os ingredientes e embalagens de {numBatches} lote(s).</p>
                   </div>
                 </div>
               </div>
