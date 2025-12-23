@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Printer, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History, Bike } from "lucide-react";
+import { ArrowLeft, Printer, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History, Bike, CheckCircle } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useOrders } from "@/contexts/OrdersContext";
 import { showSuccess } from "@/utils/toast";
@@ -63,6 +63,18 @@ const DetalhesPedido = () => {
       isNew: false
     });
     showSuccess("Pedido saiu para entrega!");
+  };
+
+  const handleFinishOrder = () => {
+    updateOrder(order.id, {
+      status: "Entregue",
+      statusColor: "green",
+      statusIcon: "check_circle",
+      isNew: false,
+      section: "finished",
+      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    });
+    showSuccess("Pedido entregue com sucesso!");
   };
 
   const handleRejectOrder = () => {
@@ -172,6 +184,19 @@ const DetalhesPedido = () => {
               >
                 <Bike size={20} />
                 Despachar para Entrega
+              </button>
+            </div>
+          )}
+
+          {/* Actions for ROTA status */}
+          {order.status === "Rota" && (
+            <div className="mt-5">
+              <button 
+                onClick={handleFinishOrder}
+                className="w-full flex items-center justify-center gap-2 h-12 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-colors shadow-lg shadow-green-600/20"
+              >
+                <CheckCircle size={20} />
+                Confirmar Entrega
               </button>
             </div>
           )}
