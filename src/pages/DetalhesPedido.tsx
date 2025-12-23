@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Printer, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History } from "lucide-react";
+import { ArrowLeft, Printer, MoreVertical, Check, X, Phone, MessageCircle, MapPin, ShoppingBag, User, CreditCard, History, Bike } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useOrders } from "@/contexts/OrdersContext";
 import { showSuccess } from "@/utils/toast";
@@ -53,6 +53,16 @@ const DetalhesPedido = () => {
       isNew: false
     });
     showSuccess("Pedido aceito! Iniciando preparo.");
+  };
+
+  const handleStartDelivery = () => {
+    updateOrder(order.id, {
+      status: "Rota",
+      statusColor: "blue",
+      statusIcon: "sports_motorsports",
+      isNew: false
+    });
+    showSuccess("Pedido saiu para entrega!");
   };
 
   const handleRejectOrder = () => {
@@ -132,6 +142,8 @@ const DetalhesPedido = () => {
               </p>
             </div>
           </div>
+          
+          {/* Actions for NEW status */}
           {order.status === "Novo" && (
             <div className="mt-5 grid grid-cols-2 gap-3">
               <button 
@@ -147,6 +159,19 @@ const DetalhesPedido = () => {
               >
                 <Check size={18} />
                 Aceitar
+              </button>
+            </div>
+          )}
+
+          {/* Actions for PREPARO status */}
+          {order.status === "Preparo" && (
+            <div className="mt-5">
+              <button 
+                onClick={handleStartDelivery}
+                className="w-full flex items-center justify-center gap-2 h-12 rounded-xl bg-blue-500 text-white font-bold text-sm hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20"
+              >
+                <Bike size={20} />
+                Despachar para Entrega
               </button>
             </div>
           )}
