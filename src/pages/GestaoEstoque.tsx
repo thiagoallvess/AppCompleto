@@ -112,6 +112,11 @@ const GestaoEstoque = () => {
     setMovementToEdit(null);
   };
 
+  const handleOpenNewMovementModal = () => {
+    setMovementToEdit(null);
+    setIsMovementModalOpen(true);
+  };
+
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
@@ -295,7 +300,7 @@ const GestaoEstoque = () => {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Movimentações Recentes</h3>
             <Button
-              onClick={() => setIsMovementModalOpen(true)}
+              onClick={handleOpenNewMovementModal}
               className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30"
             >
               <Plus size={16} />
@@ -309,6 +314,14 @@ const GestaoEstoque = () => {
           />
         </div>
       )}
+
+      {/* Floating Action Button (FAB) for New Movement */}
+      <button 
+        onClick={handleOpenNewMovementModal}
+        className="fixed bottom-6 right-6 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95"
+      >
+        <Plus size={28} />
+      </button>
 
       {/* Stock Movement Modal */}
       <Dialog open={isMovementModalOpen} onOpenChange={setIsMovementModalOpen}>
