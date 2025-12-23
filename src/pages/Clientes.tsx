@@ -1,14 +1,21 @@
 "use client";
 
-import { ArrowLeft, Bell, Plus, Search, MoreVertical, Phone, MessageCircle } from "lucide-react";
+import { ArrowLeft, Bell, Plus, Search, MoreVertical, Phone, MessageCircle, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useClients } from "@/contexts/ClientsContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { showSuccess } from "@/utils/toast";
 
 const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const { clients } = useClients();
+  const { clients, removeClient } = useClients();
 
   const filters = ["Todos", "VIPs", "Devedores", "Novos", "Inativos"];
 
@@ -21,6 +28,13 @@ const Clientes = () => {
                          (activeFilter === "Inativos" && client.type === "inactive");
     return matchesSearch && matchesFilter;
   });
+
+  const handleDelete = (id: string, name: string) => {
+    if (confirm(`Tem certeza que deseja excluir o cliente "${name}"?`)) {
+      removeClient(id);
+      showSuccess(`Cliente "${name}" removido com sucesso.`);
+    }
+  };
 
   const getStatusColor = (color: string) => {
     switch (color) {
@@ -59,7 +73,6 @@ const Clientes = () => {
 
       {/* Search & Filters */}
       <div className="flex-none flex flex-col gap-4 px-4 py-4 bg-background-light dark:bg-background-dark z-10 shadow-sm dark:shadow-none border-b border-slate-200 dark:border-white/5">
-        {/* Search Bar */}
         <div className="relative w-full">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <Search className="text-slate-400" size={20} />
@@ -72,7 +85,6 @@ const Clientes = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        {/* Filter Chips */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
           {filters.map((filter) => (
             <button
@@ -94,83 +106,100 @@ const Clientes = () => {
       <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-4 space-y-3 pb-24">
         {filteredClients.length > 0 ? (
           filteredClients.map((client) => (
-            <Link
+            <article
               key={client.id}
-              to={`/detalhes-cliente?id=${client.id}`}
-              className="block"
+              className={`group relative flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-100 dark:border-white/5 shadow-sm active:scale-[0.99] transition-transform ${
+                client.type === 'inactive' ? 'opacity-75' : ''
+              }`}
             >
-              <article
-                className={`group relative flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-100 dark:border-white/5 shadow-sm active:scale-[0.99] transition-transform ${
-                  client.type === 'inactive' ? 'opacity-75' : ''
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      {client.avatar ? (
-                        <img
-                          className="size-12 rounded-full object-cover border-2 border-primary/20"
-                          src={client.avatar}
-                          alt={client.name}
-                        />
-                      ) : (
-                        <div className="size-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-bold text-lg flex items-center justify-center">
-                          {client.initials || client.name.charAt(0)}
-                        </div>
-                      )}
-                      {client.isOnline && (
-                        <div className="absolute -bottom-1 -right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-base font-semibold text-slate-900 dark:text-white">{client.name}</h3>
-                        {client.status && (
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusColor(client.statusColor)}`}>
-                            {client.status}
-                          </span>
-                        )}
+              <div className="flex items-start justify-between">
+                <Link to={`/detalhes-cliente?id=${client.id}`} className="flex items-center gap-3 flex-1">
+                  <div className="relative">
+                    {client.avatar ? (
+                      <img
+                        className="size-12 rounded-full object-cover border-2 border-primary/20"
+                        src={client.avatar}
+                        alt={client.name}
+                      />
+                    ) : (
+                      <div className="size-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-bold text-lg flex items-center justify-center">
+                        {client.initials || client.name.charAt(0)}
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-                        {client.lastOrder ? (
-                          <>
-                            <span className="material-symbols-outlined text-[14px]">history</span>
-                            Último pedido: {client.lastOrder}
-                          </>
-                        ) : client.registered ? (
-                          <>
-                            <span className="material-symbols-outlined text-[14px]">calendar_month</span>
-                            Cadastrado: {client.registered}
-                          </>
-                        ) : null}
-                      </p>
-                    </div>
+                    )}
+                    {client.isOnline && (
+                      <div className="absolute -bottom-1 -right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
+                    )}
                   </div>
-                  <button className="text-slate-400 hover:text-primary dark:hover:text-primary">
-                    <MoreVertical size={20} />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-semibold text-slate-900 dark:text-white">{client.name}</h3>
+                      {client.status && (
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusColor(client.statusColor)}`}>
+                          {client.status}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                      {client.lastOrder ? (
+                        <>
+                          <span className="material-symbols-outlined text-[14px]">history</span>
+                          Último pedido: {client.lastOrder}
+                        </>
+                      ) : client.registered ? (
+                        <>
+                          <span className="material-symbols-outlined text-[14px]">calendar_month</span>
+                          Cadastrado: {client.registered}
+                        </>
+                      ) : null}
+                    </p>
+                  </div>
+                </Link>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="text-slate-400 hover:text-primary dark:hover:text-primary p-1">
+                      <MoreVertical size={20} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
+                    <DropdownMenuItem asChild className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
+                      <Link to={`/detalhes-cliente?id=${client.id}`}>
+                        <Edit size={16} className="text-slate-500" />
+                        <span>Editar</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleDelete(client.id, client.name)}
+                      className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
+                    >
+                      <Trash2 size={16} />
+                      <span>Excluir</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              
+              <div className="w-full h-px bg-slate-100 dark:bg-white/5"></div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-wider">
+                    {client.type === 'debtor' ? "Débito" : client.preference ? "Preferência" : "Total Gasto"}
+                  </span>
+                  <span className={`text-sm font-medium ${client.type === 'debtor' ? "text-red-600 dark:text-red-400" : "text-slate-700 dark:text-slate-200"}`}>
+                    {client.type === 'debtor' ? `R$ ${client.debt?.toFixed(2)}` : client.preference ? client.preference : `R$ ${client.totalSpent?.toFixed(2)}`}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
+                    <Phone size={18} />
+                  </button>
+                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
+                    <MessageCircle size={18} />
                   </button>
                 </div>
-                <div className="w-full h-px bg-slate-100 dark:bg-white/5"></div>
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-wider">
-                      {client.type === 'debtor' ? "Débito" : client.preference ? "Preferência" : "Total Gasto"}
-                    </span>
-                    <span className={`text-sm font-medium ${client.type === 'debtor' ? "text-red-600 dark:text-red-400" : "text-slate-700 dark:text-slate-200"}`}>
-                      {client.type === 'debtor' ? `R$ ${client.debt?.toFixed(2)}` : client.preference ? client.preference : `R$ ${client.totalSpent?.toFixed(2)}`}
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
-                      <Phone size={18} />
-                    </button>
-                    <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
-                      <MessageCircle size={18} />
-                    </button>
-                  </div>
-                </div>
-              </article>
-            </Link>
+              </div>
+            </article>
           ))
         ) : (
           <div className="text-center py-20">
