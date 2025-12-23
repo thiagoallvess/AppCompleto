@@ -4,7 +4,10 @@ export interface Equipment {
   id: string;
   name: string;
   powerType: 'eletrico' | 'gas';
-  powerValue: number; // Watts for electric, or 0 for gas (since gas consumption is managed elsewhere)
+  powerValue: number; // Watts for electric
+  gasConsumptionLow?: number; // kg/h
+  gasConsumptionMedium?: number; // kg/h
+  gasConsumptionHigh?: number; // kg/h
   icon: string; // Material Symbols icon name
   costPerHour: number; // Calculated cost per hour based on admin settings
 }
@@ -34,7 +37,6 @@ interface EquipmentProviderProps {
 export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }) => {
   const [equipment, setEquipment] = useState<Equipment[]>([]);
 
-  // Load data from localStorage on mount
   useEffect(() => {
     const loadEquipmentData = () => {
       try {
@@ -42,7 +44,6 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
         if (storedEquipment) {
           setEquipment(JSON.parse(storedEquipment));
         } else {
-          // Start with an empty array if nothing is saved
           setEquipment([]);
         }
       } catch (error) {
@@ -53,28 +54,26 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
     loadEquipmentData();
   }, []);
 
-  // Save to localStorage whenever data changes
   useEffect(() => {
-    if (equipment.length >= 0) {
-      localStorage.setItem('equipment', JSON.stringify(equipment));
-    }
+    localStorage.setItem('equipment', JSON.stringify(equipment));
   }, [equipment]);
 
-  // Helper function to calculate costPerHour (simplified mock logic)
-  const calculateCostPerHour = (powerType: 'eletrico' | 'gas', powerValue: number): number => {
-    // NOTE: In a real app, this would use settings from ConfiguracoesAdmin (energyCost, gasPrice, etc.)
-    if (powerType === 'eletrico') {
-      // Assuming energy cost is R$ 0.80/kWh (from ConfiguracoesAdmin mock)
+  const calculateCostPerHour = (item: Omit<Equipment, 'id' | 'costPerHour'> | Partial<Equipment>): number => {
+    if (item.powerType === 'eletrico') {
       const energyCostPerKWh = 0.80;
-      const powerInKW = powerValue / 1000;
+      const powerInKW = (item.powerValue || 0) / 1000;
       return powerInKW * energyCostPerKWh;
     }
-    // Assuming gas cost is R$ 0.74/hour (from DetalhesReceita mock)
-    return 0.74; 
+    
+    // Para gás, usamos o consumo médio como base para o custo/h padrão
+    // Preço do botijão (13kg) = R$ 120,00 -> R$ 9,23 por kg
+    const gasPricePerKg = 120 / 13;
+    const mediumCons = item.gasConsumptionMedium || 0;
+    return mediumCons * gasPricePerKg;
   };
 
   const addEquipment = (newEquipment: Omit<Equipment, 'id' | 'costPerHour'>) => {
-    const costPerHour = calculateCostPerHour(newEquipment.powerType, newEquipment.powerValue);
+    const costPerHour = calculateCostPerHour(newEquipment);
     const equipmentToAdd: Equipment = {
       ...newEquipment,
       id: Date.now().toString(),
@@ -87,13 +86,7 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
     setEquipment(prev => prev.map(item => {
       if (item.id === id) {
         const updatedItem = { ...item, ...updates };
-        // Recalculate cost if power type or value changes
-        if (updates.powerType !== undefined || updates.powerValue !== undefined) {
-          // Ensure powerValue is 0 if powerType is gas
-          const finalPowerValue = updatedItem.powerType === 'gas' ? 0 : updatedItem.powerValue;
-          updatedItem.powerValue = finalPowerValue;
-          updatedItem.costPerHour = calculateCostPerHour(updatedItem.powerType, finalPowerValue);
-        }
+        updatedItem.costPerHour = calculateCostPerHour(updatedItem);
         return updatedItem;
       }
       return item;
