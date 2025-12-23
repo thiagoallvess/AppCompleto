@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -15,11 +15,12 @@ const MainDrawer = () => {
     { icon: BarChart, label: "Visão Geral", path: "/visao-geral" },
     { icon: Receipt, label: "Pedidos", path: "/gestao-pedidos" },
     { icon: Package, label: "Produtos", path: "/gestao-produtos" },
+    { icon: LinkIcon, label: "Vínculos", path: "/vinculos" },
     { icon: Plus, label: "Adicionar Produto", path: "/add-produto" },
     { icon: ChefHat, label: "Receitas", path: "/gestao-receitas" },
     { icon: Factory, label: "Produção", path: "/gestao-producao" },
     { icon: Package, label: "Estoque/Insumos", path: "/gestao-estoque" },
-    { icon: Factory, label: "Equipamentos", path: "/gestao-equipamentos" }, // Adicionado
+    { icon: Factory, label: "Equipamentos", path: "/gestao-equipamentos" },
     { icon: Users, label: "Clientes", path: "/clientes" },
     { icon: BarChart, label: "Curva ABC", path: "/curva-abc" },
     { icon: FileText, label: "Relatórios", path: "/relatorios" },
