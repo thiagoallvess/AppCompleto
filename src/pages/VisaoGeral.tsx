@@ -50,42 +50,51 @@ const VisaoGeral = () => {
                 <p className="text-primary text-xs font-medium mt-1 group-hover:underline">+2 na última hora</p>
               </div>
             </Link>
-            <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm">
+            <Link
+              to="/relatorios"
+              className="group flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 hover:shadow-md transition-all active:scale-[0.98]"
+            >
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center size-8 rounded-full bg-green-500/20 text-green-500">
+                <span className="flex items-center justify-center size-8 rounded-full bg-green-500/20 text-green-500 group-hover:bg-green-500 group-hover:text-white transition-colors">
                   <DollarSign size={18} />
                 </span>
-                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Vendas Hoje</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider group-hover:text-green-500 transition-colors">Vendas Hoje</p>
               </div>
               <div>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">R$ 450</p>
                 <p className="text-green-500 text-xs font-medium mt-1">+15% vs ontem</p>
               </div>
-            </div>
-            <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm">
+            </Link>
+            <Link
+              to="/gestao-estoque"
+              className="group flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 hover:shadow-md transition-all active:scale-[0.98]"
+            >
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center size-8 rounded-full bg-blue-500/20 text-blue-500">
+                <span className="flex items-center justify-center size-8 rounded-full bg-blue-500/20 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                   <Package size={18} />
                 </span>
-                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Produtos</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider group-hover:text-blue-500 transition-colors">Produtos</p>
               </div>
               <div>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">24</p>
                 <p className="text-blue-500 text-xs font-medium mt-1">Em estoque</p>
               </div>
-            </div>
-            <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm">
+            </Link>
+            <Link
+              to="/clientes"
+              className="group flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 hover:shadow-md transition-all active:scale-[0.98]"
+            >
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center size-8 rounded-full bg-purple-500/20 text-purple-500">
+                <span className="flex items-center justify-center size-8 rounded-full bg-purple-500/20 text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
                   <User size={18} />
                 </span>
-                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Clientes</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider group-hover:text-purple-500 transition-colors">Clientes</p>
               </div>
               <div>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">156</p>
                 <p className="text-purple-500 text-xs font-medium mt-1">Ativos</p>
               </div>
-            </div>
+            </Link>
           </div>
         </section>
 
@@ -172,7 +181,7 @@ const VisaoGeral = () => {
           <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Acesso Rápido</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <Link
-              to="/gestao-insumos"
+              to="/gestao-estoque"
               className="flex flex-col items-center justify-center gap-2 rounded-xl bg-gray-100 dark:bg-surface-dark p-4 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <Package className="text-gray-900 dark:text-white" size={28} />
