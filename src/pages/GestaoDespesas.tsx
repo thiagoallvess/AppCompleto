@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useExpenses, Expense } from "@/contexts/ExpensesContext";
 import { showSuccess } from "@/utils/toast";
+import AddDespesaModal from "@/components/AddDespesaModal";
 
 const GestaoDespesas = () => {
-  const { expenses, addExpense, removeExpense, updateExpense, getTotalExpenses } = useExpenses();
+  const { expenses, removeExpense, updateExpense, getTotalExpenses } = useExpenses();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todas");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const categories = ["Todas", "Operacional", "Impostos", "Utilidades", "Pessoal", "Outros"];
 
@@ -40,7 +42,11 @@ const GestaoDespesas = () => {
             <ArrowLeft size={24} />
           </Link>
           <h1 className="text-xl font-bold">Gestão de Despesas</h1>
-          <Button size="sm" className="size-10 rounded-full p-0">
+          <Button 
+            size="sm" 
+            className="size-10 rounded-full p-0 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30"
+            onClick={() => setIsModalOpen(true)}
+          >
             <Plus size={24} />
           </Button>
         </div>
@@ -64,7 +70,7 @@ const GestaoDespesas = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <Input 
               placeholder="Buscar despesa..." 
-              className="pl-10 h-12 bg-white dark:bg-surface-dark"
+              className="pl-10 h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -128,6 +134,8 @@ const GestaoDespesas = () => {
           )}
         </div>
       </main>
+
+      <AddDespesaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };
