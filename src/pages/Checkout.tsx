@@ -1,4 +1,4 @@
-import { ArrowLeft, CreditCard, MapPin, Edit, Clock, ChevronRight } from "lucide-react";
+import { ArrowLeft, CreditCard, MapPin, Edit, Clock, ChevronRight, Tag, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useState } from "react";
@@ -8,10 +8,16 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [scheduleDelivery, setScheduleDelivery] = useState(false);
 
+  // Simulação de cupom vindo da página anterior (em um app real viria via state ou context)
+  const appliedCoupon = "VERAO10"; 
+  
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const delivery = 5.00;
-  const discount = 0.00;
+  const discount = appliedCoupon ? subtotal * 0.1 : 0.00;
   const total = subtotal + delivery - discount;
+
+  // Cálculo de cashback (5% conforme definido na página de Cashback)
+  const cashbackEarned = total * 0.05;
 
   const handleSubmit = () => {
     alert("Pagamento processado com sucesso!");
@@ -249,9 +255,25 @@ const Checkout = () => {
               <span className="text-slate-500 dark:text-gray-400">Taxa de entrega</span>
               <span className="font-medium">R$ {delivery.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-500 dark:text-gray-400">Desconto</span>
-              <span className="text-green-500 font-medium">- R$ {discount.toFixed(2)}</span>
+            {appliedCoupon && (
+              <div className="flex justify-between items-center text-sm">
+                <div className="flex items-center gap-1 text-primary">
+                  <Tag size={14} />
+                  <span>Desconto ({appliedCoupon})</span>
+                </div>
+                <span className="text-primary font-medium">- R$ {discount.toFixed(2)}</span>
+              </div>
+            )}
+            
+            {/* Cashback Info */}
+            <div className="mt-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                <Sparkles size={16} />
+                <span className="text-xs font-bold uppercase tracking-wider">Você vai ganhar</span>
+              </div>
+              <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                + R$ {cashbackEarned.toFixed(2)} de volta
+              </span>
             </div>
           </div>
         </div>
