@@ -35,10 +35,11 @@ const AddProduto = () => {
       rating: 0,
       reviews: 0,
       stock: 0,
-      isActive: isActive
+      isActive: isActive,
+      recipeId: recipeId === "none" ? "" : recipeId // Salvando o ID da receita
     };
 
-    addProduct(newProduct);
+    addProduct(newProduct as any);
     showSuccess(`${productName} adicionado com sucesso!`);
     navigate("/gestao-produtos");
   };

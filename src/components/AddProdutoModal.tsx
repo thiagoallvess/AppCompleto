@@ -37,8 +37,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
       setPrice(productToEdit.price.toString());
       setImageUrl(productToEdit.image);
       setIsActive(productToEdit.isActive);
-      // Nota: isPromotion e recipeId não existem no tipo Product atual, 
-      // mas mantemos os estados para consistência da UI
+      setRecipeId((productToEdit as any).recipeId || "");
     } else {
       setProductName("");
       setDescription("");
@@ -59,6 +58,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
       image: imageUrl || "https://via.placeholder.com/300x200?text=Produto",
       description: description,
       isActive: isActive,
+      recipeId: recipeId === "none" ? "" : recipeId, // Salvando o ID da receita
     };
 
     if (productToEdit) {
@@ -72,7 +72,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
         reviews: 0,
         stock: 0
       };
-      addProduct(newProduct);
+      addProduct(newProduct as any);
       showSuccess(`${productName} adicionado com sucesso!`);
     }
     
