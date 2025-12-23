@@ -318,7 +318,7 @@ const GestaoEstoque = () => {
       {/* Floating Action Button (FAB) for New Movement */}
       <button 
         onClick={handleOpenNewMovementModal}
-        className="fixed bottom-6 right-6 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95"
+        className="fixed bottom-[100px] right-6 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95"
       >
         <Plus size={28} />
       </button>
