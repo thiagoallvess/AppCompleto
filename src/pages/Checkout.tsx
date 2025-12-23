@@ -1,14 +1,17 @@
-import { ArrowLeft, CreditCard, MapPin, Edit, Clock, ChevronRight, Tag, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, CreditCard, MapPin, Edit, Clock, ChevronRight, Tag } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
+import { useOrders } from "../contexts/OrdersContext";
 import { useState } from "react";
+import { showSuccess } from "../utils/toast";
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const { items, clearCart } = useCart();
+  const { addOrder } = useOrders();
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [scheduleDelivery, setScheduleDelivery] = useState(false);
 
-  // Simulação de cupom vindo da página anterior (em um app real viria via state ou context)
   const appliedCoupon = "VERAO10"; 
   
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -17,8 +20,31 @@ const Checkout = () => {
   const total = subtotal + delivery - discount;
 
   const handleSubmit = () => {
-    alert("Pagamento processado com sucesso!");
+    if (items.length === 0) return;
+
+    const newOrder = {
+      id: `#${Math.floor(1000 + Math.random() * 9000)}`,
+      customer: "João Silva", // Simulação de usuário logado
+      status: "Novo",
+      statusColor: "primary",
+      statusIcon: "inventory_2",
+      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      total: total,
+      items: items.map(item => ({
+        quantity: item.quantity,
+        name: item.name,
+        description: "Gourmet • Cremoso",
+        price: item.price
+      })),
+      isNew: true,
+      section: 'open' as const,
+      date: new Date().toLocaleDateString('pt-BR')
+    };
+
+    addOrder(newOrder);
+    showSuccess("Pedido realizado com sucesso!");
     clearCart();
+    navigate("/meus-pedidos");
   };
 
   return (
@@ -274,7 +300,8 @@ const Checkout = () => {
           </div>
           <button
             onClick={handleSubmit}
-            className="flex-1 bg-primary hover:bg-sky-500 text-white font-bold h-12 rounded-full flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-primary/20"
+            disabled={items.length === 0}
+            className="flex-1 bg-primary hover:bg-sky-500 text-white font-bold h-12 rounded-full flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-primary/20 disabled:opacity-50"
           >
             <span>Confirmar Pedido</span>
             <ChevronRight size={18} />
