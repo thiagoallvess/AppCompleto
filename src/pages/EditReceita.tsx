@@ -45,8 +45,6 @@ const EditReceita = () => {
         setRecipeName(recipe.name);
         setRecipeYield(recipe.quantity.toString());
         setLaborTime(recipe.time.replace(" min", ""));
-        // Nota: No mock atual, alguns campos como ingredientes detalhados não estão no contexto global,
-        // mas em uma implementação real eles seriam carregados aqui.
       } else {
         showError("Receita não encontrada");
         navigate("/gestao-receitas");
@@ -72,7 +70,8 @@ const EditReceita = () => {
       const pack = availablePackagingItems.find(p => p.id === selectedPackaging);
       if (pack) {
         const unitCost = pack.unitCost || 0;
-        setPackaging([...packaging, { id: Date.now(), name: pack.name, quantity: parseFloat(packagingQuantity), unit: pack.unit, totalCost: parseFloat(packagingQuantity) * unitCost }]);
+        const totalCost = parseFloat(packagingQuantity) * unitCost;
+        setPackaging([...packaging, { id: Date.now(), name: pack.name, quantity: parseFloat(packagingQuantity), unit: pack.unit, totalCost }]);
         setSelectedPackaging("");
         setPackagingQuantity("");
       }
@@ -84,19 +83,29 @@ const EditReceita = () => {
       const equip = availableEquipment.find(e => e.id === selectedEquipment);
       if (equip) {
         const costPerHour = equip.costPerHour || 0;
-        setEquipment([...equipment, { id: Date.now(), name: equip.name, minTime: parseFloat(equipmentMinTime), totalCost: (parseFloat(equipmentMinTime) / 60) * costPerHour }]);
+        const totalCost = (parseFloat(equipmentMinTime) / 60) * costPerHour;
+        setEquipment([...equipment, { id: Date.now(), name: equip.name, minTime: parseFloat(equipmentMinTime), totalCost }]);
         setSelectedEquipment("");
         setEquipmentMinTime("");
       }
     }
   };
 
+  // Cost calculations
   const ingredientsCost = ingredients.reduce((sum, i) => sum + i.totalCost, 0);
   const packagingCost = packaging.reduce((sum, p) => sum + p.totalCost, 0);
   const equipmentCost = equipment.reduce((sum, e) => sum + e.totalCost, 0);
-  const laborCost = laborTime ? (parseFloat(laborTime) / 60) * 15 : 0; 
-  const totalCost = ingredientsCost + packagingCost + equipmentCost + laborCost;
-  const unitCost = recipeYield ? totalCost / parseFloat(recipeYield) : 0;
+  const laborCostValue = laborTime ? (parseFloat(laborTime) / 60) * 30 : 0; // Assumindo R$ 30/h
+  const totalCost = ingredientsCost + packagingCost + equipmentCost + laborCostValue;
+  
+  const yieldNum = parseFloat(recipeYield) || 1;
+  const unitCost = totalCost / yieldNum;
+  
+  const currentSellingPrice = sellingPrice ? parseFloat(sellingPrice) : 0;
+  const totalRevenue = currentSellingPrice * yieldNum;
+  const totalProfit = totalRevenue - totalCost;
+  const unitProfit = currentSellingPrice - unitCost;
+  const margin = currentSellingPrice > 0 ? (unitProfit / currentSellingPrice) * 100 : 0;
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,6 +142,7 @@ const EditReceita = () => {
       </header>
 
       <div className="flex-1 w-full overflow-y-auto p-4 space-y-6 max-w-4xl mx-auto">
+        {/* Informações Básicas */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Informações Básicas</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -142,7 +152,7 @@ const EditReceita = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Rendimento</label>
+                <label className="text-sm font-medium">Rendimento (unid)</label>
                 <Input type="number" value={recipeYield} onChange={(e) => setRecipeYield(e.target.value)} />
               </div>
               <div className="space-y-2">
@@ -150,9 +160,14 @@ const EditReceita = () => {
                 <Input type="number" value={laborTime} onChange={(e) => setLaborTime(e.target.value)} />
               </div>
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Preço de Venda Unitário (R$)</label>
+              <Input type="number" step="0.01" value={sellingPrice} onChange={(e) => setSellingPrice(e.target.value)} placeholder="0,00" />
+            </div>
           </div>
         </section>
 
+        {/* Ingredientes */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Ingredientes</h2>
           <div className="flex gap-2">
@@ -169,16 +184,121 @@ const EditReceita = () => {
             {ingredients.map(i => (
               <div key={i.id} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                 <span>{i.name} ({i.quantity} {i.unit})</span>
-                <button onClick={() => setIngredients(ingredients.filter(x => x.id !== i.id))} className="text-red-500"><Trash2 size={18} /></button>
+                <div className="flex items-center gap-4">
+                  <span className="font-medium">R$ {i.totalCost.toFixed(2)}</span>
+                  <button onClick={() => setIngredients(ingredients.filter(x => x.id !== i.id))} className="text-red-500"><Trash2 size={18} /></button>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-primary/10 p-6 rounded-xl border border-primary/20 shadow-sm">
-          <div className="flex justify-between items-center">
-            <span className="font-bold">Custo Unitário Estimado:</span>
-            <span className="text-2xl font-bold text-primary">R$ {unitCost.toFixed(2)}</span>
+        {/* Embalagens */}
+        <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <h2 className="text-lg font-bold">Embalagens</h2>
+          <div className="flex gap-2">
+            <Select value={selectedPackaging} onValueChange={setSelectedPackaging}>
+              <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+              <SelectContent>
+                {availablePackagingItems.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Input className="w-24" type="number" placeholder="Qtd" value={packagingQuantity} onChange={(e) => setPackagingQuantity(e.target.value)} />
+            <Button type="button" onClick={addPackaging}><Plus size={20} /></Button>
+          </div>
+          <div className="space-y-2">
+            {packaging.map(p => (
+              <div key={p.id} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <span>{p.name} ({p.quantity} {p.unit})</span>
+                <div className="flex items-center gap-4">
+                  <span className="font-medium">R$ {p.totalCost.toFixed(2)}</span>
+                  <button onClick={() => setPackaging(packaging.filter(x => x.id !== p.id))} className="text-red-500"><Trash2 size={18} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Equipamentos */}
+        <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <h2 className="text-lg font-bold">Equipamentos</h2>
+          <div className="flex gap-2">
+            <Select value={selectedEquipment} onValueChange={setSelectedEquipment}>
+              <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+              <SelectContent>
+                {availableEquipment.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Input className="w-24" type="number" placeholder="Min" value={equipmentMinTime} onChange={(e) => setEquipmentMinTime(e.target.value)} />
+            <Button type="button" onClick={addEquipment}><Plus size={20} /></Button>
+          </div>
+          <div className="space-y-2">
+            {equipment.map(e => (
+              <div key={e.id} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <span>{e.name} ({e.minTime} min)</span>
+                <div className="flex items-center gap-4">
+                  <span className="font-medium">R$ {e.totalCost.toFixed(2)}</span>
+                  <button onClick={() => setEquipment(equipment.filter(x => x.id !== e.id))} className="text-red-500"><Trash2 size={18} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Prévia de Custos Detalhada */}
+        <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold border-b pb-2">Prévia de Custos e Lucros</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Custo Ingredientes:</span>
+                <span className="font-semibold">R$ {ingredientsCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Custo Embalagens:</span>
+                <span className="font-semibold">R$ {packagingCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Custo Equipamentos:</span>
+                <span className="font-semibold">R$ {equipmentCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Custo Mão de Obra:</span>
+                <span className="font-semibold">R$ {laborCostValue.toFixed(2)}</span>
+              </div>
+              <div className="h-px bg-slate-100 dark:bg-slate-700 my-2"></div>
+              <div className="flex justify-between text-base font-bold">
+                <span>Custo Total:</span>
+                <span>R$ {totalCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-base font-bold text-primary">
+                <span>Custo Unitário:</span>
+                <span>R$ {unitCost.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="space-y-3 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Lucro Total:</span>
+                <span className={`font-semibold ${totalProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  R$ {totalProfit.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Lucro Unitário:</span>
+                <span className={`font-semibold ${unitProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  R$ {unitProfit.toFixed(2)}
+                </span>
+              </div>
+              <div className="h-px bg-slate-200 dark:bg-slate-700 my-2"></div>
+              <div className="flex justify-between items-center">
+                <span className="font-bold">Margem (%):</span>
+                <span className={`text-2xl font-black ${margin >= 30 ? 'text-green-600' : 'text-amber-600'}`}>
+                  {margin.toFixed(1)}%
+                </span>
+              </div>
+            </div>
           </div>
         </section>
       </div>
