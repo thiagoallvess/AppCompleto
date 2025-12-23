@@ -1,13 +1,36 @@
-import { ArrowLeft, Minus, Plus, FileText, ArrowRight } from "lucide-react";
+import { ArrowLeft, Minus, Plus, FileText, ArrowRight, Tag, X, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
+import { useState } from "react";
+import { showSuccess, showError } from "../utils/toast";
 
 const Cart = () => {
   const { items, updateQuantity, clearCart } = useCart();
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const delivery = 5.00;
-  const total = subtotal + delivery;
+  const discount = appliedCoupon ? subtotal * 0.1 : 0; // Exemplo: 10% de desconto
+  const total = subtotal + delivery - discount;
+
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) return;
+    
+    // Simulação de validação de cupom
+    if (couponCode.toUpperCase().includes("GELA") || couponCode.toUpperCase() === "VERAO10") {
+      setAppliedCoupon(couponCode.toUpperCase());
+      showSuccess(`Cupom ${couponCode.toUpperCase()} aplicado!`);
+      setCouponCode("");
+    } else {
+      showError("Cupom inválido ou expirado.");
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    showSuccess("Cupom removido.");
+  };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary min-h-screen flex flex-col">
@@ -29,7 +52,7 @@ const Cart = () => {
         </div>
       </header>
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-md mx-auto lg:max-w-7xl p-4 lg:px-6 pb-32 space-y-4">
+      <main className="flex-1 w-full max-w-md mx-auto lg:max-w-7xl p-4 lg:px-6 pb-48 space-y-4">
         {/* Cart Items List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((item) => (
@@ -70,19 +93,60 @@ const Cart = () => {
             </div>
           ))}
         </div>
+
         {items.length === 0 && (
           <div className="text-center py-8">
             <p className="text-gray-500 dark:text-gray-400">Seu carrinho está vazio.</p>
           </div>
         )}
-        {/* Order Note / Add-on hint */}
+
+        {/* Coupon Section */}
         {items.length > 0 && (
-          <div className="mt-6 p-4 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 bg-transparent flex items-center justify-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+          <div className="mt-6 space-y-3">
+            <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">Cupom de Desconto</h3>
+            {!appliedCoupon ? (
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <input
+                    type="text"
+                    placeholder="Digite seu cupom"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium"
+                  />
+                </div>
+                <button
+                  onClick={handleApplyCoupon}
+                  disabled={!couponCode.trim()}
+                  className="px-6 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  Aplicar
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20">
+                <div className="flex items-center gap-2 text-primary">
+                  <Check size={18} />
+                  <span className="text-sm font-bold">Cupom {appliedCoupon} aplicado!</span>
+                </div>
+                <button onClick={handleRemoveCoupon} className="p-1 hover:bg-primary/10 rounded-full text-primary transition-colors">
+                  <X size={18} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Order Note */}
+        {items.length > 0 && (
+          <div className="mt-4 p-4 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 bg-transparent flex items-center justify-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
             <FileText className="text-gray-400 text-xl" />
             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Adicionar observação ao pedido</p>
           </div>
         )}
       </main>
+
       {/* Bottom Sheet / Summary */}
       {items.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 w-full bg-white dark:bg-surface-dark rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-40 border-t border-gray-100 dark:border-gray-800">
@@ -97,6 +161,12 @@ const Cart = () => {
                 <p className="text-gray-500 dark:text-gray-400">Entrega</p>
                 <p className="font-medium text-green-500">R$ {delivery.toFixed(2)}</p>
               </div>
+              {appliedCoupon && (
+                <div className="flex justify-between items-center text-sm">
+                  <p className="text-primary font-medium">Desconto ({appliedCoupon})</p>
+                  <p className="font-medium text-primary">- R$ {discount.toFixed(2)}</p>
+                </div>
+              )}
               <div className="h-px bg-gray-200 dark:bg-gray-700 my-2"></div>
               <div className="flex justify-between items-end">
                 <p className="text-base font-bold text-gray-900 dark:text-white">Total</p>
