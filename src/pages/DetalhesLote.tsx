@@ -1,6 +1,7 @@
 import { ArrowLeft, Edit, Printer, Trash2, Package, Layers, DollarSign, Calendar } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { showSuccess } from "@/utils/toast";
 
 const DetalhesLote = () => {
@@ -64,8 +65,11 @@ const DetalhesLote = () => {
     );
   }
 
+  // Garantir que batches seja pelo menos 1 para o cálculo
+  const numBatches = lot.batches || 1;
+
   return (
-    <div className="relative flex min-h-screen w-full flex-col pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
+    <div className="relative flex h-full min-h-screen w-full flex-col pb-24 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
       {/* Header */}
       <header className="sticky top-0 z-30 flex items-center justify-between bg-white/90 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-slate-200 dark:border-slate-800">
         <Link
@@ -110,7 +114,7 @@ const DetalhesLote = () => {
               <Layers className="text-primary" size={18} />
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Volume Produzido</span>
             </div>
-            <span className="text-lg font-bold text-slate-900 dark:text-white">{lot.batches} Lote(s)</span>
+            <span className="text-lg font-bold text-slate-900 dark:text-white">{numBatches} Lote(s)</span>
             <span className="text-xs text-slate-400">Total: {lot.produced} unidades</span>
           </div>
           <div className="flex flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-sm border border-slate-100 dark:border-slate-800">
@@ -128,39 +132,46 @@ const DetalhesLote = () => {
           <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 px-1">Insumos Consumidos</h3>
           <div className="rounded-xl bg-white dark:bg-surface-dark overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800">
+              {/* Ingredientes */}
               {lot.costBreakdown?.ingredients?.length > 0 ? (
                 lot.costBreakdown.ingredients.map((item: any, idx: number) => (
-                  <div key={idx} className="flex items-center justify-between px-5 py-3.5">
+                  <div key={`i-${idx}`} className="flex items-center justify-between px-5 py-3.5">
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-slate-900 dark:text-slate-200">{item.name}</span>
                       <span className="text-[10px] text-slate-400">Ingrediente</span>
                     </div>
                     <div className="text-right">
                       <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                        {(item.quantity * lot.batches).toFixed(2)} {item.unit}
+                        {(item.quantity * numBatches).toFixed(2)} {item.unit}
                       </span>
-                      <p className="text-[10px] text-slate-400">R$ {(item.totalCost * lot.batches).toFixed(2)}</p>
+                      <p className="text-[10px] text-slate-400">R$ {(item.totalCost * numBatches).toFixed(2)}</p>
                     </div>
                   </div>
                 ))
-              ) : (
-                <div className="p-4 text-center text-xs text-slate-400 italic">Nenhum detalhe de insumo disponível</div>
-              )}
+              ) : null}
               
-              {lot.costBreakdown?.packaging?.map((item: any, idx: number) => (
-                <div key={`p-${idx}`} className="flex items-center justify-between px-5 py-3.5">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-slate-900 dark:text-slate-200">{item.name}</span>
-                    <span className="text-[10px] text-slate-400">Embalagem</span>
+              {/* Embalagens */}
+              {lot.costBreakdown?.packaging?.length > 0 ? (
+                lot.costBreakdown.packaging.map((item: any, idx: number) => (
+                  <div key={`p-${idx}`} className="flex items-center justify-between px-5 py-3.5">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-slate-900 dark:text-slate-200">{item.name}</span>
+                      <span className="text-[10px] text-slate-400">Embalagem</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                        {(item.quantity * numBatches).toFixed(2)} {item.unit}
+                      </span>
+                      <p className="text-[10px] text-slate-400">R$ {(item.totalCost * numBatches).toFixed(2)}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                      {(item.quantity * lot.batches).toFixed(2)} {item.unit}
-                    </span>
-                    <p className="text-[10px] text-slate-400">R$ {(item.totalCost * lot.batches).toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : null}
+
+              {/* Caso não haja dados */}
+              {(!lot.costBreakdown?.ingredients?.length && !lot.costBreakdown?.packaging?.length) && (
+                <div className="p-8 text-center text-xs text-slate-400 italic">Nenhum detalhe de insumo disponível para este lote</div>
+              )}
             </div>
           </div>
         </div>
