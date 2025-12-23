@@ -34,6 +34,9 @@ const AddReceita = () => {
   const [equipment, setEquipment] = useState<any[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState("");
   const [equipmentMinTime, setEquipmentMinTime] = useState("");
+  const [gasIntensity, setGasIntensity] = useState<"low" | "medium" | "high">("medium");
+
+  const currentSelectedEquip = availableEquipment.find(e => e.id === selectedEquipment);
 
   const addIngredient = () => {
     if (selectedIngredient && ingredientQuantity) {
@@ -65,16 +68,30 @@ const AddReceita = () => {
     if (selectedEquipment && equipmentMinTime) {
       const equip = availableEquipment.find(e => e.id === selectedEquipment);
       if (equip) {
-        const costPerHour = equip.costPerHour || 0;
-        const totalCost = (parseFloat(equipmentMinTime) / 60) * costPerHour;
-        setEquipment([...equipment, { id: Date.now(), name: equip.name, minTime: parseFloat(equipmentMinTime), totalCost }]);
+        let hourlyCost = equip.costPerHour;
+        
+        if (equip.powerType === 'gas') {
+          const gasPricePerKg = 120 / 13;
+          const consumption = gasIntensity === 'low' ? equip.gasConsumptionLow : 
+                              gasIntensity === 'high' ? equip.gasConsumptionHigh : 
+                              equip.gasConsumptionMedium;
+          hourlyCost = (consumption || 0) * gasPricePerKg;
+        }
+
+        const totalCost = (parseFloat(equipmentMinTime) / 60) * hourlyCost;
+        setEquipment([...equipment, { 
+          id: Date.now(), 
+          name: equip.name, 
+          minTime: parseFloat(equipmentMinTime), 
+          totalCost,
+          intensity: equip.powerType === 'gas' ? gasIntensity : null 
+        }]);
         setSelectedEquipment("");
         setEquipmentMinTime("");
       }
     }
   };
 
-  // Cálculos de custo em tempo real
   const ingredientsCost = ingredients.reduce((sum, i) => sum + i.totalCost, 0);
   const packagingCost = packaging.reduce((sum, p) => sum + p.totalCost, 0);
   const equipmentCost = equipment.reduce((sum, e) => sum + e.totalCost, 0);
@@ -133,7 +150,6 @@ const AddReceita = () => {
       </header>
 
       <div className="flex-1 w-full overflow-y-auto p-4 space-y-6 max-w-4xl mx-auto">
-        {/* Informações Básicas */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Informações Básicas</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -170,7 +186,6 @@ const AddReceita = () => {
           </div>
         </section>
 
-        {/* Ingredientes */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Ingredientes</h2>
           <div className="flex gap-2">
@@ -196,7 +211,6 @@ const AddReceita = () => {
           </div>
         </section>
 
-        {/* Embalagens */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Embalagens</h2>
           <div className="flex gap-2">
@@ -222,23 +236,53 @@ const AddReceita = () => {
           </div>
         </section>
 
-        {/* Equipamentos */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Equipamentos</h2>
-          <div className="flex gap-2">
-            <Select value={selectedEquipment} onValueChange={setSelectedEquipment}>
-              <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione..." /></SelectTrigger>
-              <SelectContent>
-                {availableEquipment.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Input className="w-24" type="number" placeholder="Min" value={equipmentMinTime} onChange={(e) => setEquipmentMinTime(e.target.value)} />
-            <Button type="button" onClick={addEquipment}><Plus size={20} /></Button>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <Select value={selectedEquipment} onValueChange={setSelectedEquipment}>
+                <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent>
+                  {availableEquipment.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Input className="w-24" type="number" placeholder="Min" value={equipmentMinTime} onChange={(e) => setEquipmentMinTime(e.target.value)} />
+              <Button type="button" onClick={addEquipment}><Plus size={20} /></Button>
+            </div>
+            
+            {currentSelectedEquip?.powerType === 'gas' && (
+              <div className="flex flex-col gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-100 dark:border-orange-800">
+                <label className="text-xs font-bold text-orange-700 dark:text-orange-400 uppercase">Intensidade da Chama</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['low', 'medium', 'high'] as const).map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      onClick={() => setGasIntensity(level)}
+                      className={`py-2 text-xs font-bold rounded-md border transition-all ${
+                        gasIntensity === level 
+                        ? 'bg-orange-500 border-orange-500 text-white shadow-sm' 
+                        : 'bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 text-slate-500'
+                      }`}
+                    >
+                      {level === 'low' ? 'Baixa' : level === 'medium' ? 'Média' : 'Alta'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             {equipment.map(e => (
               <div key={e.id} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <span>{e.name} ({e.minTime} min)</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{e.name} ({e.minTime} min)</span>
+                  {e.intensity && (
+                    <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase">
+                      Chama: {e.intensity === 'low' ? 'Baixa' : e.intensity === 'medium' ? 'Média' : 'Alta'}
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-4">
                   <span className="font-medium">R$ {e.totalCost.toFixed(2)}</span>
                   <button onClick={() => setEquipment(equipment.filter(x => x.id !== e.id))} className="text-red-500"><Trash2 size={18} /></button>
@@ -248,59 +292,23 @@ const AddReceita = () => {
           </div>
         </section>
 
-        {/* Prévia de Custos Detalhada */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
           <h2 className="text-lg font-bold border-b pb-2">Prévia de Custos e Lucros</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Custo Ingredientes:</span>
-                <span className="font-semibold">R$ {ingredientsCost.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Custo Embalagens:</span>
-                <span className="font-semibold">R$ {packagingCost.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Custo Equipamentos:</span>
-                <span className="font-semibold">R$ {equipmentCost.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Custo Mão de Obra:</span>
-                <span className="font-semibold">R$ {laborCostValue.toFixed(2)}</span>
-              </div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500">Custo Ingredientes:</span><span className="font-semibold">R$ {ingredientsCost.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500">Custo Embalagens:</span><span className="font-semibold">R$ {packagingCost.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500">Custo Equipamentos:</span><span className="font-semibold">R$ {equipmentCost.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500">Custo Mão de Obra:</span><span className="font-semibold">R$ {laborCostValue.toFixed(2)}</span></div>
               <div className="h-px bg-slate-100 dark:bg-slate-700 my-2"></div>
-              <div className="flex justify-between text-base font-bold">
-                <span>Custo Total:</span>
-                <span>R$ {totalCost.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-base font-bold text-primary">
-                <span>Custo Unitário:</span>
-                <span>R$ {unitCost.toFixed(2)}</span>
-              </div>
+              <div className="flex justify-between text-base font-bold"><span>Custo Total:</span><span>R$ {totalCost.toFixed(2)}</span></div>
+              <div className="flex justify-between text-base font-bold text-primary"><span>Custo Unitário:</span><span>R$ {unitCost.toFixed(2)}</span></div>
             </div>
-
             <div className="space-y-3 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Lucro Total:</span>
-                <span className={`font-semibold ${totalProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  R$ {totalProfit.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Lucro Unitário:</span>
-                <span className={`font-semibold ${unitProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  R$ {unitProfit.toFixed(2)}
-                </span>
-              </div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500">Lucro Total:</span><span className={`font-semibold ${totalProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>R$ {totalProfit.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500">Lucro Unitário:</span><span className={`font-semibold ${unitProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>R$ {unitProfit.toFixed(2)}</span></div>
               <div className="h-px bg-slate-200 dark:bg-slate-700 my-2"></div>
-              <div className="flex justify-between items-center">
-                <span className="font-bold">Margem (%):</span>
-                <span className={`text-2xl font-black ${margin >= 30 ? 'text-green-600' : 'text-amber-600'}`}>
-                  {margin.toFixed(1)}%
-                </span>
-              </div>
+              <div className="flex justify-between items-center"><span className="font-bold">Margem (%):</span><span className={`text-2xl font-black ${margin >= 30 ? 'text-green-600' : 'text-amber-600'}`}>{margin.toFixed(1)}%</span></div>
             </div>
           </div>
         </section>
