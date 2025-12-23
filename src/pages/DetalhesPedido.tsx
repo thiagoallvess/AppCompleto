@@ -6,11 +6,13 @@ import { useOrders } from "@/contexts/OrdersContext";
 
 const DetalhesPedido = () => {
   const [searchParams] = useSearchParams();
-  const orderId = searchParams.get('id');
+  const orderIdParam = searchParams.get('id');
   const { getOrderById } = useOrders();
 
-  // Busca o pedido real no contexto
-  const order = getOrderById(orderId || '');
+  // Se o ID vier da URL como "5740" ou "#5740", o getOrderById já está preparado 
+  // para buscar das duas formas, mas vamos garantir a limpeza aqui também.
+  const cleanId = orderIdParam ? (orderIdParam.startsWith('#') ? orderIdParam : `#${orderIdParam}`) : '';
+  const order = getOrderById(cleanId);
 
   if (!order) {
     return (
@@ -28,7 +30,7 @@ const DetalhesPedido = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <span className="material-symbols-outlined text-slate-400 text-6xl mb-4">receipt_long</span>
-            <p className="text-slate-500 dark:text-slate-400 mb-4">Não encontramos este pedido no sistema.</p>
+            <p className="text-slate-500 dark:text-slate-400 mb-4">Não encontramos o pedido {orderIdParam} no sistema.</p>
             <Link
               to="/gestao-pedidos"
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
