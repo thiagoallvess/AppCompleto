@@ -74,13 +74,21 @@ const AddReceita = () => {
     }
   };
 
+  // Cálculos de custo em tempo real
   const ingredientsCost = ingredients.reduce((sum, i) => sum + i.totalCost, 0);
   const packagingCost = packaging.reduce((sum, p) => sum + p.totalCost, 0);
   const equipmentCost = equipment.reduce((sum, e) => sum + e.totalCost, 0);
   const laborCostValue = laborTime ? (parseFloat(laborTime) / 60) * 30 : 0;
   const totalCost = ingredientsCost + packagingCost + equipmentCost + laborCostValue;
+  
   const yieldNum = parseFloat(recipeYield) || 1;
   const unitCost = totalCost / yieldNum;
+  
+  const currentSellingPrice = sellingPrice ? parseFloat(sellingPrice) : 0;
+  const totalRevenue = currentSellingPrice * yieldNum;
+  const totalProfit = totalRevenue - totalCost;
+  const unitProfit = currentSellingPrice - unitCost;
+  const margin = currentSellingPrice > 0 ? (unitProfit / currentSellingPrice) * 100 : 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +104,7 @@ const AddReceita = () => {
       ingredientsList: ingredients,
       packagingList: packaging,
       equipmentList: equipment,
-      sellingPrice: parseFloat(sellingPrice) || 0,
+      sellingPrice: currentSellingPrice,
       linkedProductId: linkedProduct
     };
 
@@ -125,6 +133,7 @@ const AddReceita = () => {
       </header>
 
       <div className="flex-1 w-full overflow-y-auto p-4 space-y-6 max-w-4xl mx-auto">
+        {/* Informações Básicas */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Informações Básicas</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -161,6 +170,7 @@ const AddReceita = () => {
           </div>
         </section>
 
+        {/* Ingredientes */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Ingredientes</h2>
           <div className="flex gap-2">
@@ -186,6 +196,7 @@ const AddReceita = () => {
           </div>
         </section>
 
+        {/* Embalagens */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Embalagens</h2>
           <div className="flex gap-2">
@@ -211,6 +222,7 @@ const AddReceita = () => {
           </div>
         </section>
 
+        {/* Equipamentos */}
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Equipamentos</h2>
           <div className="flex gap-2">
@@ -233,6 +245,63 @@ const AddReceita = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Prévia de Custos Detalhada */}
+        <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold border-b pb-2">Prévia de Custos e Lucros</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Custo Ingredientes:</span>
+                <span className="font-semibold">R$ {ingredientsCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Custo Embalagens:</span>
+                <span className="font-semibold">R$ {packagingCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Custo Equipamentos:</span>
+                <span className="font-semibold">R$ {equipmentCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Custo Mão de Obra:</span>
+                <span className="font-semibold">R$ {laborCostValue.toFixed(2)}</span>
+              </div>
+              <div className="h-px bg-slate-100 dark:bg-slate-700 my-2"></div>
+              <div className="flex justify-between text-base font-bold">
+                <span>Custo Total:</span>
+                <span>R$ {totalCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-base font-bold text-primary">
+                <span>Custo Unitário:</span>
+                <span>R$ {unitCost.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="space-y-3 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Lucro Total:</span>
+                <span className={`font-semibold ${totalProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  R$ {totalProfit.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Lucro Unitário:</span>
+                <span className={`font-semibold ${unitProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  R$ {unitProfit.toFixed(2)}
+                </span>
+              </div>
+              <div className="h-px bg-slate-200 dark:bg-slate-700 my-2"></div>
+              <div className="flex justify-between items-center">
+                <span className="font-bold">Margem (%):</span>
+                <span className={`text-2xl font-black ${margin >= 30 ? 'text-green-600' : 'text-amber-600'}`}>
+                  {margin.toFixed(1)}%
+                </span>
+              </div>
+            </div>
           </div>
         </section>
       </div>
