@@ -1,91 +1,48 @@
-import { ArrowLeft, HelpCircle, RefreshCw, MapPin, CreditCard, Truck, Clock, DollarSign, CheckCircle } from "lucide-react";
+"use client";
+
+import { ArrowLeft, HelpCircle, RefreshCw, MapPin, CreditCard, Truck, Clock, CheckCircle } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useOrders } from "@/contexts/OrdersContext";
 
 const DetalhesPedidoCliente = () => {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('id');
+  const { getOrderById } = useOrders();
 
-  // Mock data for different orders - in a real app, this would come from an API
-  const ordersData = {
-    "1234": {
-      id: "1234",
-      date: "Hoje, 14:30",
-      status: "Saiu para entrega",
-      eta: "15:00 - 15:20",
-      progress: 75,
-      coupon: "VERAO10",
-      discount: 3.20,
-      items: [
-        { quantity: 2, name: "Ninho com Nutella", description: "Cremoso • Sem adição de água", price: 8.00 },
-        { quantity: 1, name: "Morango Gourmet", description: "Fruta natural • Base leite", price: 8.00 },
-        { quantity: 1, name: "Maracujá", description: "Refrescante • Edição limitada", price: 6.00 }
-      ],
-      subtotal: 22.00,
-      delivery: 5.00,
-      total: 23.80,
-      address: "Rua das Flores, 123 - Apt 402",
-      city: "Jardim Paulista, São Paulo - SP",
-      payment: "Mastercard final 4242"
-    },
-    "1102": {
-      id: "1102",
-      date: "10/10/2023",
-      status: "Entregue",
-      eta: null,
-      progress: 100,
-      coupon: null,
-      discount: 0,
-      items: [
-        { quantity: 3, name: "Limão Siciliano", description: "Refrescante • Base leite", price: 6.00 },
-        { quantity: 2, name: "Chocolate Belga", description: "Intenso • Cacau 70%", price: 7.50 }
-      ],
-      subtotal: 33.00,
-      delivery: 5.50,
-      total: 38.50,
-      address: "Av. Paulista, 1000 - Sala 42",
-      city: "Bela Vista, São Paulo - SP",
-      payment: "Pix"
-    },
-    "0988": {
-      id: "0988",
-      date: "25/09/2023",
-      status: "Entregue",
-      eta: null,
-      progress: 100,
-      coupon: "PRIMEIRA10",
-      discount: 1.60,
-      items: [
-        { quantity: 1, name: "Coco com Doce de Leite", description: "Tradicional • Base leite", price: 6.00 },
-        { quantity: 1, name: "Paçoca", description: "Doce brasileiro • Edição especial", price: 5.00 }
-      ],
-      subtotal: 11.00,
-      delivery: 5.00,
-      total: 14.40,
-      address: "Rua das Acácias, 450",
-      city: "Centro, São Paulo - SP",
-      payment: "Dinheiro"
-    },
-    "0845": {
-      id: "0845",
-      date: "12/08/2023",
-      status: "Cancelado",
-      eta: null,
-      progress: 0,
-      coupon: null,
-      discount: 0,
-      items: [
-        { quantity: 4, name: "Morango com Leite Condensado", description: "Clássico • Base leite", price: 7.00 }
-      ],
-      subtotal: 28.00,
-      delivery: 0,
-      total: 28.00,
-      address: "Rua dos Pinheiros, 789",
-      city: "Pinheiros, São Paulo - SP",
-      payment: "Não processado"
+  // Busca o pedido real no contexto
+  const order = getOrderById(orderId?.startsWith('#') ? orderId : `#${orderId}`);
+
+  if (!order) {
+    return (
+      <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-6 bg-background-light dark:bg-background-dark">
+        <header className="sticky top-0 z-50 flex items-center justify-between bg-background-light/80 dark:bg-background-dark/80 px-4 py-3 backdrop-blur-md">
+          <Link to="/meus-pedidos" className="flex size-10 items-center justify-center rounded-full text-gray-900 dark:text-white">
+            <ArrowLeft size={20} />
+          </Link>
+          <h2 className="flex-1 pr-10 text-center text-lg font-bold">Pedido não encontrado</h2>
+        </header>
+        <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
+          <p className="text-slate-500 mb-4">Não conseguimos encontrar as informações deste pedido.</p>
+          <Link to="/meus-pedidos" className="text-primary font-bold">Voltar para meus pedidos</Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Lógica de progresso baseada no status real
+  const getProgress = (status: string) => {
+    switch (status) {
+      case "Novo": return 25;
+      case "Preparo": return 50;
+      case "Rota": return 75;
+      case "Entregue": return 100;
+      default: return 0;
     }
   };
 
-  const order = ordersData[orderId as keyof typeof ordersData] || ordersData["1234"];
+  const subtotal = order.total;
+  const deliveryFee = 5.00;
+  const total = subtotal + deliveryFee;
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-6 bg-background-light dark:bg-background-dark">
@@ -102,18 +59,12 @@ const DetalhesPedidoCliente = () => {
 
       {/* MetaText */}
       <div className="flex flex-col items-center justify-center pt-2 pb-6">
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pedido #{order.id} • {order.date}</p>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pedido {order.id} • {order.date || 'Hoje'}</p>
       </div>
 
       {/* Status Card */}
       <div className="px-4 mb-6">
         <div className="relative overflow-hidden rounded-xl bg-surface-dark shadow-sm ring-1 ring-white/5">
-          <div
-            className="absolute inset-0 opacity-40 mix-blend-overlay bg-cover bg-center"
-            style={{
-              backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDWTK1n7aOhx__vo_cevhPpS9byrZuyR_4sheKDMmf3eOJmSHkRFrvfqfowAA2n5Y8_mIpZqECul70jHAjJFaYcki_tUbFveK6WNS1MHc5x6S02_uq_AOMWlHIB8LY3qir2JsekOLcBLahxBWsq_rAkXep1ybEfvL79oNNwPjz5cgNhbedMtNV_17OkfbVWLt2cEeoVUNa8wv0PQSPcgaJcJdsgtuR2sTj8Msv_T-V0dktLmub8owpOpANGJOCXOu3L0Xb1fM8_BA')`
-            }}
-          ></div>
           <div className="absolute inset-0 bg-gradient-to-r from-background-dark/95 to-background-dark/60"></div>
           <div className="relative flex items-center justify-between p-5">
             <div className="flex flex-col gap-1">
@@ -132,23 +83,10 @@ const DetalhesPedidoCliente = () => {
           </div>
           {/* Progress Line */}
           <div className="relative h-1 w-full bg-gray-700">
-            <div className="absolute left-0 top-0 h-full bg-primary shadow-[0_0_10px_rgba(22,67,156,0.5)]" style={{ width: `${order.progress}%` }}></div>
+            <div className="absolute left-0 top-0 h-full bg-primary shadow-[0_0_10px_rgba(22,67,156,0.5)]" style={{ width: `${getProgress(order.status)}%` }}></div>
           </div>
         </div>
       </div>
-
-      {/* Coupon Section */}
-      {order.coupon && (
-        <div className="px-4 mb-6">
-          <div className="flex items-center justify-between rounded-xl bg-surface-dark p-3 px-4 border border-white/5">
-            <div className="flex flex-col">
-              <span className="text-xs font-medium text-gray-500">Cupom aplicado</span>
-              <span className="text-sm font-bold text-white tracking-wide">{order.coupon}</span>
-            </div>
-            <CheckCircle className="text-green-500" size={20} />
-          </div>
-        </div>
-      )}
 
       {/* Order Items Section */}
       <div className="mb-2">
@@ -178,8 +116,8 @@ const DetalhesPedidoCliente = () => {
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-white">Endereço de entrega</p>
-            <p className="text-sm text-gray-400">{order.address}</p>
-            <p className="text-xs text-gray-500">{order.city}</p>
+            <p className="text-sm text-gray-400">Rua das Flores, 123 - Apt 402</p>
+            <p className="text-xs text-gray-500">Jardim Paulista, São Paulo - SP</p>
           </div>
         </div>
         {/* Payment */}
@@ -189,7 +127,7 @@ const DetalhesPedidoCliente = () => {
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-white">Pagamento</p>
-            <p className="text-sm text-gray-400">{order.payment}</p>
+            <p className="text-sm text-gray-400">Cartão de Crédito (App)</p>
           </div>
         </div>
       </div>
@@ -199,22 +137,16 @@ const DetalhesPedidoCliente = () => {
         <div className="mb-6 space-y-2">
           <div className="flex justify-between text-sm text-gray-400">
             <span>Subtotal</span>
-            <span>R$ {order.subtotal.toFixed(2)}</span>
+            <span>R$ {subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm text-gray-400">
             <span>Taxa de entrega</span>
-            <span>R$ {order.delivery.toFixed(2)}</span>
+            <span>R$ {deliveryFee.toFixed(2)}</span>
           </div>
-          {order.discount > 0 && (
-            <div className="flex justify-between text-sm text-green-500">
-              <span>Desconto ({order.coupon})</span>
-              <span>- R$ {order.discount.toFixed(2)}</span>
-            </div>
-          )}
           <div className="my-3 h-px w-full bg-white/10"></div>
           <div className="flex justify-between items-center">
             <span className="text-base font-medium text-white">Total</span>
-            <span className="text-2xl font-bold text-white">R$ {order.total.toFixed(2)}</span>
+            <span className="text-2xl font-bold text-white">R$ {total.toFixed(2)}</span>
           </div>
         </div>
         <div className="flex gap-3">
