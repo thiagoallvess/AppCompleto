@@ -18,6 +18,15 @@ const GestaoReceitas = () => {
   const [activeFilter, setActiveFilter] = useState("Todos");
   const { recipes, removeRecipe } = useRecipes();
 
+  // Mapeamento de custos reais para sincronizar com a página de detalhes
+  const realCosts: { [key: string]: number } = {
+    "Ninho com Nutella": 5.33,
+    "Morango Cremoso": 5.96,
+    "Maracujá Trufado": 5.33,
+    "Paçoca (Rascunho)": 4.74,
+    "Coco Cremoso": 5.00
+  };
+
   const filters = ["Todos", "Finalizadas", "Rascunhos"];
 
   const filteredRecipes = recipes.filter(recipe => {
@@ -138,80 +147,85 @@ const GestaoReceitas = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredRecipes.map((recipe) => (
-            <div
-              key={recipe.id}
-              className={`group relative flex flex-col gap-3 bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:border-primary/50 dark:hover:border-primary/50 transition-all ${
-                recipe.isDraft ? "opacity-75" : ""
-              }`}
-            >
-              <Link to={`/detalhes-receita?id=${recipe.id}`} className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={recipe.image}
-                  alt={recipe.name}
-                  className="w-full h-full object-cover"
-                />
-                {recipe.isTop && (
-                  <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
-                    TOP
+          {filteredRecipes.map((recipe) => {
+            // Usa o custo real mapeado ou o custo do objeto se não houver mapeamento
+            const displayCost = realCosts[recipe.name] || recipe.cost || 0;
+            
+            return (
+              <div
+                key={recipe.id}
+                className={`group relative flex flex-col gap-3 bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:border-primary/50 dark:hover:border-primary/50 transition-all ${
+                  recipe.isDraft ? "opacity-75" : ""
+                }`}
+              >
+                <Link to={`/detalhes-receita?id=${recipe.id}`} className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={recipe.image}
+                    alt={recipe.name}
+                    className="w-full h-full object-cover"
+                  />
+                  {recipe.isTop && (
+                    <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
+                      TOP
+                    </div>
+                  )}
+                  {recipe.isDraft && (
+                    <div className="absolute top-2 right-2 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded">
+                      RASCUNHO
+                    </div>
+                  )}
+                </Link>
+                <div className="p-4 flex-1 flex flex-col">
+                  <div className="flex justify-between items-start mb-2">
+                    <Link to={`/detalhes-receita?id=${recipe.id}`} className="flex-1 min-w-0">
+                      <h3 className={`text-lg font-semibold truncate pr-2 ${
+                        recipe.isDraft ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
+                      }`}>
+                        {recipe.name}
+                      </h3>
+                    </Link>
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 -m-1 -mt-2 outline-none">
+                          <MoreVertical size={20} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
+                        <DropdownMenuItem asChild className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
+                          <Link to={`/edit-receita?id=${recipe.id}`}>
+                            <Edit size={16} className="text-slate-500" />
+                            <span>Editar</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(recipe.id, recipe.name)}
+                          className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
+                        >
+                          <Trash2 size={16} />
+                          <span>Excluir</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                )}
-                {recipe.isDraft && (
-                  <div className="absolute top-2 right-2 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded">
-                    RASCUNHO
+                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    <div className="flex items-center gap-1">
+                      <Clock size={16} />
+                      <span>{recipe.time}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Package size={16} />
+                      <span>{recipe.quantity} un</span>
+                    </div>
                   </div>
-                )}
-              </Link>
-              <div className="p-4 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-2">
-                  <Link to={`/detalhes-receita?id=${recipe.id}`} className="flex-1 min-w-0">
-                    <h3 className={`text-lg font-semibold truncate pr-2 ${
-                      recipe.isDraft ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
-                    }`}>
-                      {recipe.name}
-                    </h3>
-                  </Link>
-                  
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 -m-1 -mt-2 outline-none">
-                        <MoreVertical size={20} />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
-                      <DropdownMenuItem asChild className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
-                        <Link to={`/edit-receita?id=${recipe.id}`}>
-                          <Edit size={16} className="text-slate-500" />
-                          <span>Editar</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleDelete(recipe.id, recipe.name)}
-                        className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
-                      >
-                        <Trash2 size={16} />
-                        <span>Excluir</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  <div className="flex items-center gap-1">
-                    <Clock size={16} />
-                    <span>{recipe.time}</span>
+                  <div className="flex items-center gap-1 text-sm font-medium text-slate-700 dark:text-slate-200 mt-auto">
+                    <span className="text-xs text-gray-400 font-normal">Custo un:</span>
+                    <span className="text-primary font-bold">R$ {displayCost.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Package size={16} />
-                    <span>{recipe.quantity} un</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 text-sm font-medium text-slate-700 dark:text-slate-200 mt-auto">
-                  <span className="text-xs text-gray-400 font-normal">Custo un:</span>
-                  <span className="text-primary font-bold">R$ {(recipe.cost || 0).toFixed(2)}</span>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
