@@ -1,35 +1,48 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useRecipes } from "@/contexts/RecipesContext";
+import { showSuccess, showError } from "@/utils/toast";
 
 const AddProducao = () => {
-  const [selectedRecipe, setSelectedRecipe] = useState("");
+  const navigate = useNavigate();
+  const { recipes } = useRecipes();
+  const [selectedRecipeId, setSelectedRecipeId] = useState("");
   const [quantity, setQuantity] = useState("");
 
-  const recipes = [
-    { id: "1", name: "Ninho com Nutella", unitCost: 1.50 },
-    { id: "2", name: "Morango Gourmet", unitCost: 1.60 },
-    { id: "3", name: "Maracujá Cremoso", unitCost: 1.40 },
-    { id: "4", name: "Chocolate Belga", unitCost: 2.00 },
-    { id: "5", name: "Coco com Doce de Leite", unitCost: 1.30 }
-  ];
-
-  const selectedRecipeData = recipes.find(r => r.id === selectedRecipe);
-  const unitCost = selectedRecipeData?.unitCost || 1.50;
+  // Encontra a receita selecionada na lista real
+  const selectedRecipe = recipes.find(r => r.id.toString() === selectedRecipeId);
+  
+  const unitCost = selectedRecipe?.cost || 0;
   const qty = parseInt(quantity) || 0;
   const totalCost = unitCost * qty;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement production registration logic
+    
+    if (!selectedRecipeId) {
+      showError("Por favor, selecione uma receita.");
+      return;
+    }
+    if (qty <= 0) {
+      showError("A quantidade deve ser maior que zero.");
+      return;
+    }
+
+    // TODO: Implementar a lógica de salvar o lote de produção no contexto de Produção
     console.log({
-      recipe: selectedRecipe,
+      recipeId: selectedRecipeId,
+      recipeName: selectedRecipe?.name,
       quantity: qty,
       unitCost,
-      totalCost
+      totalCost,
+      date: new Date().toISOString()
     });
+
+    showSuccess(`Produção de ${qty} unidades de ${selectedRecipe?.name} registrada!`);
+    navigate("/gestao-producao");
   };
 
   return (
@@ -55,21 +68,23 @@ const AddProducao = () => {
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="recipe">
                 Receita
               </label>
-              <Select value={selectedRecipe} onValueChange={setSelectedRecipe}>
+              <Select value={selectedRecipeId} onValueChange={setSelectedRecipeId}>
                 <SelectTrigger className="w-full h-14 bg-white dark:bg-surface-dark border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary">
-                  <SelectValue placeholder="Selecione a receita..." />
+                  <SelectValue placeholder={recipes.length > 0 ? "Selecione a receita..." : "Nenhuma receita cadastrada"} />
                 </SelectTrigger>
                 <SelectContent>
                   {recipes.map((recipe) => (
-                    <SelectItem key={recipe.id} value={recipe.id}>
+                    <SelectItem key={recipe.id} value={recipe.id.toString()}>
                       {recipe.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-slate-500 dark:text-slate-400 px-1">
-                Selecione o sabor para calcular os ingredientes.
-              </p>
+              {recipes.length === 0 && (
+                <p className="text-xs text-red-500 px-1">
+                  Você precisa cadastrar uma receita em "Gestão de Receitas" primeiro.
+                </p>
+              )}
             </div>
 
             {/* Quantity Input */}
@@ -96,7 +111,8 @@ const AddProducao = () => {
             <div className="pt-4">
               <Button
                 onClick={handleSubmit}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-base font-bold text-white shadow-lg shadow-primary/25 transition-all hover:bg-blue-600 active:scale-[0.98]"
+                disabled={!selectedRecipeId || recipes.length === 0}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-base font-bold text-white shadow-lg shadow-primary/25 transition-all hover:bg-blue-600 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="material-symbols-outlined">save</span>
                 Registrar Produção
@@ -115,7 +131,7 @@ const AddProducao = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Custo Unitário (Estimado)</span>
+                  <span className="text-slate-600 dark:text-slate-400">Custo Unitário (da Receita)</span>
                   <span className="text-slate-900 dark:text-white font-medium">R$ {unitCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -130,7 +146,7 @@ const AddProducao = () => {
               </div>
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-black/20">
                 <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400">
-                  * O valor final é calculado com base no custo médio atual dos ingredientes disponíveis no estoque.
+                  * O custo unitário é baseado no cálculo definido na receita selecionada.
                 </p>
               </div>
             </div>
@@ -156,13 +172,6 @@ const AddProducao = () => {
                   <div>
                     <p className="text-sm font-medium text-slate-900 dark:text-white">Estoque Atualizado</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">A produção será automaticamente adicionada ao estoque após registro.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">analytics</span>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">Relatórios</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Os dados de produção são incluídos nos relatórios financeiros.</p>
                   </div>
                 </div>
               </div>
