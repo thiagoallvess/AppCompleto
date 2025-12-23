@@ -1,17 +1,24 @@
 "use client";
 
-import { ArrowLeft, Plus, Search, MoreVertical, IceCream, Receipt, Settings } from "lucide-react";
+import { ArrowLeft, Plus, Search, MoreVertical, IceCream, Receipt, Settings, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useProducts } from "@/contexts/ProductsContext";
 import AddProdutoModal from "@/components/AddProdutoModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { showSuccess } from "@/utils/toast";
 
 const GestaoProdutos = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { products } = useProducts();
+  const { products, removeProduct } = useProducts();
 
   const filters = ["Todos", "Em estoque", "Esgotado", "Inativos"];
 
@@ -28,6 +35,13 @@ const GestaoProdutos = () => {
       
     return matchesSearch && matchesFilter;
   });
+
+  const handleDelete = (id: string, name: string) => {
+    if (confirm(`Tem certeza que deseja excluir o produto "${name}"?`)) {
+      removeProduct(id);
+      showSuccess(`Produto "${name}" excluído com sucesso.`);
+    }
+  };
 
   const getStatusColor = (product: any) => {
     if (!product.isActive) return "text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-500/10";
@@ -139,9 +153,27 @@ const GestaoProdutos = () => {
                     <h3 className="text-base font-semibold truncate pr-2 text-slate-800 dark:text-slate-100">
                       {product.name}
                     </h3>
-                    <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 -m-1 -mt-2">
-                      <MoreVertical size={20} />
-                    </button>
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 -m-1 -mt-2 outline-none">
+                          <MoreVertical size={20} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
+                        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
+                          <Edit size={16} className="text-slate-500" />
+                          <span>Editar</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(product.id, product.name)}
+                          className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
+                        >
+                          <Trash2 size={16} />
+                          <span>Excluir</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mb-1">
                     {product.description}
