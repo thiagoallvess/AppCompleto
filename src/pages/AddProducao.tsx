@@ -22,7 +22,7 @@ const AddProducao = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedRecipeId) {
+    if (!selectedRecipeId || !selectedRecipe) {
       showError("Por favor, selecione uma receita.");
       return;
     }
@@ -31,18 +31,35 @@ const AddProducao = () => {
       return;
     }
 
-    // TODO: Implementar a lógica de salvar o lote de produção no contexto de Produção
-    console.log({
+    // Criar o novo lote
+    const newLot = {
+      id: Math.floor(1000 + Math.random() * 9000).toString(),
       recipeId: selectedRecipeId,
-      recipeName: selectedRecipe?.name,
+      name: selectedRecipe.name,
+      image: selectedRecipe.image,
       quantity: qty,
-      unitCost,
-      totalCost,
-      date: new Date().toISOString()
-    });
+      produced: qty,
+      unitCost: unitCost,
+      totalCost: totalCost,
+      status: "Finalizado",
+      statusColor: "green",
+      date: new Date().toISOString(),
+      inputs: [] // Em uma versão futura, poderíamos detalhar os insumos gastos aqui
+    };
 
-    showSuccess(`Produção de ${qty} unidades de ${selectedRecipe?.name} registrada!`);
-    navigate("/gestao-producao");
+    // Salvar no localStorage
+    try {
+      const storedLots = localStorage.getItem('productionLots');
+      const currentLots = storedLots ? JSON.parse(storedLots) : [];
+      const updatedLots = [newLot, ...currentLots];
+      localStorage.setItem('productionLots', JSON.stringify(updatedLots));
+      
+      showSuccess(`Produção de ${qty} unidades de ${selectedRecipe.name} registrada!`);
+      navigate("/gestao-producao");
+    } catch (error) {
+      console.error("Erro ao salvar produção:", error);
+      showError("Erro ao registrar produção.");
+    }
   };
 
   return (
