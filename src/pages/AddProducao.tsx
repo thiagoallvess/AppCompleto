@@ -15,6 +15,8 @@ const AddProducao = () => {
   // Encontra a receita selecionada na lista real
   const selectedRecipe = recipes.find(r => r.id.toString() === selectedRecipeId);
   
+  // O custo unitário da receita já deve vir calculado do contexto de receitas
+  // que engloba ingredientes, embalagens, equipamentos e mão de obra.
   const unitCost = selectedRecipe?.cost || 0;
   const qty = parseInt(quantity) || 0;
   const totalCost = unitCost * qty;
@@ -31,7 +33,7 @@ const AddProducao = () => {
       return;
     }
 
-    // Criar o novo lote
+    // Criar o novo lote com metadados detalhados
     const newLot = {
       id: Math.floor(1000 + Math.random() * 9000).toString(),
       recipeId: selectedRecipeId,
@@ -44,7 +46,13 @@ const AddProducao = () => {
       status: "Finalizado",
       statusColor: "green",
       date: new Date().toISOString(),
-      inputs: [] // Em uma versão futura, poderíamos detalhar os insumos gastos aqui
+      // Armazenamos um snapshot dos custos no momento da produção
+      costBreakdown: {
+        ingredients: (selectedRecipe as any).ingredientsList || [],
+        packaging: (selectedRecipe as any).packagingList || [],
+        equipment: (selectedRecipe as any).equipmentList || [],
+        labor: (selectedRecipe as any).laborTime || 0
+      }
     };
 
     // Salvar no localStorage
@@ -54,7 +62,7 @@ const AddProducao = () => {
       const updatedLots = [newLot, ...currentLots];
       localStorage.setItem('productionLots', JSON.stringify(updatedLots));
       
-      showSuccess(`Produção de ${qty} unidades de ${selectedRecipe.name} registrada!`);
+      showSuccess(`Produção de ${qty} unidades de ${selectedRecipe.name} registrada com sucesso!`);
       navigate("/gestao-producao");
     } catch (error) {
       console.error("Erro ao salvar produção:", error);
@@ -143,27 +151,27 @@ const AddProducao = () => {
               <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-700/50">
                 <span className="material-symbols-outlined text-primary text-xl">monetization_on</span>
                 <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
-                  Prévia de Custos
+                  Composição de Custos
                 </h3>
               </div>
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Custo Unitário (da Receita)</span>
+                  <span className="text-slate-600 dark:text-slate-400">Custo Unitário Base</span>
                   <span className="text-slate-900 dark:text-white font-medium">R$ {unitCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600 dark:text-slate-400">Quantidade</span>
                   <span className="text-slate-900 dark:text-white font-medium">{qty}</span>
                 </div>
-                <div className="h-px w-full bg-slate-100 dark:bg-slate-700"></div>
+                <div className="h-px w-full bg-slate-100 dark:bg-slate-700 my-2"></div>
                 <div className="flex justify-between items-end pt-1">
-                  <span className="text-base font-bold text-slate-800 dark:text-white">Custo Total</span>
+                  <span className="text-base font-bold text-slate-800 dark:text-white">Custo Total do Lote</span>
                   <span className="text-xl font-bold text-primary">R$ {totalCost.toFixed(2)}</span>
                 </div>
               </div>
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-black/20">
                 <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400">
-                  * O custo unitário é baseado no cálculo definido na receita selecionada.
+                  * Este valor inclui: Ingredientes, Embalagens, Equipamentos e Mão de Obra conforme definido na receita.
                 </p>
               </div>
             </div>
@@ -173,22 +181,22 @@ const AddProducao = () => {
               <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-700/50">
                 <span className="material-symbols-outlined text-primary text-xl">info</span>
                 <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
-                  Informações
+                  Impacto no Negócio
                 </h3>
               </div>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">factory</span>
+                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">analytics</span>
                   <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">Produção Automática</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Os custos são calculados automaticamente com base na receita selecionada.</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">Custo de Produção</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">O custo total será refletido nos seus relatórios financeiros e análise de margem.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">inventory_2</span>
                   <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">Estoque Atualizado</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">A produção será automaticamente adicionada ao estoque após registro.</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">Atualização de Estoque</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">As {qty || 0} unidades serão adicionadas ao estoque do produto vinculado.</p>
                   </div>
                 </div>
               </div>
