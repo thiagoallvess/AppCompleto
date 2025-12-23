@@ -65,6 +65,12 @@ const DetalhesInsumo = () => {
     .filter(movement => movement.item_id === itemId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
+  // Calculate last updated date
+  const lastUpdatedDate = itemMovements.length > 0 
+    ? new Date(itemMovements[0].date).toLocaleDateString('pt-BR')
+    : 'Nunca';
+
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR', {
@@ -373,7 +379,7 @@ const DetalhesInsumo = () => {
             <div className="flex justify-between items-center py-2">
               <span className="text-sm text-slate-600 dark:text-slate-300">Última Atualização</span>
               <span className="text-sm font-medium text-slate-900 dark:text-white">
-                {item.lastUpdated ? new Date(item.lastUpdated).toLocaleDateString('pt-BR') : 'Nunca'}
+                {lastUpdatedDate}
               </span>
             </div>
           </div>
