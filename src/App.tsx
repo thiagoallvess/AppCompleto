@@ -26,7 +26,7 @@ import DetalhesCliente from "./pages/DetalhesCliente";
 import VisaoGeral from "./pages/VisaoGeral";
 import GestaoReceitas from "./pages/GestaoReceitas";
 import AddReceita from "./pages/AddReceita";
-import EditReceita from "./pages/EditReceita"; // Importado
+import EditReceita from "./pages/EditReceita";
 import DetalhesReceita from "./pages/DetalhesReceita";
 import GestaoProducao from "./pages/GestaoProducao";
 import AddProducao from "./pages/AddProducao";
@@ -59,8 +59,6 @@ const App = () => (
                 <EquipmentProvider>
                   <CartProvider>
                     <TooltipProvider>
-                      <Toaster />
-                      <Sonner />
                       <BrowserRouter>
                         <Routes>
                           <Route path="/" element={<Index />} />
@@ -89,7 +87,7 @@ const App = () => (
                           <Route path="/visao-geral" element={<VisaoGeral />} />
                           <Route path="/gestao-receitas" element={<GestaoReceitas />} />
                           <Route path="/add-receita" element={<AddReceita />} />
-                          <Route path="/edit-receita" element={<EditReceita />} /> {/* Rota Adicionada */}
+                          <Route path="/edit-receita" element={<EditReceita />} />
                           <Route path="/detalhes-receita" element={<DetalhesReceita />} />
                           <Route path="/gestao-producao" element={<GestaoProducao />} />
                           <Route path="/add-producao" element={<AddProducao />} />
@@ -99,6 +97,8 @@ const App = () => (
                           <Route path="*" element={<NotFound />} />
                         </Routes>
                       </BrowserRouter>
+                      <Toaster />
+                      <Sonner />
                     </TooltipProvider>
                   </CartProvider>
                 </EquipmentProvider>
