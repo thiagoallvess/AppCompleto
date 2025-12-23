@@ -45,6 +45,14 @@ const EditReceita = () => {
         setRecipeName(recipe.name);
         setRecipeYield(recipe.quantity.toString());
         setLaborTime(recipe.time.replace(" min", ""));
+        
+        // Carregar itens salvos (se existirem no objeto da receita)
+        // Nota: Como o contexto atual é simplificado, simulamos a carga ou usamos dados estendidos se disponíveis
+        if ((recipe as any).ingredientsList) setIngredients((recipe as any).ingredientsList);
+        if ((recipe as any).packagingList) setPackaging((recipe as any).packagingList);
+        if ((recipe as any).equipmentList) setEquipment((recipe as any).equipmentList);
+        if ((recipe as any).sellingPrice) setSellingPrice((recipe as any).sellingPrice.toString());
+        if ((recipe as any).linkedProductId) setLinkedProduct((recipe as any).linkedProductId);
       } else {
         showError("Receita não encontrada");
         navigate("/gestao-receitas");
@@ -91,11 +99,11 @@ const EditReceita = () => {
     }
   };
 
-  // Cost calculations
+  // Cálculos de custo
   const ingredientsCost = ingredients.reduce((sum, i) => sum + i.totalCost, 0);
   const packagingCost = packaging.reduce((sum, p) => sum + p.totalCost, 0);
   const equipmentCost = equipment.reduce((sum, e) => sum + e.totalCost, 0);
-  const laborCostValue = laborTime ? (parseFloat(laborTime) / 60) * 30 : 0; // Assumindo R$ 30/h
+  const laborCostValue = laborTime ? (parseFloat(laborTime) / 60) * 30 : 0;
   const totalCost = ingredientsCost + packagingCost + equipmentCost + laborCostValue;
   
   const yieldNum = parseFloat(recipeYield) || 1;
@@ -115,8 +123,14 @@ const EditReceita = () => {
       name: recipeName,
       time: `${laborTime || 0} min`,
       quantity: parseInt(recipeYield),
-      cost: unitCost
-    });
+      cost: unitCost,
+      // Salvando as listas para que persistam na próxima edição
+      ingredientsList: ingredients,
+      packagingList: packaging,
+      equipmentList: equipment,
+      sellingPrice: currentSellingPrice,
+      linkedProductId: linkedProduct
+    } as any);
 
     showSuccess("Receita atualizada com sucesso!");
     navigate("/gestao-receitas");
@@ -163,6 +177,18 @@ const EditReceita = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Preço de Venda Unitário (R$)</label>
               <Input type="number" step="0.01" value={sellingPrice} onChange={(e) => setSellingPrice(e.target.value)} placeholder="0,00" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Vincular a um Produto</label>
+              <Select value={linkedProduct} onValueChange={setLinkedProduct}>
+                <SelectTrigger><SelectValue placeholder="Nenhum Produto" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum Produto</SelectItem>
+                  {products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>{product.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </section>
