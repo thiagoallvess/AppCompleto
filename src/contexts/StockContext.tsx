@@ -70,8 +70,6 @@ interface StockProviderProps {
   children: ReactNode;
 }
 
-const generateUniqueId = () => Date.now().toString() + Math.random().toString(36).substring(2, 9);
-
 export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [packagingItems, setPackagingItems] = useState<PackagingItem[]>([]);
