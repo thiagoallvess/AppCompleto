@@ -28,16 +28,15 @@ const DetalhesReceita = () => {
     );
   }
 
-  // Extração de dados do objeto estendido salvo no contexto
-  const ingredients = (recipe as any).ingredientsList || [];
-  const packaging = (recipe as any).packagingList || [];
-  const equipment = (recipe as any).equipmentList || [];
-  const sellingPrice = (recipe as any).sellingPrice || 0;
+  // Extração de dados garantindo compatibilidade com os nomes salvos
+  const ingredients = recipe.ingredientsList || [];
+  const packaging = recipe.packagingList || [];
+  const equipment = recipe.equipmentList || [];
+  const sellingPrice = recipe.sellingPrice || 0;
   
-  // Cálculos de custo baseados nos dados reais
-  const ingredientsCost = ingredients.reduce((sum: number, i: any) => sum + i.totalCost, 0);
-  const packagingCost = packaging.reduce((sum: number, p: any) => sum + p.totalCost, 0);
-  const equipmentCost = equipment.reduce((sum: number, e: any) => sum + e.totalCost, 0);
+  const ingredientsCost = ingredients.reduce((sum: number, i: any) => sum + (i.totalCost || 0), 0);
+  const packagingCost = packaging.reduce((sum: number, p: any) => sum + (p.totalCost || 0), 0);
+  const equipmentCost = equipment.reduce((sum: number, e: any) => sum + (e.totalCost || 0), 0);
   const laborCostValue = recipe.time ? (parseFloat(recipe.time.replace(" min", "")) / 60) * 30 : 0;
   
   const totalCost = ingredientsCost + packagingCost + equipmentCost + laborCostValue;
@@ -50,33 +49,21 @@ const DetalhesReceita = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white max-w-7xl mx-auto shadow-2xl">
-      {/* TopAppBar */}
       <header className="sticky top-0 z-50 flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 border-b border-gray-200 dark:border-gray-800 justify-between">
-        <Link
-          to="/gestao-receitas"
-          className="text-slate-900 dark:text-white flex size-12 shrink-0 items-center justify-start cursor-pointer hover:opacity-70 transition-opacity"
-        >
+        <Link to="/gestao-receitas" className="text-slate-900 dark:text-white flex size-12 shrink-0 items-center justify-start cursor-pointer hover:opacity-70 transition-opacity">
           <ArrowLeft size={24} />
         </Link>
         <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Detalhes da Receita</h2>
-        <Link
-          to={`/edit-receita?id=${recipe.id}`}
-          className="flex size-12 items-center justify-end cursor-pointer hover:opacity-70 transition-opacity"
-        >
+        <Link to={`/edit-receita?id=${recipe.id}`} className="flex size-12 items-center justify-end cursor-pointer hover:opacity-70 transition-opacity">
           <Edit className="text-primary text-2xl" />
         </Link>
       </header>
 
       <div className="flex-1 overflow-y-auto pb-8">
-        {/* Header with Recipe Name and Image */}
         <div className="px-6 py-6 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-6">
             <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 flex-shrink-0">
-              <img
-                src={recipe.image}
-                alt={recipe.name}
-                className="w-full h-full object-cover"
-              />
+              <img src={recipe.image} alt={recipe.name} className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{recipe.name}</h1>
@@ -87,7 +74,7 @@ const DetalhesReceita = () => {
 
         <div className="px-6 py-6 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Ingredients Column */}
+            {/* Ingredientes */}
             <div className="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary text-xl">grocery</span>
@@ -106,7 +93,7 @@ const DetalhesReceita = () => {
               </div>
             </div>
 
-            {/* Packaging Column */}
+            {/* Embalagens */}
             <div className="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary text-xl">inventory_2</span>
@@ -125,7 +112,7 @@ const DetalhesReceita = () => {
               </div>
             </div>
 
-            {/* Equipment Column */}
+            {/* Equipamentos */}
             <div className="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary text-xl">kitchen</span>
@@ -145,7 +132,7 @@ const DetalhesReceita = () => {
             </div>
           </div>
 
-          {/* Cost Summary */}
+          {/* Sumário */}
           <div className="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-2 mb-6">
               <span className="material-symbols-outlined text-primary text-xl">calculate</span>
