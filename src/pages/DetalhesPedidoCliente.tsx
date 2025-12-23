@@ -13,7 +13,6 @@ const DetalhesPedidoCliente = () => {
       status: "Saiu para entrega",
       eta: "15:00 - 15:20",
       progress: 75,
-      cashback: 1.60,
       coupon: "VERAO10",
       discount: 3.20,
       items: [
@@ -34,7 +33,6 @@ const DetalhesPedidoCliente = () => {
       status: "Entregue",
       eta: null,
       progress: 100,
-      cashback: 1.93,
       coupon: null,
       discount: 0,
       items: [
@@ -54,7 +52,6 @@ const DetalhesPedidoCliente = () => {
       status: "Entregue",
       eta: null,
       progress: 100,
-      cashback: 0.80,
       coupon: "PRIMEIRA10",
       discount: 1.60,
       items: [
@@ -74,7 +71,6 @@ const DetalhesPedidoCliente = () => {
       status: "Cancelado",
       eta: null,
       progress: 0,
-      cashback: 0,
       coupon: null,
       discount: 0,
       items: [
@@ -141,20 +137,9 @@ const DetalhesPedidoCliente = () => {
         </div>
       </div>
 
-      {/* Cashback & Referral Section */}
-      <div className="px-4 mb-6 space-y-3">
-        {/* Cashback */}
-        <div className="flex items-center gap-4 rounded-xl bg-surface-dark border border-primary/20 p-4 shadow-[0_0_15px_rgba(22,67,156,0.1)]">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <DollarSign size={20} />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-400">Cashback ganho</p>
-            <p className="text-lg font-bold text-white">R$ {order.cashback.toFixed(2)} <span className="text-xs font-normal text-gray-500 ml-1">(5% do total)</span></p>
-          </div>
-        </div>
-        {/* Referral */}
-        {order.coupon && (
+      {/* Coupon Section */}
+      {order.coupon && (
+        <div className="px-4 mb-6">
           <div className="flex items-center justify-between rounded-xl bg-surface-dark p-3 px-4 border border-white/5">
             <div className="flex flex-col">
               <span className="text-xs font-medium text-gray-500">Cupom aplicado</span>
@@ -162,8 +147,8 @@ const DetalhesPedidoCliente = () => {
             </div>
             <CheckCircle className="text-green-500" size={20} />
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Order Items Section */}
       <div className="mb-2">

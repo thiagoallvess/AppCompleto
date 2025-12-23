@@ -2,61 +2,8 @@ import { Home, Search, Heart, User, DollarSign, Gift, TrendingUp, Clock, ArrowLe
 import { Link } from "react-router-dom";
 
 const Cashback = () => {
-  const cashbackBalance = 12.50;
-  const cashbackHistory = [
-    {
-      id: 1,
-      description: "Compra de Morango do Nordeste",
-      amount: 0.50,
-      date: "Hoje",
-      type: "earned"
-    },
-    {
-      id: 2,
-      description: "Compra de Trufa Belga",
-      amount: 0.75,
-      date: "Ontem",
-      type: "earned"
-    },
-    {
-      id: 3,
-      description: "Resgate de desconto",
-      amount: -5.00,
-      date: "3 dias atrás",
-      type: "spent"
-    },
-    {
-      id: 4,
-      description: "Compra de Coco Puro",
-      amount: 0.60,
-      date: "1 semana atrás",
-      type: "earned"
-    }
-  ];
-
-  const rewards = [
-    {
-      id: 1,
-      title: "Geladinho Grátis",
-      description: "Resgate um geladinho de qualquer sabor",
-      cost: 15.00,
-      available: false
-    },
-    {
-      id: 2,
-      title: "Desconto 20%",
-      description: "Aplique 20% de desconto na próxima compra",
-      cost: 10.00,
-      available: true
-    },
-    {
-      id: 3,
-      title: "Entrega Grátis",
-      description: "Frete grátis na próxima entrega",
-      cost: 8.00,
-      available: true
-    }
-  ];
+  const cashbackBalance = 0.00;
+  const cashbackHistory = [];
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary pb-24 min-h-screen">
@@ -91,7 +38,7 @@ const Cashback = () => {
           </div>
           <div className="mt-4 flex items-center gap-2">
             <TrendingUp size={16} className="text-white/80" />
-            <p className="text-white/80 text-sm">Ganhe 5% de cashback em cada compra</p>
+            <p className="text-white/80 text-sm">Ganhe cashback em cada compra aprovada</p>
           </div>
         </div>
 
@@ -101,7 +48,7 @@ const Cashback = () => {
             <div>
               <h3 className="text-base font-semibold text-slate-900 dark:text-white">Meta de Resgate</h3>
               <p className="text-sm text-slate-500 dark:text-text-secondary mt-1">
-                Faltam <span className="text-primary font-bold">R$ 4,50</span> para liberar o resgate
+                Acumule saldo para liberar o resgate
               </p>
             </div>
             <div className="text-right">
@@ -110,14 +57,14 @@ const Cashback = () => {
             </div>
           </div>
           <div className="relative h-3 w-full rounded-full bg-gray-100 dark:bg-black/40 overflow-hidden mt-2">
-            <div className="absolute left-0 top-0 h-full rounded-full bg-primary transition-all duration-500 ease-out" style={{ width: '77.5%' }}></div>
+            <div className="absolute left-0 top-0 h-full rounded-full bg-primary transition-all duration-500 ease-out" style={{ width: '0%' }}></div>
           </div>
-          {/* Redeem Button (Disabled State Logic Applied Visually) */}
-          <button className="mt-4 w-full flex items-center justify-center gap-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-bold py-3 px-4 cursor-not-allowed transition-colors hover:bg-gray-300 dark:hover:bg-gray-600 opacity-80" disabled>
+          {/* Redeem Button */}
+          <button className="mt-4 w-full flex items-center justify-center gap-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-bold py-3 px-4 cursor-not-allowed transition-colors opacity-80" disabled>
             <span className="text-[20px]">🔒</span>
             <span>Solicitar Resgate</span>
           </button>
-          <p className="text-xs text-center text-slate-400 mt-1">O botão será ativado ao atingir R$ 20,00</p>
+          <p className="text-xs text-center text-slate-400 mt-1">O botão será ativado ao atingir o valor mínimo</p>
         </div>
 
         {/* How to Earn More */}
@@ -133,7 +80,7 @@ const Cashback = () => {
               </div>
               <div>
                 <p className="font-medium text-white">Compras</p>
-                <p className="text-sm text-text-secondary">Ganhe 5% em cada pedido</p>
+                <p className="text-sm text-text-secondary">Ganhe uma porcentagem em cada pedido</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
@@ -142,16 +89,7 @@ const Cashback = () => {
               </div>
               <div>
                 <p className="font-medium text-white">Indicações</p>
-                <p className="text-sm text-text-secondary">Ganhe R$ 2 por amigo indicado</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
-              <div className="bg-primary/20 rounded-full p-2">
-                <TrendingUp size={16} className="text-primary" />
-              </div>
-              <div>
-                <p className="font-medium text-white">Avaliações</p>
-                <p className="text-sm text-text-secondary">Ganhe R$ 0,50 por avaliação</p>
+                <p className="text-sm text-text-secondary">Ganhe bônus por amigo indicado</p>
               </div>
             </div>
           </div>
@@ -164,23 +102,27 @@ const Cashback = () => {
             Histórico de Cashback
           </h3>
           <div className="space-y-3">
-            {cashbackHistory.map((item) => (
-              <div key={item.id} className="flex items-center justify-between py-2">
-                <div className="flex-1">
-                  <p className="font-medium text-sm text-white">{item.description}</p>
-                  <p className="text-xs text-text-secondary">{item.date}</p>
+            {cashbackHistory.length > 0 ? (
+              cashbackHistory.map((item: any) => (
+                <div key={item.id} className="flex items-center justify-between py-2">
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-white">{item.description}</p>
+                    <p className="text-xs text-text-secondary">{item.date}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      item.type === 'earned'
+                        ? 'bg-green-600/20 text-green-400'
+                        : 'bg-red-600/20 text-red-400'
+                    }`}>
+                      {item.type === 'earned' ? '+' : ''}R$ {item.amount.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    item.type === 'earned'
-                      ? 'bg-green-600/20 text-green-400'
-                      : 'bg-red-600/20 text-red-400'
-                  }`}>
-                    {item.type === 'earned' ? '+' : ''}R$ {item.amount.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-sm text-text-secondary text-center py-4 italic">Nenhuma movimentação encontrada.</p>
+            )}
           </div>
         </div>
       </main>

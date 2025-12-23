@@ -16,9 +16,6 @@ const Checkout = () => {
   const discount = appliedCoupon ? subtotal * 0.1 : 0.00;
   const total = subtotal + delivery - discount;
 
-  // Cálculo de cashback (5% conforme definido na página de Cashback)
-  const cashbackEarned = total * 0.05;
-
   const handleSubmit = () => {
     alert("Pagamento processado com sucesso!");
     clearCart();
@@ -264,17 +261,6 @@ const Checkout = () => {
                 <span className="text-primary font-medium">- R$ {discount.toFixed(2)}</span>
               </div>
             )}
-            
-            {/* Cashback Info */}
-            <div className="mt-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                <Sparkles size={16} />
-                <span className="text-xs font-bold uppercase tracking-wider">Você vai ganhar</span>
-              </div>
-              <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                + R$ {cashbackEarned.toFixed(2)} de volta
-              </span>
-            </div>
           </div>
         </div>
       </main>
