@@ -5,6 +5,14 @@ const StoreStatusBanner = () => {
   const { storeOpen, getCurrentDayHours } = useStore();
   const dayHours = getCurrentDayHours();
 
+  const getDayName = () => {
+    const daysMap = [
+      'Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 
+      'Quinta-feira', 'Sexta-feira', 'Sábado'
+    ];
+    return daysMap[new Date().getDay()];
+  };
+
   if (!storeOpen) {
     return (
       <div className="mx-4 mt-4 mb-2 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 shadow-sm">
@@ -34,7 +42,7 @@ const StoreStatusBanner = () => {
           {dayHours && (
             <p className="text-xs text-green-700 dark:text-green-400 mt-0.5 flex items-center gap-1">
               <Clock size={12} />
-              Hoje (Domingo): {dayHours.open} - {dayHours.close}
+              Hoje ({getDayName()}): {dayHours.open} - {dayHours.close}
             </p>
           )}
         </div>
