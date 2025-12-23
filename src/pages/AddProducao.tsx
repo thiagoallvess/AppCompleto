@@ -64,12 +64,23 @@ const AddProducao = () => {
       localStorage.setItem('productionLots', JSON.stringify(updatedLots));
       
       // 2. Atualizar o estoque do produto vinculado
-      const linkedProductId = (selectedRecipe as any).linkedProductId;
-      if (linkedProductId && linkedProductId !== "none") {
-        updateStock(linkedProductId, totalProducedUnits);
+      // Procuramos o produto que tem este recipeId vinculado
+      const linkedProduct = products.find(p => p.recipeId === selectedRecipeId);
+      
+      if (linkedProduct) {
+        updateStock(linkedProduct.id, totalProducedUnits);
+        showSuccess(`Produção registrada! ${totalProducedUnits} unidades adicionadas ao estoque de "${linkedProduct.name}".`);
+      } else {
+        // Fallback: se não achar pelo recipeId, tenta pelo nome (opcional, mas ajuda na usabilidade)
+        const productByName = products.find(p => p.name.toLowerCase() === selectedRecipe.name.toLowerCase());
+        if (productByName) {
+          updateStock(productByName.id, totalProducedUnits);
+          showSuccess(`Produção registrada! ${totalProducedUnits} unidades adicionadas ao estoque de "${productByName.name}".`);
+        } else {
+          showSuccess(`Produção registrada! Lembre-se de vincular esta receita a um produto para atualizar o estoque automaticamente.`);
+        }
       }
       
-      showSuccess(`Produção de ${numBatches} lote(s) (${totalProducedUnits} unidades) de ${selectedRecipe.name} registrada!`);
       navigate("/gestao-producao");
     } catch (error) {
       console.error("Erro ao salvar produção:", error);
@@ -172,53 +183,9 @@ const AddProducao = () => {
                 </div>
               </div>
             </div>
-
-            <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
-              <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-                <span className="material-symbols-outlined text-primary text-xl">info</span>
-                <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
-                  Resumo da Operação
-                </h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">inventory_2</span>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">Entrada no Estoque</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Serão adicionadas {totalProducedUnits} unidades ao estoque de produtos prontos.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-lg mt-0.5">layers</span>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">Consumo de Insumos</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">O sistema baixará proporcionalmente os ingredientes e embalagens de {numBatches} lote(s).</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800/80 backdrop-blur-lg bg-opacity-95">
-        <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-          <span className="material-symbols-outlined text-[24px]">dashboard</span>
-          <span className="text-[10px] font-medium">Início</span>
-        </Link>
-        <Link to="/gestao-producao" className="flex flex-col items-center gap-1 p-2 w-16 text-primary">
-          <span className="material-symbols-outlined fill-current text-[24px]">conveyor_belt</span>
-          <span className="text-[10px] font-medium">Produção</span>
-        </Link>
-        <Link to="/gestao-estoque" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-          <span className="material-symbols-outlined text-[24px]">inventory_2</span>
-          <span className="text-[10px] font-medium">Estoque</span>
-        </Link>
-        <Link to="/relatorios" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-          <span className="material-symbols-outlined text-[24px]">payments</span>
-          <span className="text-[10px] font-medium">Finanças</span>
-        </Link>
-      </nav>
     </div>
   );
 };
