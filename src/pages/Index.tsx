@@ -14,9 +14,12 @@ const Index = () => {
   const { addItem } = useCart();
   const { products } = useProducts();
 
+  // Filtra produtos que possuem estoque (stock > 0), estão ativos e correspondem à busca
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    product.isActive && 
+    product.stock > 0 &&
+    (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleAddToCart = (product: typeof products[0]) => {
@@ -75,67 +78,79 @@ const Index = () => {
       </div>
 
       <main className="flex-1 px-4 pb-24">
-        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto lg:max-w-7xl lg:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-shadow flex flex-col"
-            >
-              <Link to={`/product-details?id=${product.id}`} className="flex-1 flex flex-col">
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4 flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                    {product.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2 flex-1">
-                    {product.description}
-                  </p>
-                  <div className="flex items-center justify-between mb-3 mt-auto">
-                    <span className="text-xl font-bold text-primary">
-                      R$ {product.price.toFixed(2)}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-yellow-500">★</span>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {product.rating} ({product.reviews})
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto lg:max-w-7xl lg:grid-cols-4">
+            {filteredProducts.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-shadow flex flex-col"
+              >
+                <Link to={`/product-details?id=${product.id}`} className="flex-1 flex flex-col">
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
+                      {product.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2 flex-1">
+                      {product.description}
+                    </p>
+                    <div className="flex items-center justify-between mb-3 mt-auto">
+                      <span className="text-xl font-bold text-primary">
+                        R$ {product.price.toFixed(2)}
                       </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {product.rating} ({product.reviews})
+                        </span>
+                      </div>
                     </div>
                   </div>
+                </Link>
+                <div className="px-4 pb-4">
+                  <Button
+                    onClick={() => handleAddToCart(product)}
+                    className={`w-full h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${
+                      addedItems.has(product.id)
+                        ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30'
+                        : 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {addedItems.has(product.id) ? (
+                        <>
+                          <span className="text-green-100">✓</span>
+                          <span>Adicionado</span>
+                        </>
+                      ) : (
+                        <>
+                          <Plus size={16} />
+                          <span>Adicionar</span>
+                        </>
+                      )}
+                    </div>
+                  </Button>
                 </div>
-              </Link>
-              <div className="px-4 pb-4">
-                <Button
-                  onClick={() => handleAddToCart(product)}
-                  className={`w-full h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${
-                    addedItems.has(product.id)
-                      ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30'
-                      : 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {addedItems.has(product.id) ? (
-                      <>
-                        <span className="text-green-100">✓</span>
-                        <span>Adicionado</span>
-                      </>
-                    ) : (
-                      <>
-                        <Plus size={16} />
-                        <span>Adicionar</span>
-                      </>
-                    )}
-                  </div>
-                </Button>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="bg-slate-100 dark:bg-surface-dark p-6 rounded-full mb-4">
+              <ShoppingCart size={48} className="text-slate-300" />
             </div>
-          ))}
-        </div>
+            <h3 className="text-lg font-bold">Nenhum produto disponível</h3>
+            <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto mt-2">
+              No momento não temos produtos em estoque. Volte mais tarde!
+            </p>
+          </div>
+        )}
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-lg pb-safe">
