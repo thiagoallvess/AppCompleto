@@ -1,4 +1,4 @@
-import { ArrowLeft, Home, IceCream, Receipt, Settings, Store, Bolt, HardHat, DollarSign, Gift } from "lucide-react";
+import { ArrowLeft, Home, IceCream, Receipt, Settings, Store, Bolt, HardHat, DollarSign, Gift, Coins } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,28 +16,25 @@ const ConfiguracoesAdmin = () => {
     referralRewardYou,
     setReferralRewardYou,
     referralRewardThem,
-    setReferralRewardThem
+    setReferralRewardThem,
+    cashbackPercent,
+    setCashbackPercent
   } = useStore();
   
   const [tempBusinessHours, setTempBusinessHours] = useState(businessHours);
   const [tempRewardYou, setTempRewardYou] = useState(referralRewardYou);
   const [tempRewardThem, setTempRewardThem] = useState(referralRewardThem);
+  const [tempCashback, setTempCashback] = useState(cashbackPercent);
 
   // Gas configurations
   const [gasWeight, setGasWeight] = useState("13");
   const [gasPrice, setGasPrice] = useState("120");
-  const [gasConsumptionLow, setGasConsumptionLow] = useState("0,06");
-  const [gasConsumptionMedium, setGasConsumptionMedium] = useState("0,12");
-  const [gasConsumptionHigh, setGasConsumptionHigh] = useState("0,24");
 
   // Energy configurations
   const [energyCost, setEnergyCost] = useState("0,8");
 
   // Labor configurations
   const [laborCost, setLaborCost] = useState("30");
-
-  // Cashback configurations
-  const [cashbackMinValue, setCashbackMinValue] = useState("80");
 
   const days = [
     { key: 'monday', label: 'Segunda-feira' },
@@ -50,12 +47,10 @@ const ConfiguracoesAdmin = () => {
   ];
 
   const handleSaveAllSettings = () => {
-    // Save business hours
     setBusinessHours(tempBusinessHours);
-    
-    // Save referral rewards
     setReferralRewardYou(tempRewardYou);
     setReferralRewardThem(tempRewardThem);
+    setCashbackPercent(tempCashback);
     
     showSuccess("Todas as configurações foram salvas!");
   };
@@ -72,7 +67,6 @@ const ConfiguracoesAdmin = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
@@ -88,19 +82,15 @@ const ConfiguracoesAdmin = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-32 space-y-6">
         {/* Configurações da Loja */}
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-            <span className="material-symbols-outlined text-primary text-xl">store</span>
+            <Store className="text-primary" size={24} />
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
               Configurações da Loja
             </h3>
           </div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Gerencie o status de abertura e os horários de funcionamento da sua loja.
-          </p>
 
           <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50">
             <div className="flex flex-col">
@@ -116,7 +106,7 @@ const ConfiguracoesAdmin = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-primary text-lg">schedule</span>
-              <h4 className="text-slate-900 dark:text-white text-base font-semibold">Horários de Funcionamento Semanal</h4>
+              <h4 className="text-slate-900 dark:text-white text-base font-semibold">Horários de Funcionamento</h4>
             </div>
             <div className="space-y-3">
               {days.map((day) => (
@@ -143,6 +133,34 @@ const ConfiguracoesAdmin = () => {
           </div>
         </div>
 
+        {/* Configurações de Cashback */}
+        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
+            <Coins className="text-primary" size={24} />
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
+              Configurações de Cashback
+            </h3>
+          </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">
+            Defina a porcentagem que o cliente recebe de volta em cada compra.
+          </p>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="cashback-percent">
+              Porcentagem de Cashback (%)
+            </label>
+            <div className="relative max-w-[200px]">
+              <Input
+                id="cashback-percent"
+                type="number"
+                value={tempCashback}
+                onChange={(e) => setTempCashback(e.target.value)}
+                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-10"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
+            </div>
+          </div>
+        </div>
+
         {/* Configurações de Indicação */}
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
@@ -151,18 +169,11 @@ const ConfiguracoesAdmin = () => {
               Programa de Indicação
             </h3>
           </div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Defina as recompensas em porcentagem para quem indica e para o novo cliente.
-          </p>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="reward-you">
-                Recompensa "Pra Você" (%)
-              </label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Recompensa "Pra Você" (%)</label>
               <div className="relative">
                 <Input
-                  id="reward-you"
                   type="number"
                   value={tempRewardYou}
                   onChange={(e) => setTempRewardYou(e.target.value)}
@@ -172,12 +183,9 @@ const ConfiguracoesAdmin = () => {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="reward-them">
-                Recompensa "Pra Ele" (%)
-              </label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Recompensa "Pra Ele" (%)</label>
               <div className="relative">
                 <Input
-                  id="reward-them"
                   type="number"
                   value={tempRewardThem}
                   onChange={(e) => setTempRewardThem(e.target.value)}
@@ -189,67 +197,33 @@ const ConfiguracoesAdmin = () => {
           </div>
         </div>
 
-        {/* Link para Gestão de Equipamentos */}
-        <Link
-          to="/gestao-equipamentos"
-          className="flex items-center gap-4 bg-white dark:bg-surface-dark hover:bg-gray-50 dark:hover:bg-surface-dark/50 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 transition-colors group"
-        >
-          <div className="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-10 group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined">factory</span>
-          </div>
-          <div className="flex flex-col items-start flex-1">
-            <p className="text-base font-semibold leading-normal">Gestão de Equipamentos</p>
-            <p className="text-xs text-gray-400 dark:text-slate-400">Custos de energia e gás por equipamento</p>
-          </div>
-          <div className="text-gray-400">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
-
-        {/* Configurações de Gás */}
+        {/* Custos de Produção (Gás, Energia, Mão de Obra) */}
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-            <span className="material-symbols-outlined text-primary text-xl">local_fire_department</span>
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
-              Configurações de Gás
-            </h3>
+            <Bolt className="text-primary" size={24} />
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Custos de Produção</h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Peso do Botijão (kg)</label>
-              <Input value={gasWeight} onChange={(e) => setGasWeight(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Preço do Botijão (R$)</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Preço Botijão Gás (R$)</label>
               <Input value={gasPrice} onChange={(e) => setGasPrice(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
             </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Custo kWh Energia (R$)</label>
+              <Input value={energyCost} onChange={(e) => setEnergyCost(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Mão de Obra (R$/hora)</label>
+              <Input value={laborCost} onChange={(e) => setLaborCost(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
+            </div>
           </div>
-        </div>
-
-        {/* Configurações de Energia */}
-        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-            <span className="material-symbols-outlined text-primary text-xl">bolt</span>
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Configurações de Energia</h3>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Custo kWh Elétrico (R$)</label>
-            <Input value={energyCost} onChange={(e) => setEnergyCost(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
-          </div>
-        </div>
-
-        {/* Configurações de Preço e Mão de Obra */}
-        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-            <span className="material-symbols-outlined text-primary text-xl">engineering</span>
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Mão de Obra</h3>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Custo Mão de Obra (R$/hora)</label>
-            <Input value={laborCost} onChange={(e) => setLaborCost(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
-          </div>
+          <Link
+            to="/gestao-equipamentos"
+            className="mt-2 flex items-center justify-between p-3 rounded-lg border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
+          >
+            <span className="text-sm font-bold">Configurar Equipamentos Individuais</span>
+            <ArrowLeft className="rotate-180" size={18} />
+          </Link>
         </div>
 
         {/* Save Button */}

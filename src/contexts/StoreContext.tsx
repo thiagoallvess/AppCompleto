@@ -19,6 +19,8 @@ interface StoreContextType {
   setReferralRewardYou: (value: string) => void;
   referralRewardThem: string;
   setReferralRewardThem: (value: string) => void;
+  cashbackPercent: string;
+  setCashbackPercent: (value: string) => void;
   getCurrentDayHours: () => { open: string; close: string } | null;
   isWithinBusinessHours: () => boolean;
   getNextOpenTime: () => { dayName: string; time: string } | null;
@@ -68,6 +70,10 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
     return localStorage.getItem('referralRewardThem') || "5";
   });
 
+  const [cashbackPercent, setCashbackPercentState] = useState<string>(() => {
+    return localStorage.getItem('cashbackPercent') || "3";
+  });
+
   const setStoreOpen = (open: boolean) => {
     setStoreOpenState(open);
     localStorage.setItem('storeOpen', JSON.stringify(open));
@@ -86,6 +92,11 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
   const setReferralRewardThem = (value: string) => {
     setReferralRewardThemState(value);
     localStorage.setItem('referralRewardThem', value);
+  };
+
+  const setCashbackPercent = (value: string) => {
+    setCashbackPercentState(value);
+    localStorage.setItem('cashbackPercent', value);
   };
 
   const getCurrentDayHours = () => {
@@ -140,6 +151,8 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
       setReferralRewardYou,
       referralRewardThem,
       setReferralRewardThem,
+      cashbackPercent,
+      setCashbackPercent,
       getCurrentDayHours,
       isWithinBusinessHours,
       getNextOpenTime
