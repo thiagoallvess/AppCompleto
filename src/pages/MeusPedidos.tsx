@@ -1,58 +1,25 @@
-import { ArrowLeft, Receipt, Clock, CheckCircle, XCircle, Star, RotateCcw, HelpCircle, Home, Search, Heart, User } from "lucide-react";
+import { ArrowLeft, Receipt, Clock, Star, Home, Search, Heart, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useOrders } from "@/contexts/OrdersContext";
 
 const MeusPedidos = () => {
-  const orders = [
-    {
-      id: "1234",
-      status: "A Caminho",
-      statusColor: "blue",
-      date: "Hoje, 14:30",
-      items: "2x Ninho com Nutella, 1x Morango Gourmet, 1x Maracujá",
-      itemCount: 4,
-      total: 32.00,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCM6J9kuR4cOh8UXIW26pv-fPK3cG9jQCzURHy7AV7t8Arw9q1NoBye9wKKB8WXufd8tzM4G1BAZ9JvwhrwDX9YLZolz40iRUA9AzzFuIaZSbYsO6Vmo9xMOil91XsmiJaxBoFlaD1iQ9JVIfHkUNsbsdoRyqW82u5BLzsgxfxTtDTMmZSfAbz7KzFJGKROwBtkcrp8pvM0jqSfYcv8pKpx4xRgAVi5VHAM-MtKHIV_WCsKjLr2rHnMeUX4m_HOr7kgJC5OA2ZUEA",
-      eta: "Chega em 15-20 min",
-      action: "Rastrear",
-      isActive: true
-    },
-    {
-      id: "1102",
-      status: "Entregue",
-      statusColor: "gray",
-      date: "10/10/2023",
-      items: "3x Limão Siciliano, 2x Chocolate Belga",
-      itemCount: 5,
-      total: 38.50,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCP_m7KaKD21V6E1B_c0sItWR_KDl4JSnIrE-BScmbxUcOukdTbHnQw405xnMAWitsksiODcGE5o-Dr8wXMGrcoToHYwgMvGjYm0xtxT5ICWvbPgHMwC1vUeWP2Aq2EMlJ54eg83m4USThEj7DyaN5ooKvNnAn_wND5tt192FTxsb5-cFQ0vR7i2DivW_VlDhPFMEnWH2Lktl9T7r9kBv5Da5WVPomxWnlhtEnbkuY33lb9b82h18mLt9buFArHNWEL96mJkKuRqQ",
-      action: "Pedir novamente",
-      rating: null
-    },
-    {
-      id: "0988",
-      status: "Entregue",
-      statusColor: "gray",
-      date: "25/09/2023",
-      items: "1x Coco com Doce de Leite, 1x Paçoca",
-      itemCount: 2,
-      total: 16.00,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAG7Uj02VQJ-qhcbTCnesEG4gD3UInDA4rNayZup2RLN2_bQCfTnVNR_l-DTdXOBvhL9WAaX87UftAK2U7sB2U6JTa7r8wpWfiDPIEbAtGGv-5CrecYaZuuD9l1b4s01XjoNpc5t9qaYh4dzSCTxZXGQq2UVC2yLgyUnmioy-w9jEP6S31faZwIlo68d951DTN_-oos0ZbKhyHyEGxSHXFfW4gxKyg2e9ICHwtS3Beq_3-2wSvZVjYKvOLPZI2_nP6TbsWYvi__Q",
-      action: "Pedir novamente",
-      rating: 4.8
-    },
-    {
-      id: "0845",
-      status: "Cancelado",
-      statusColor: "red",
-      date: "12/08/2023",
-      items: "4x Morango com Leite Condensado",
-      itemCount: 4,
-      total: 28.00,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKSeegtc1WHv61uN6BonhkxNT-hRmAzqvIXa7Pljzqpy4ynTe3sU9afaW15RbEgEqXnUaxh_hQ-vzORiim_pyLBLNaLcDpFYpajhWwGrwd0nobdJcQAqUZfwzXpNeuxTfAi6K6aCK1WtILpgK_E4JxjfjhoHvH4yb6emo8hN1v2hMvj12_DsLgMEuLKy7lh0A5ydsxj0EQsJHrLlehbqmwo3NsiWl5vq7may3QA6nBZ8xQPvCuR_UwfI4VmSorxXwazg08m7hZAg",
-      action: "Ajuda",
-      cancelled: true
-    }
-  ];
+  const { orders } = useOrders();
+
+  // No contexto do cliente, mostramos apenas os pedidos dele (neste MVP, todos os pedidos do contexto)
+  const displayOrders = orders.map(order => ({
+    id: order.id.replace('#', ''),
+    status: order.status,
+    statusColor: order.statusColor === 'blue' ? 'blue' : order.statusColor === 'red' ? 'red' : 'gray',
+    date: order.date || `Hoje, ${order.time}`,
+    items: order.items.map(i => `${i.quantity}x ${i.name}`).join(', '),
+    itemCount: order.items.reduce((sum, i) => sum + i.quantity, 0),
+    total: order.total,
+    image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=300",
+    eta: order.eta,
+    action: order.status === 'Entregue' ? "Pedir novamente" : "Rastrear",
+    isActive: order.section === 'open',
+    cancelled: order.cancelled
+  }));
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary pb-24 min-h-screen">
@@ -71,97 +38,79 @@ const MeusPedidos = () => {
         </div>
       </header>
 
-      {/* Filter Chips */}
-      <div className="sticky top-[60px] z-40 w-full overflow-x-auto bg-background-light dark:bg-background-dark py-4 px-4 no-scrollbar border-b border-transparent dark:border-gray-800">
-        <div className="flex gap-3 min-w-max">
-          {/* Active Chip */}
-          <button className="flex h-9 items-center justify-center rounded-full bg-primary px-5 shadow-lg shadow-primary/20 transition-transform active:scale-95">
-            <span className="text-sm font-medium text-white">Todos</span>
-          </button>
-          {/* Inactive Chips */}
-          <button className="flex h-9 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
-            <span className="text-sm font-medium text-gray-600 dark:text-text-secondary">Em Preparo</span>
-          </button>
-          <button className="flex h-9 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
-            <span className="text-sm font-medium text-gray-600 dark:text-text-secondary">A Caminho</span>
-          </button>
-          <button className="flex h-9 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-5 transition-transform active:scale-95 hover:bg-gray-50 dark:hover:bg-gray-800">
-            <span className="text-sm font-medium text-gray-600 dark:text-text-secondary">Entregue</span>
-          </button>
-        </div>
-      </div>
-
       {/* Orders List */}
-      <main className="flex-1 px-4 pb-24 pt-2 max-w-md mx-auto lg:max-w-7xl">
+      <main className="flex-1 px-4 pb-24 pt-6 max-w-md mx-auto lg:max-w-7xl">
         <div className="flex flex-col gap-4">
-          {orders.map((order) => (
-            <Link
-              key={order.id}
-              to={`/detalhes-pedido-cliente?id=${order.id}`}
-              className="block"
-            >
-              <article
-                className={`group relative overflow-hidden rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 p-4 transition-all hover:border-primary/50 dark:hover:border-primary/50 cursor-pointer ${
-                  order.cancelled ? 'opacity-75 hover:opacity-100' : ''
-                }`}
+          {displayOrders.length === 0 ? (
+            <div className="text-center py-20">
+              <Receipt className="mx-auto h-12 w-12 text-slate-300 mb-4" />
+              <p className="text-slate-500">Você ainda não realizou pedidos.</p>
+              <Link to="/" className="text-primary font-bold mt-4 inline-block">Ver cardápio</Link>
+            </div>
+          ) : (
+            displayOrders.map((order) => (
+              <Link
+                key={order.id}
+                to={`/detalhes-pedido-cliente?id=${order.id}`}
+                className="block"
               >
-                <div className="mb-3 flex items-start justify-between gap-4">
-                  <div className="flex flex-col gap-1">
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                      order.statusColor === 'blue' ? 'bg-blue-100 dark:bg-primary/20 text-primary dark:text-blue-200' :
-                      order.statusColor === 'red' ? 'bg-red-100 dark:bg-red-900/20 text-red-500 dark:text-red-400' :
-                      'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
-                    }`}>
-                      {order.status === 'A Caminho' && <div className="h-1.5 w-1.5 rounded-full bg-primary dark:bg-blue-400 animate-pulse"></div>}
-                      {order.status}
-                    </span>
-                    <p className="mt-2 text-xs font-medium text-gray-500 dark:text-text-secondary">Pedido #{order.id} • {order.date}</p>
-                  </div>
-                  <ArrowLeft className="text-gray-400 dark:text-text-secondary rotate-180" size={20} />
-                </div>
-                <div className="flex gap-4">
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
-                    <img
-                      alt={order.items}
-                      className={`h-full w-full object-cover ${order.cancelled ? 'grayscale opacity-50' : ''}`}
-                      src={order.image}
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col justify-between py-0.5">
-                    <div>
-                      <h3 className={`line-clamp-2 text-sm font-medium leading-snug ${
-                        order.cancelled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white'
+                <article
+                  className={`group relative overflow-hidden rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 p-4 transition-all hover:border-primary/50 dark:hover:border-primary/50 cursor-pointer ${
+                    order.cancelled ? 'opacity-75' : ''
+                  }`}
+                >
+                  <div className="mb-3 flex items-start justify-between gap-4">
+                    <div className="flex flex-col gap-1">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                        order.status === 'Rota' || order.status === 'A Caminho' ? 'bg-blue-100 dark:bg-primary/20 text-primary dark:text-blue-200' :
+                        order.cancelled ? 'bg-red-100 dark:bg-red-900/20 text-red-500 dark:text-red-400' :
+                        'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                       }`}>
-                        {order.items}
-                      </h3>
+                        {order.isActive && <div className="h-1.5 w-1.5 rounded-full bg-primary dark:bg-blue-400 animate-pulse"></div>}
+                        {order.status}
+                      </span>
+                      <p className="mt-2 text-xs font-medium text-gray-500 dark:text-text-secondary">Pedido #{order.id} • {order.date}</p>
                     </div>
-                    <div className="flex items-end justify-between">
-                      <p className="text-sm text-gray-500 dark:text-text-secondary">{order.itemCount} itens</p>
-                      <p className={`text-base font-bold ${order.cancelled ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`}>
-                        R$ {order.total.toFixed(2)}
-                      </p>
+                    <ArrowLeft className="text-gray-400 dark:text-text-secondary rotate-180" size={20} />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
+                      <img
+                        alt={order.items}
+                        className={`h-full w-full object-cover ${order.cancelled ? 'grayscale opacity-50' : ''}`}
+                        src={order.image}
+                      />
+                    </div>
+                    <div className="flex flex-1 flex-col justify-between py-0.5">
+                      <div>
+                        <h3 className={`line-clamp-2 text-sm font-medium leading-snug ${
+                          order.cancelled ? 'text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white'
+                        }`}>
+                          {order.items}
+                        </h3>
+                      </div>
+                      <div className="flex items-end justify-between">
+                        <p className="text-sm text-gray-500 dark:text-text-secondary">{order.itemCount} itens</p>
+                        <p className={`text-base font-bold ${order.cancelled ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`}>
+                          R$ {order.total.toFixed(2)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3 flex justify-between items-center">
-                  <span className="text-xs text-gray-500 dark:text-text-secondary flex items-center gap-1">
-                    {order.isActive && <Clock size={14} />}
-                    {order.rating && <Star size={14} className="text-yellow-500 fill-current" />}
-                    {order.cancelled && "Cancelado pelo usuário"}
-                    {order.eta && order.eta}
-                    {order.rating && `${order.rating}`}
-                  </span>
-                  <button className={`text-sm font-semibold ${
-                    order.cancelled ? 'text-gray-600 dark:text-gray-300 hover:text-primary' :
-                    order.isActive ? 'text-primary hover:text-primary/80' :
-                    'text-gray-600 dark:text-gray-300 hover:text-primary'
-                  }`}>
-                    {order.action}
-                  </button>
-                </div>
-              </article>
-            </Link>
-          ))}
+                  <div className="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3 flex justify-between items-center">
+                    <span className="text-xs text-gray-500 dark:text-text-secondary flex items-center gap-1">
+                      {order.isActive && <Clock size={14} />}
+                      {order.cancelled && "Cancelado"}
+                      {order.eta && order.eta}
+                    </span>
+                    <button className="text-sm font-semibold text-primary">
+                      {order.action}
+                    </button>
+                  </div>
+                </article>
+              </Link>
+            ))
+          )}
         </div>
       </main>
 
