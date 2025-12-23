@@ -1,4 +1,4 @@
-import { ArrowLeft, Home, IceCream, Receipt, Settings, Store, Bolt, HardHat, DollarSign } from "lucide-react";
+import { ArrowLeft, Home, IceCream, Receipt, Settings, Store, Bolt, HardHat, DollarSign, Gift } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,20 @@ import { useStore } from "../contexts/StoreContext";
 import { showSuccess } from "../utils/toast";
 
 const ConfiguracoesAdmin = () => {
-  const { storeOpen, setStoreOpen, businessHours, setBusinessHours } = useStore();
+  const { 
+    storeOpen, 
+    setStoreOpen, 
+    businessHours, 
+    setBusinessHours,
+    referralRewardYou,
+    setReferralRewardYou,
+    referralRewardThem,
+    setReferralRewardThem
+  } = useStore();
+  
   const [tempBusinessHours, setTempBusinessHours] = useState(businessHours);
+  const [tempRewardYou, setTempRewardYou] = useState(referralRewardYou);
+  const [tempRewardThem, setTempRewardThem] = useState(referralRewardThem);
 
   // Gas configurations
   const [gasWeight, setGasWeight] = useState("13");
@@ -41,10 +53,9 @@ const ConfiguracoesAdmin = () => {
     // Save business hours
     setBusinessHours(tempBusinessHours);
     
-    // TODO: Save gas settings to backend/storage
-    // TODO: Save energy settings to backend/storage
-    // TODO: Save labor settings to backend/storage
-    // TODO: Save cashback settings to backend/storage
+    // Save referral rewards
+    setReferralRewardYou(tempRewardYou);
+    setReferralRewardThem(tempRewardThem);
     
     showSuccess("Todas as configurações foram salvas!");
   };
@@ -107,10 +118,6 @@ const ConfiguracoesAdmin = () => {
               <span className="material-symbols-outlined text-primary text-lg">schedule</span>
               <h4 className="text-slate-900 dark:text-white text-base font-semibold">Horários de Funcionamento Semanal</h4>
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-xs">
-              Use o formato HH:MM (ex: 09:00) ou digite 'Fechado' para dias sem expediente.
-            </p>
-
             <div className="space-y-3">
               {days.map((day) => (
                 <div key={day.key} className="flex items-center gap-4">
@@ -132,6 +139,52 @@ const ConfiguracoesAdmin = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Configurações de Indicação */}
+        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
+            <Gift className="text-primary" size={24} />
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
+              Programa de Indicação
+            </h3>
+          </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">
+            Defina as recompensas em porcentagem para quem indica e para o novo cliente.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="reward-you">
+                Recompensa "Pra Você" (%)
+              </label>
+              <div className="relative">
+                <Input
+                  id="reward-you"
+                  type="number"
+                  value={tempRewardYou}
+                  onChange={(e) => setTempRewardYou(e.target.value)}
+                  className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-10"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="reward-them">
+                Recompensa "Pra Ele" (%)
+              </label>
+              <div className="relative">
+                <Input
+                  id="reward-them"
+                  type="number"
+                  value={tempRewardThem}
+                  onChange={(e) => setTempRewardThem(e.target.value)}
+                  className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-10"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
+              </div>
             </div>
           </div>
         </div>
@@ -163,65 +216,14 @@ const ConfiguracoesAdmin = () => {
               Configurações de Gás
             </h3>
           </div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Gerencie os detalhes do seu botijão de gás e taxas de consumo.
-          </p>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-weight">
-                Peso do Botijão (kg)
-              </label>
-              <Input
-                id="gas-weight"
-                value={gasWeight}
-                onChange={(e) => setGasWeight(e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Peso do Botijão (kg)</label>
+              <Input value={gasWeight} onChange={(e) => setGasWeight(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-price">
-                Preço do Botijão (R$)
-              </label>
-              <Input
-                id="gas-price"
-                value={gasPrice}
-                onChange={(e) => setGasPrice(e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-low">
-                Consumo Baixo (kg/h)
-              </label>
-              <Input
-                id="gas-low"
-                value={gasConsumptionLow}
-                onChange={(e) => setGasConsumptionLow(e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-medium">
-                Consumo Médio (kg/h)
-              </label>
-              <Input
-                id="gas-medium"
-                value={gasConsumptionMedium}
-                onChange={(e) => setGasConsumptionMedium(e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
-            </div>
-            <div className="flex flex-col gap-2 md:col-span-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="gas-high">
-                Consumo Alto (kg/h)
-              </label>
-              <Input
-                id="gas-high"
-                value={gasConsumptionHigh}
-                onChange={(e) => setGasConsumptionHigh(e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-              />
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Preço do Botijão (R$)</label>
+              <Input value={gasPrice} onChange={(e) => setGasPrice(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
             </div>
           </div>
         </div>
@@ -230,24 +232,11 @@ const ConfiguracoesAdmin = () => {
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
             <span className="material-symbols-outlined text-primary text-xl">bolt</span>
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
-              Configurações de Energia
-            </h3>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Configurações de Energia</h3>
           </div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Defina o custo do kWh elétrico.
-          </p>
-
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="energy-cost">
-              Custo kWh Elétrico (R$)
-            </label>
-            <Input
-              id="energy-cost"
-              value={energyCost}
-              onChange={(e) => setEnergyCost(e.target.value)}
-              className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-            />
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Custo kWh Elétrico (R$)</label>
+            <Input value={energyCost} onChange={(e) => setEnergyCost(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
           </div>
         </div>
 
@@ -255,53 +244,15 @@ const ConfiguracoesAdmin = () => {
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
             <span className="material-symbols-outlined text-primary text-xl">engineering</span>
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
-              Configurações de Preço e Mão de Obra
-            </h3>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Mão de Obra</h3>
           </div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Defina o custo da mão de obra por hora.
-          </p>
-
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="labor-cost">
-              Custo Mão de Obra (R$/hora)
-            </label>
-            <Input
-              id="labor-cost"
-              value={laborCost}
-              onChange={(e) => setLaborCost(e.target.value)}
-              className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-            />
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Custo Mão de Obra (R$/hora)</label>
+            <Input value={laborCost} onChange={(e) => setLaborCost(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
           </div>
         </div>
 
-        {/* Configurações de Cashback */}
-        <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-            <span className="material-symbols-outlined text-primary text-xl">savings</span>
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
-              Configurações de Cashback
-            </h3>
-          </div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Defina o valor mínimo para resgate de cashback.
-          </p>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="cashback-min">
-              Valor Mínimo de Resgate (R$)
-            </label>
-            <Input
-              id="cashback-min"
-              value={cashbackMinValue}
-              onChange={(e) => setCashbackMinValue(e.target.value)}
-              className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
-            />
-          </div>
-        </div>
-
-        {/* Save Button within configurations */}
+        {/* Save Button */}
         <div className="flex justify-center pt-4">
           <Button
             onClick={handleSaveAllSettings}
