@@ -53,11 +53,45 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
     const loadOrders = () => {
       try {
         const storedOrders = localStorage.getItem('orders');
-        if (storedOrders) {
+        if (storedOrders && JSON.parse(storedOrders).length > 0) {
           setOrders(JSON.parse(storedOrders));
         } else {
-          // Inicia vazio para produção real
-          setOrders([]);
+          // Dados de exemplo para teste inicial
+          const mockOrders: Order[] = [
+            {
+              id: "#4829",
+              customer: "Maria Silva",
+              status: "Novo",
+              statusColor: "primary",
+              statusIcon: "inventory_2",
+              time: "14:30",
+              total: 45.00,
+              isNew: true,
+              section: 'open',
+              date: "25/10/2023",
+              items: [
+                { quantity: 2, name: "Ninho com Nutella", description: "Gourmet • Cremoso", price: 15.00 },
+                { quantity: 1, name: "Morango Cremoso", description: "Fruta • Refrescante", price: 15.00 }
+              ]
+            },
+            {
+              id: "#4825",
+              customer: "João Souza",
+              status: "Rota",
+              statusColor: "blue",
+              statusIcon: "sports_motorsports",
+              time: "13:15",
+              total: 30.00,
+              section: 'open',
+              date: "25/10/2023",
+              eta: "15 min",
+              items: [
+                { quantity: 2, name: "Maracujá Trufado", description: "Gourmet • Intenso", price: 15.00 }
+              ]
+            }
+          ];
+          setOrders(mockOrders);
+          localStorage.setItem('orders', JSON.stringify(mockOrders));
         }
       } catch (error) {
         console.error('Error loading orders:', error);
@@ -70,7 +104,9 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
 
   // Save to localStorage whenever orders change
   useEffect(() => {
-    localStorage.setItem('orders', JSON.stringify(orders));
+    if (orders.length > 0) {
+      localStorage.setItem('orders', JSON.stringify(orders));
+    }
   }, [orders]);
 
   const addOrder = (order: Order) => {
@@ -88,7 +124,8 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
   };
 
   const getOrderById = (id: string) => {
-    return orders.find(order => order.id === id);
+    // Tenta buscar com ou sem o caractere '#'
+    return orders.find(order => order.id === id || order.id === `#${id}`);
   };
 
   return (
