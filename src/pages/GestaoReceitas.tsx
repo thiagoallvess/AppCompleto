@@ -1,14 +1,22 @@
-import { ArrowLeft, Plus, Search, MoreVertical, ChefHat, Clock, DollarSign, Package } from "lucide-react";
+"use client";
+
+import { ArrowLeft, Plus, Search, MoreVertical, ChefHat, Clock, DollarSign, Package, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useRecipes } from "@/contexts/RecipesContext";
+import { showSuccess } from "@/utils/toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const GestaoReceitas = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const { recipes } = useRecipes();
+  const { recipes, removeRecipe } = useRecipes();
 
   const filters = ["Todos", "Finalizadas", "Rascunhos"];
 
@@ -19,6 +27,13 @@ const GestaoReceitas = () => {
                          (activeFilter === "Rascunhos" && recipe.isDraft);
     return matchesSearch && matchesFilter;
   });
+
+  const handleDelete = (id: number, name: string) => {
+    if (confirm(`Tem certeza que deseja excluir a receita "${name}"?`)) {
+      removeRecipe(id);
+      showSuccess(`Receita "${name}" excluída com sucesso.`);
+    }
+  };
 
   const totalRecipes = recipes.length;
   const finishedRecipes = recipes.filter(r => !r.isDraft).length;
@@ -118,18 +133,10 @@ const GestaoReceitas = () => {
 
       {/* Recipes List */}
       <div className="flex-1 px-4 pb-24 space-y-3">
-        {/* List Header Stats */}
         <div className="flex items-center justify-between py-2 text-xs font-medium text-slate-500 dark:text-slate-400">
           <span>Total: {filteredRecipes.length} receitas</span>
-          <button className="flex items-center gap-1 cursor-pointer hover:text-primary">
-            <span>Ordenar</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-            </svg>
-          </button>
         </div>
 
-        {/* Recipe Items */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredRecipes.map((recipe) => (
             <div
@@ -138,7 +145,7 @@ const GestaoReceitas = () => {
                 recipe.isDraft ? "opacity-75" : ""
               }`}
             >
-              <div className="aspect-[4/3] overflow-hidden">
+              <Link to={`/detalhes-receita?id=${recipe.id}`} className="aspect-[4/3] overflow-hidden">
                 <img
                   src={recipe.image}
                   alt={recipe.name}
@@ -154,17 +161,39 @@ const GestaoReceitas = () => {
                     RASCUNHO
                   </div>
                 )}
-              </div>
+              </Link>
               <div className="p-4 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className={`text-lg font-semibold truncate pr-2 ${
-                    recipe.isDraft ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
-                  }`}>
-                    {recipe.name}
-                  </h3>
-                  <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 -m-1 -mt-2">
-                    <MoreVertical size={20} />
-                  </button>
+                  <Link to={`/detalhes-receita?id=${recipe.id}`} className="flex-1 min-w-0">
+                    <h3 className={`text-lg font-semibold truncate pr-2 ${
+                      recipe.isDraft ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
+                    }`}>
+                      {recipe.name}
+                    </h3>
+                  </Link>
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 -m-1 -mt-2 outline-none">
+                        <MoreVertical size={20} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
+                      <DropdownMenuItem asChild className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
+                        <Link to={`/edit-receita?id=${recipe.id}`}>
+                          <Edit size={16} className="text-slate-500" />
+                          <span>Editar</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleDelete(recipe.id, recipe.name)}
+                        className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
+                      >
+                        <Trash2 size={16} />
+                        <span>Excluir</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
                   <div className="flex items-center gap-1">
@@ -188,22 +217,22 @@ const GestaoReceitas = () => {
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 w-full bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
-        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+        <Link to="/visao-geral" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
           <ArrowLeft size={20} />
           <span className="text-[10px] font-medium">Início</span>
-        </button>
+        </Link>
         <button className="flex flex-col items-center gap-1 text-primary">
           <ChefHat size={20} />
           <span className="text-[10px] font-medium">Receitas</span>
         </button>
-        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+        <Link to="/gestao-producao" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
           <Package size={20} />
           <span className="text-[10px] font-medium">Produção</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+        </Link>
+        <Link to="/relatorios" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
           <DollarSign size={20} />
           <span className="text-[10px] font-medium">Finanças</span>
-        </button>
+        </Link>
       </nav>
     </div>
   );
