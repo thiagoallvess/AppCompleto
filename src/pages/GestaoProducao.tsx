@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Plus, Search, MoreVertical, Package, TrendingUp, DollarSign, Calendar, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,56 +15,31 @@ import { showSuccess } from "@/utils/toast";
 const GestaoProducao = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
+  const [productionLots, setProductionLots] = useState<any[]>([]);
 
-  const filters = ["Todos", "Em Produção", "Finalizado", "Em Estoque"];
-
-  // Mock data - em uma aplicação real viria do contexto/API
-  const [productionLots, setProductionLots] = useState([
-    {
-      id: "8349",
-      name: "Ninho com Nutella",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkd8lB5c2Vaw9ZupDeGKA8CqQrsuCbv1IVWtjP1Pgq6N5JYAMjwdcNFdmTh7yXGKKGPykrJKJC3EQGvyud_4OcMgbqUKbbJxg_HMmq1DxGVHqG67Xx_g_O1nhM68hW_zb8fX5mpqZq1K6sshICrQCxa8oV61kN1WUpqDp5PiU3Ww7K_MZF2TOu-iy-FqWeK-zibAFwgP0IvVgMX4QnpBYdPUzoUzGQaTcXvNfJTbTCUlmXc25qyIc3GuUHXF19vX4tEBWm0AYdEA",
-      status: "Finalizado",
-      statusColor: "green",
-      date: "12/08/2023",
-      produced: 50,
-      totalCost: 75.00,
-      unitCost: 1.50
-    },
-    {
-      id: "8348",
-      name: "Morango Gourmet",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCM3cfAeatmEUtNaDEnz796M7L7_1N-EtyXmykGuHogX2Bqw0GLmlvYa3HPA8Wz1_4o9F5wPSUrzWkU8Yp7doalaFscT5306YI3bZgNz9gTLuFuBl4eyymE72I2oud60ide53rz4tw6ycGt2mAau951TpWIjxrfxMQg_NpEJUwcm1qol_S5JpSoZbGnw8au7eUWzH4lvezL2wocDTs541UOAWtFuVwleVW5xacABNhs7r5_Xla2rV2_GgGzX6Ol3wbDpTujEKBi_A",
-      status: "Em Estoque",
-      statusColor: "yellow",
-      date: "11/08/2023",
-      produced: 30,
-      totalCost: 45.00,
-      unitCost: 1.50
-    },
-    {
-      id: "8347",
-      name: "Maracujá Trufado",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBoZ4WrJnviJNuxDALva68IEx8BdGnHIjNAHbiCD9c4LdL8-hJlme5-_jxH6yK45w60ONtc-wS1X4YRBtWIaMoT-ulkjkHFRp2qqXBLfOkCCCkwdQaWLx2-89611q0649qzVgnLg86WrY-Ea70L22N2sX9RqBAfGRPY9V-lGLiw6-mIc2syzuhmzeimcROK7NbRdCxSJMIFrOkJSzh4puGnvIZiAPSOVeuwwrqMUlMvOWxuvH8MJKoEM1-UH9iaFBbmLGPUy3smQQ",
-      status: "Em Produção",
-      statusColor: "blue",
-      date: "10/08/2023",
-      produced: 0,
-      totalCost: 0.00,
-      unitCost: 0.00
-    }
-  ]);
+  // Carregar dados reais do localStorage
+  useEffect(() => {
+    const loadLots = () => {
+      const storedLots = localStorage.getItem('productionLots');
+      if (storedLots) {
+        setProductionLots(JSON.parse(storedLots));
+      }
+    };
+    loadLots();
+  }, []);
 
   const handleDelete = (id: string, name: string) => {
     if (confirm(`Deseja realmente excluir o lote de "${name}"?`)) {
-      setProductionLots(prev => prev.filter(lot => lot.id !== id));
+      const updatedLots = productionLots.filter(lot => lot.id !== id);
+      setProductionLots(updatedLots);
+      localStorage.setItem('productionLots', JSON.stringify(updatedLots));
       showSuccess(`Lote #${id} excluído com sucesso.`);
     }
   };
 
   const filteredLots = productionLots.filter(lot => {
     const matchesSearch = lot.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lot.id.toLowerCase().includes(searchTerm.toLowerCase());
+                         lot.id.toString().includes(searchTerm.toLowerCase());
     const matchesFilter = activeFilter === "Todos" ||
                          (activeFilter === "Em Produção" && lot.status === "Em Produção") ||
                          (activeFilter === "Finalizado" && lot.status === "Finalizado") ||
@@ -72,18 +47,20 @@ const GestaoProducao = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const getStatusColor = (color: string) => {
-    switch (color) {
-      case "green": return "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400";
-      case "yellow": return "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400";
-      case "blue": return "bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400";
+  const filters = ["Todos", "Em Produção", "Finalizado", "Em Estoque"];
+
+  const totalLots = productionLots.length;
+  const totalProduced = productionLots.reduce((sum, lot) => sum + (lot.produced || lot.quantity || 0), 0);
+  const totalCost = productionLots.reduce((sum, lot) => sum + (lot.totalCost || 0), 0);
+
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "finalizado": return "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400";
+      case "em estoque": return "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400";
+      case "em produção": return "bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400";
       default: return "bg-gray-100 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400";
     }
   };
-
-  const totalLots = productionLots.length;
-  const totalProduced = productionLots.reduce((sum, lot) => sum + lot.produced, 0);
-  const totalCost = productionLots.reduce((sum, lot) => sum + lot.totalCost, 0);
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
@@ -180,75 +157,82 @@ const GestaoProducao = () => {
       {/* Production Lots List */}
       <div className="flex-1 px-4 pb-20 space-y-3">
         <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 mt-2">Lotes Recentes</h3>
-        {filteredLots.map((lot) => (
-          <div key={lot.id} className="relative">
-            <Link
-              to={`/detalhes-lote?id=${lot.id}`}
-              className="block"
-            >
-              <div className="bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 flex gap-4 items-start active:scale-[0.99] transition-transform cursor-pointer group">
-                <div className="relative shrink-0 w-[72px] h-[72px]">
-                  <div
-                    className="w-full h-full rounded-lg bg-gray-200 dark:bg-gray-700 bg-cover bg-center"
-                    style={{ backgroundImage: `url('${lot.image}')` }}
-                  ></div>
-                </div>
-                <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-                  <div className="flex justify-between items-start">
-                    <h3 className={`text-base font-semibold text-slate-800 dark:text-white truncate pr-8`}>
-                      {lot.name}
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-1">
-                      <Calendar size={14} />
-                      <span>{lot.date}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Package size={14} />
-                      <span>{lot.produced} un</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className={`inline-flex items-center rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wide ${getStatusColor(lot.statusColor)}`}>
-                      {lot.status}
-                    </span>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">R$ {lot.totalCost.toFixed(2)}</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">R$ {lot.unitCost.toFixed(2)}/un</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
-            
-            {/* Menu de Opções (Três Pontinhos) */}
-            <div className="absolute top-2 right-2 z-10">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center justify-center size-8 rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors outline-none">
-                    <MoreVertical size={20} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
-                  <DropdownMenuItem asChild className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
-                    <Link to={`/detalhes-lote?id=${lot.id}`}>
-                      <Edit size={16} className="text-slate-500" />
-                      <span>Editar</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => handleDelete(lot.id, lot.name)}
-                    className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
-                  >
-                    <Trash2 size={16} />
-                    <span>Excluir</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+        
+        {filteredLots.length === 0 ? (
+          <div className="text-center py-12 bg-white dark:bg-surface-dark rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+            <Package className="mx-auto h-12 w-12 text-slate-300 mb-3" />
+            <p className="text-slate-500 dark:text-slate-400">Nenhum lote encontrado.</p>
           </div>
-        ))}
+        ) : (
+          filteredLots.map((lot) => (
+            <div key={lot.id} className="relative">
+              <Link
+                to={`/detalhes-lote?id=${lot.id}`}
+                className="block"
+              >
+                <div className="bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 flex gap-4 items-start active:scale-[0.99] transition-transform cursor-pointer group">
+                  <div className="relative shrink-0 w-[72px] h-[72px]">
+                    <div
+                      className="w-full h-full rounded-lg bg-gray-200 dark:bg-gray-700 bg-cover bg-center"
+                      style={{ backgroundImage: `url('${lot.image || "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=300"}')` }}
+                    ></div>
+                  </div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                    <div className="flex justify-between items-start">
+                      <h3 className={`text-base font-semibold text-slate-800 dark:text-white truncate pr-8`}>
+                        {lot.name}
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-1">
+                        <Calendar size={14} />
+                        <span>{new Date(lot.date).toLocaleDateString('pt-BR')}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Package size={14} />
+                        <span>{lot.produced || lot.quantity} un</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className={`inline-flex items-center rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wide ${getStatusColor(lot.status || "Finalizado")}`}>
+                        {lot.status || "Finalizado"}
+                      </span>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200">R$ {(lot.totalCost || 0).toFixed(2)}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">R$ {(lot.unitCost || 0).toFixed(2)}/un</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+              
+              <div className="absolute top-2 right-2 z-10">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center justify-center size-8 rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors outline-none">
+                      <MoreVertical size={20} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
+                    <DropdownMenuItem asChild className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
+                      <Link to={`/detalhes-lote?id=${lot.id}`}>
+                        <Edit size={16} className="text-slate-500" />
+                        <span>Editar</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleDelete(lot.id, lot.name)}
+                      className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
+                    >
+                      <Trash2 size={16} />
+                      <span>Excluir</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Floating Action Button */}
