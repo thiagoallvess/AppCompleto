@@ -26,6 +26,7 @@ import DetalhesCliente from "./pages/DetalhesCliente";
 import VisaoGeral from "./pages/VisaoGeral";
 import GestaoReceitas from "./pages/GestaoReceitas";
 import AddReceita from "./pages/AddReceita";
+import EditReceita from "./pages/EditReceita"; // Importado
 import DetalhesReceita from "./pages/DetalhesReceita";
 import GestaoProducao from "./pages/GestaoProducao";
 import AddProducao from "./pages/AddProducao";
@@ -34,7 +35,7 @@ import CurvaABC from "./pages/CurvaABC";
 import GestaoEstoque from "./pages/GestaoEstoque";
 import DetalhesInsumo from "./pages/DetalhesInsumo";
 import AddInsumo from "./pages/AddInsumo";
-import GestaoEquipamentos from "./pages/GestaoEquipamentos"; // Novo
+import GestaoEquipamentos from "./pages/GestaoEquipamentos";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -43,7 +44,7 @@ import { OrdersProvider } from "./contexts/OrdersContext";
 import { ClientsProvider } from "./contexts/ClientsContext";
 import { RecipesProvider } from "./contexts/RecipesContext";
 import { StockProvider } from "./contexts/StockContext";
-import { EquipmentProvider } from "./contexts/EquipmentContext"; // Novo
+import { EquipmentProvider } from "./contexts/EquipmentContext";
 
 const queryClient = new QueryClient();
 
@@ -55,7 +56,7 @@ const App = () => (
           <OrdersProvider>
             <ClientsProvider>
               <RecipesProvider>
-                <EquipmentProvider> {/* Novo Provider */}
+                <EquipmentProvider>
                   <CartProvider>
                     <TooltipProvider>
                       <Toaster />
@@ -88,12 +89,13 @@ const App = () => (
                           <Route path="/visao-geral" element={<VisaoGeral />} />
                           <Route path="/gestao-receitas" element={<GestaoReceitas />} />
                           <Route path="/add-receita" element={<AddReceita />} />
+                          <Route path="/edit-receita" element={<EditReceita />} /> {/* Rota Adicionada */}
                           <Route path="/detalhes-receita" element={<DetalhesReceita />} />
                           <Route path="/gestao-producao" element={<GestaoProducao />} />
                           <Route path="/add-producao" element={<AddProducao />} />
                           <Route path="/detalhes-lote" element={<DetalhesLote />} />
                           <Route path="/curva-abc" element={<CurvaABC />} />
-                          <Route path="/gestao-equipamentos" element={<GestaoEquipamentos />} /> {/* Nova Rota */}
+                          <Route path="/gestao-equipamentos" element={<GestaoEquipamentos />} />
                           <Route path="*" element={<NotFound />} />
                         </Routes>
                       </BrowserRouter>
