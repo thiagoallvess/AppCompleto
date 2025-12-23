@@ -1,4 +1,6 @@
-import { ArrowLeft, Bell, Plus, Search, MoreVertical, Phone, MessageCircle, ShoppingCart } from "lucide-react";
+"use client";
+
+import { ArrowLeft, Bell, Plus, Search, MoreVertical, Phone, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useClients } from "@/contexts/ClientsContext";
@@ -25,17 +27,17 @@ const Clientes = () => {
       case "yellow": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
       case "red": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
       case "blue": return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
-      default: return "";
+      default: return "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400";
     }
   };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-white/5">
+      <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-white/5 p-4">
         <div className="flex items-center justify-between h-14 mb-2">
           <Link
-            to="/"
+            to="/visao-geral"
             className="flex items-center justify-center size-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
           >
             <ArrowLeft className="text-slate-900 dark:text-white" size={24} />
@@ -56,7 +58,7 @@ const Clientes = () => {
       </header>
 
       {/* Search & Filters */}
-      <div className="flex-none flex flex-col gap-4 px-4 pb-2 bg-background-light dark:bg-background-dark z-10 shadow-sm dark:shadow-none border-b border-slate-200 dark:border-white/5">
+      <div className="flex-none flex flex-col gap-4 px-4 py-4 bg-background-light dark:bg-background-dark z-10 shadow-sm dark:shadow-none border-b border-slate-200 dark:border-white/5">
         {/* Search Bar */}
         <div className="relative w-full">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -64,7 +66,7 @@ const Clientes = () => {
           </div>
           <input
             className="block w-full p-3 pl-10 border border-slate-200 rounded-xl bg-white dark:bg-surface-dark dark:border-white/10 dark:placeholder-slate-400 dark:text-white focus:ring-primary focus:border-primary focus:outline-none transition-all"
-            placeholder="Buscar por nome, telefone ou status..."
+            placeholder="Buscar por nome..."
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -90,85 +92,91 @@ const Clientes = () => {
 
       {/* Customer List */}
       <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-4 space-y-3 pb-24">
-        {filteredClients.map((client) => (
-          <Link
-            key={client.id}
-            to={`/detalhes-cliente?id=${client.id}`}
-            className="block"
-          >
-            <article
-              className={`group relative flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-100 dark:border-white/5 shadow-sm active:scale-[0.99] transition-transform ${
-                client.debt ? 'opacity-75 hover:opacity-100' : ''
-              }`}
+        {filteredClients.length > 0 ? (
+          filteredClients.map((client) => (
+            <Link
+              key={client.id}
+              to={`/detalhes-cliente?id=${client.id}`}
+              className="block"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    {client.avatar ? (
-                      <img
-                        className="size-12 rounded-full object-cover border-2 border-primary/20"
-                        src={client.avatar}
-                        alt={client.name}
-                      />
-                    ) : (
-                      <div className="size-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-bold text-lg flex items-center justify-center">
-                        {client.initials}
-                      </div>
-                    )}
-                    {client.isOnline && (
-                      <div className="absolute -bottom-1 -right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-semibold text-slate-900 dark:text-white">{client.name}</h3>
-                      {client.status && (
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusColor(client.statusColor)}`}>
-                          {client.status}
-                        </span>
+              <article
+                className={`group relative flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-100 dark:border-white/5 shadow-sm active:scale-[0.99] transition-transform ${
+                  client.type === 'inactive' ? 'opacity-75' : ''
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      {client.avatar ? (
+                        <img
+                          className="size-12 rounded-full object-cover border-2 border-primary/20"
+                          src={client.avatar}
+                          alt={client.name}
+                        />
+                      ) : (
+                        <div className="size-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-bold text-lg flex items-center justify-center">
+                          {client.initials || client.name.charAt(0)}
+                        </div>
+                      )}
+                      {client.isOnline && (
+                        <div className="absolute -bottom-1 -right-1 bg-green-500 size-3 rounded-full border-2 border-white dark:border-surface-dark"></div>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-                      {client.lastOrder ? (
-                        <>
-                          <span className="material-symbols-outlined text-[14px]">history</span>
-                          Último pedido: {client.lastOrder}
-                        </>
-                      ) : client.registered ? (
-                        <>
-                          <span className="material-symbols-outlined text-[14px]">calendar_month</span>
-                          Cadastrado: {client.registered}
-                        </>
-                      ) : null}
-                    </p>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base font-semibold text-slate-900 dark:text-white">{client.name}</h3>
+                        {client.status && (
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusColor(client.statusColor)}`}>
+                            {client.status}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                        {client.lastOrder ? (
+                          <>
+                            <span className="material-symbols-outlined text-[14px]">history</span>
+                            Último pedido: {client.lastOrder}
+                          </>
+                        ) : client.registered ? (
+                          <>
+                            <span className="material-symbols-outlined text-[14px]">calendar_month</span>
+                            Cadastrado: {client.registered}
+                          </>
+                        ) : null}
+                      </p>
+                    </div>
+                  </div>
+                  <button className="text-slate-400 hover:text-primary dark:hover:text-primary">
+                    <MoreVertical size={20} />
+                  </button>
+                </div>
+                <div className="w-full h-px bg-slate-100 dark:bg-white/5"></div>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-wider">
+                      {client.type === 'debtor' ? "Débito" : client.preference ? "Preferência" : "Total Gasto"}
+                    </span>
+                    <span className={`text-sm font-medium ${client.type === 'debtor' ? "text-red-600 dark:text-red-400" : "text-slate-700 dark:text-slate-200"}`}>
+                      {client.type === 'debtor' ? `R$ ${client.debt?.toFixed(2)}` : client.preference ? client.preference : `R$ ${client.totalSpent?.toFixed(2)}`}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
+                      <Phone size={18} />
+                    </button>
+                    <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
+                      <MessageCircle size={18} />
+                    </button>
                   </div>
                 </div>
-                <button className="text-slate-400 hover:text-primary dark:hover:text-primary">
-                  <MoreVertical size={20} />
-                </button>
-              </div>
-              <div className="w-full h-px bg-slate-100 dark:bg-white/5"></div>
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-wider">
-                    {client.debt ? "Débito" : client.preference ? "Preferência" : "Total Gasto"}
-                  </span>
-                  <span className={`text-sm font-medium ${client.debt ? "text-red-600 dark:text-red-400" : "text-slate-700 dark:text-slate-200"}`}>
-                    {client.debt ? `R$ ${client.debt.toFixed(2)}` : client.preference ? client.preference : `R$ ${client.totalSpent?.toFixed(2)}`}
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
-                    <Phone size={18} />
-                  </button>
-                  <button className="flex items-center justify-center size-9 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-green-500 transition-colors">
-                    <MessageCircle size={18} />
-                  </button>
-                </div>
-              </div>
-            </article>
-          </Link>
-        ))}
+              </article>
+            </Link>
+          ))
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-slate-500 dark:text-slate-400">Nenhum cliente encontrado.</p>
+          </div>
+        )}
       </main>
     </div>
   );
