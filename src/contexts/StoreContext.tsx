@@ -37,7 +37,7 @@ interface StoreProviderProps {
 const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const dayNamesMap = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
-export const CartProvider: React.FC<StoreProviderProps> = ({ children }) => {
+export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
   const [storeOpen, setStoreOpenState] = useState<boolean>(() => {
     const saved = localStorage.getItem('storeOpen');
     return saved !== null ? JSON.parse(saved) : true;
