@@ -10,7 +10,6 @@ const DetalhesPedido = () => {
   const orderIdParam = searchParams.get('id');
   const { getOrderById, updateOrder } = useOrders();
 
-  // Decodifica o ID da URL e garante que o prefixo # seja tratado corretamente
   const decodedId = orderIdParam ? decodeURIComponent(orderIdParam) : '';
   const cleanId = decodedId.startsWith('#') ? decodedId : `#${decodedId}`;
   const order = getOrderById(cleanId);
@@ -104,7 +103,6 @@ const DetalhesPedido = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-6 bg-background-light dark:bg-background-dark">
-      {/* TopAppBar */}
       <header className="sticky top-0 z-20 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 justify-between border-b border-slate-200 dark:border-slate-800 w-full">
         <Link
           to="/gestao-pedidos"
@@ -123,9 +121,7 @@ const DetalhesPedido = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 px-4 py-6 space-y-6 pb-32 w-full max-w-4xl mx-auto">
-        {/* Order Status */}
         <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <span className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Status do Pedido</span>
@@ -155,7 +151,6 @@ const DetalhesPedido = () => {
             </div>
           </div>
           
-          {/* Actions for NEW status */}
           {order.status === "Novo" && (
             <div className="mt-5 grid grid-cols-2 gap-3">
               <button 
@@ -175,7 +170,6 @@ const DetalhesPedido = () => {
             </div>
           )}
 
-          {/* Actions for PREPARO status */}
           {order.status === "Preparo" && (
             <div className="mt-5">
               <button 
@@ -188,7 +182,6 @@ const DetalhesPedido = () => {
             </div>
           )}
 
-          {/* Actions for ROTA status */}
           {order.status === "Rota" && (
             <div className="mt-5">
               <button 
@@ -202,7 +195,6 @@ const DetalhesPedido = () => {
           )}
         </div>
 
-        {/* Customer Info */}
         <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
           <h3 className="text-slate-900 dark:text-white text-base font-bold mb-4 flex items-center gap-2">
             <User className="text-slate-500 dark:text-slate-400" size={20} />
@@ -234,7 +226,6 @@ const DetalhesPedido = () => {
           </div>
         </div>
 
-        {/* Order Items */}
         <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
           <h3 className="text-slate-900 dark:text-white text-base font-bold mb-4 flex items-center gap-2">
             <ShoppingBag className="text-slate-500 dark:text-slate-400" size={20} />
@@ -273,52 +264,29 @@ const DetalhesPedido = () => {
           </div>
         </div>
 
-        {/* Payment Info */}
-        <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <h3 className="text-slate-900 dark:text-white text-base font-bold mb-4 flex items-center gap-2">
-            <CreditCard className="text-slate-500 dark:text-slate-400" size={20} />
-            Pagamento
-          </h3>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                <span className="material-symbols-outlined text-slate-600 dark:text-slate-300">payments</span>
-              </div>
-              <div>
-                <p className="text-slate-900 dark:text-white text-sm font-bold">Método de Pagamento</p>
-                <p className="text-slate-500 dark:text-slate-400 text-xs">Confirmado pelo sistema</p>
-              </div>
-            </div>
-            <span className="rounded-md bg-green-500/10 px-2 py-1 text-xs font-bold uppercase tracking-wide text-green-600">Pago</span>
-          </div>
-        </div>
-
-        {/* Order History */}
         <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
           <h3 className="text-slate-900 dark:text-white text-base font-bold mb-4 flex items-center gap-2">
             <History className="text-slate-500 dark:text-slate-400" size={20} />
-            Histórico
+            Histórico do Pedido
           </h3>
           <div className="relative pl-4 border-l-2 border-slate-200 dark:border-slate-800 space-y-6">
-            <div className="relative">
-              <div className="absolute -left-[21px] top-1 size-3 rounded-full bg-primary ring-4 ring-white dark:ring-surface-dark"></div>
-              <p className="text-slate-900 dark:text-white text-sm font-bold">Pedido Criado</p>
-              <p className="text-slate-500 dark:text-slate-400 text-xs">{order.date || 'Hoje'} • {order.time}</p>
-            </div>
-            {order.status !== "Novo" && (
-              <div className="relative">
-                <div className="absolute -left-[21px] top-1 size-3 rounded-full bg-primary ring-4 ring-white dark:ring-surface-dark"></div>
-                <p className="text-slate-900 dark:text-white text-sm font-bold">
-                  {order.status}
+            {order.history && order.history.map((event, index) => (
+              <div key={index} className="relative">
+                <div className={`absolute -left-[21px] top-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark ${
+                  index === order.history.length - 1 ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'
+                }`}></div>
+                <p className={`text-sm font-bold ${
+                  index === order.history.length - 1 ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'
+                }`}>
+                  {event.status}
                 </p>
-                <p className="text-slate-500 dark:text-slate-400 text-xs">Atualizado pelo sistema</p>
+                <p className="text-slate-500 dark:text-slate-400 text-xs">{event.date} • {event.time}</p>
               </div>
-            )}
+            ))}
           </div>
         </div>
       </main>
 
-      {/* Bottom Action */}
       <div className="fixed bottom-0 left-0 w-full bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-20">
         <div className="w-full max-w-4xl mx-auto">
           <button className="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-primary text-white font-bold text-lg shadow-xl shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]">

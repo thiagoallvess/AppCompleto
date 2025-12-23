@@ -7,6 +7,12 @@ export interface OrderItem {
   price: number;
 }
 
+export interface HistoryEvent {
+  status: string;
+  time: string;
+  date: string;
+}
+
 export interface Order {
   id: string;
   customer: string;
@@ -21,6 +27,7 @@ export interface Order {
   date?: string;
   cancelled?: boolean;
   eta?: string;
+  history: HistoryEvent[];
 }
 
 interface OrdersContextType {
@@ -48,15 +55,14 @@ interface OrdersProviderProps {
 export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Load orders from localStorage on mount
   useEffect(() => {
     const loadOrders = () => {
       try {
         const storedOrders = localStorage.getItem('orders');
-        if (storedOrders && JSON.parse(storedOrders).length > 0) {
+        if (storedOrders) {
           setOrders(JSON.parse(storedOrders));
         } else {
-          // Dados de exemplo para teste inicial
+          const initialDate = "25/10/2023";
           const mockOrders: Order[] = [
             {
               id: "#4829",
@@ -68,7 +74,8 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
               total: 45.00,
               isNew: true,
               section: 'open',
-              date: "25/10/2023",
+              date: initialDate,
+              history: [{ status: "Pedido Criado", time: "14:30", date: initialDate }],
               items: [
                 { quantity: 2, name: "Ninho com Nutella", description: "Gourmet • Cremoso", price: 15.00 },
                 { quantity: 1, name: "Morango Cremoso", description: "Fruta • Refrescante", price: 15.00 }
@@ -83,8 +90,13 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
               time: "13:15",
               total: 30.00,
               section: 'open',
-              date: "25/10/2023",
+              date: initialDate,
               eta: "15 min",
+              history: [
+                { status: "Pedido Criado", time: "12:45", date: initialDate },
+                { status: "Em Preparo", time: "13:00", date: initialDate },
+                { status: "Saiu para Entrega", time: "13:15", date: initialDate }
+              ],
               items: [
                 { quantity: 2, name: "Maracujá Trufado", description: "Gourmet • Intenso", price: 15.00 }
               ]
@@ -102,7 +114,6 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
     loadOrders();
   }, []);
 
-  // Save to localStorage whenever orders change
   useEffect(() => {
     if (orders.length > 0) {
       localStorage.setItem('orders', JSON.stringify(orders));
@@ -110,13 +121,32 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
   }, [orders]);
 
   const addOrder = (order: Order) => {
-    setOrders(prev => [order, ...prev]);
+    const orderWithHistory = {
+      ...order,
+      history: order.history || [{ 
+        status: "Pedido Criado", 
+        time: order.time, 
+        date: order.date || new Date().toLocaleDateString('pt-BR') 
+      }]
+    };
+    setOrders(prev => [orderWithHistory, ...prev]);
   };
 
   const updateOrder = (id: string, updates: Partial<Order>) => {
-    setOrders(prev => prev.map(order =>
-      order.id === id ? { ...order, ...updates } : order
-    ));
+    setOrders(prev => prev.map(order => {
+      if (order.id === id) {
+        const newHistory = [...(order.history || [])];
+        if (updates.status && updates.status !== order.status) {
+          newHistory.push({
+            status: updates.status,
+            time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            date: new Date().toLocaleDateString('pt-BR')
+          });
+        }
+        return { ...order, ...updates, history: newHistory };
+      }
+      return order;
+    }));
   };
 
   const removeOrder = (id: string) => {
@@ -124,7 +154,6 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
   };
 
   const getOrderById = (id: string) => {
-    // Tenta buscar com ou sem o caractere '#'
     return orders.find(order => order.id === id || order.id === `#${id}`);
   };
 
