@@ -39,6 +39,7 @@ import GestaoEquipamentos from "./pages/GestaoEquipamentos";
 import GestaoDespesas from "./pages/GestaoDespesas";
 import AddDespesa from "./pages/AddDespesa";
 import Vinculos from "./pages/Vinculos";
+import AlertasReposicao from "./pages/AlertasReposicao";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -48,7 +49,7 @@ import { ClientsProvider } from "./contexts/ClientsContext";
 import { RecipesProvider } from "./contexts/RecipesContext";
 import { StockProvider } from "./contexts/StockContext";
 import { EquipmentProvider } from "./contexts/EquipmentContext";
-import { ExpensesProvider } from "./contexts/ExpensesContext";
+import { ExpensesProvider } from "./contexts/ExpensesProvider";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +103,7 @@ const App = () => (
                             <Route path="/gestao-despesas" element={<GestaoDespesas />} />
                             <Route path="/add-despesa" element={<AddDespesa />} />
                             <Route path="/vinculos" element={<Vinculos />} />
+                            <Route path="/alertas-reposicao" element={<AlertasReposicao />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                         </BrowserRouter>
