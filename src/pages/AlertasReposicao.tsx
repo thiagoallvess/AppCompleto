@@ -278,16 +278,18 @@ const AlertasReposicao = () => {
       {/* Floating Action Button */}
       {totalAlerts > 0 && (
         <div className="fixed bottom-6 left-0 right-0 px-4 flex justify-center z-30">
-          <button className="shadow-2xl shadow-primary/40 bg-primary hover:bg-blue-700 text-white rounded-full h-14 pl-6 pr-8 flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
-            <div className="relative">
-              <ShoppingCart size={24} />
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-primary">{totalAlerts}</span>
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="text-sm font-bold leading-none">Ver Lista de Compras</span>
-              <span className="text-[10px] font-medium opacity-80 leading-tight">{totalAlerts} itens pendentes</span>
-            </div>
-          </button>
+          <Link to="/lista-compras" className="w-full max-w-xs">
+            <button className="w-full shadow-2xl shadow-primary/40 bg-primary hover:bg-blue-700 text-white rounded-full h-14 pl-6 pr-8 flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
+              <div className="relative">
+                <ShoppingCart size={24} />
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-primary">{totalAlerts}</span>
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-bold leading-none">Ver Lista de Compras</span>
+                <span className="text-[10px] font-medium opacity-80 leading-tight">{totalAlerts} itens pendentes</span>
+              </div>
+            </button>
+          </Link>
         </div>
       )}
     </div>
