@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus, Edit, Trash2, X, Phone, Camera, Bike, Car, ShieldCheck, Unlink } from "lucide-react";
+import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus, Edit, Trash2, X, Phone, Camera, Bike, Car, ShieldCheck, Unlink, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDrivers, Driver } from "@/contexts/DriversContext";
@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { showSuccess } from "@/utils/toast";
 import AtribuirPedidoModal from "@/components/AtribuirPedidoModal";
 import DesatribuirPedidoModal from "@/components/DesatribuirPedidoModal";
+import HistoricoEntregasModal from "@/components/HistoricoEntregasModal";
 
 const GestaoEntregadores = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,6 +26,7 @@ const GestaoEntregadores = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isUnassignModalOpen, setIsUnassignModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
   const [selectedDriverForManage, setSelectedDriverForManage] = useState<Driver | null>(null);
   
@@ -76,6 +78,11 @@ const GestaoEntregadores = () => {
   const handleOpenUnassignModal = (driver: Driver) => {
     setSelectedDriverForManage(driver);
     setIsUnassignModalOpen(true);
+  };
+
+  const handleOpenHistoryModal = (driver: Driver) => {
+    setSelectedDriverForManage(driver);
+    setIsHistoryModalOpen(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -278,6 +285,13 @@ const GestaoEntregadores = () => {
                       Gerenciar Pedidos
                     </DropdownMenuItem>
                     <DropdownMenuItem 
+                      onClick={() => handleOpenHistoryModal(driver)}
+                      className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800"
+                    >
+                      <History size={16} className="text-slate-500" />
+                      Histórico
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
                       onClick={() => handleDelete(driver.id, driver.name)}
                       className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
                     >
@@ -316,9 +330,12 @@ const GestaoEntregadores = () => {
                         Atribuir Pedido
                       </button>
                     )}
-                    <button className="flex-1 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold flex items-center justify-center gap-2 transition-colors">
-                      <Info size={16} />
-                      Detalhes
+                    <button 
+                        onClick={() => handleOpenHistoryModal(driver)}
+                        className="flex-1 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold flex items-center justify-center gap-2 transition-colors"
+                    >
+                      <History size={16} />
+                      Histórico
                     </button>
                   </div>
                 </>
@@ -504,6 +521,13 @@ const GestaoEntregadores = () => {
       <DesatribuirPedidoModal 
         isOpen={isUnassignModalOpen} 
         onClose={() => setIsUnassignModalOpen(false)} 
+        driver={selectedDriverForManage}
+      />
+
+      {/* History Modal */}
+      <HistoricoEntregasModal 
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
         driver={selectedDriverForManage}
       />
 
