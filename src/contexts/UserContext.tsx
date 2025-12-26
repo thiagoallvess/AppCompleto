@@ -40,13 +40,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return {
       name: "João Silva",
       email: "joao.silva@email.com",
-      referralCode: "GELA-GOURMET-92",
+      referralCode: "GELA-" + Math.random().toString(36).substring(2, 7).toUpperCase(),
       balance: 0,
-      referralHistory: [
-        { name: "Beatriz Souza", date: "24 Out, 2023", status: "Usado" },
-        { name: "Lucas Ferreira", date: "22 Out, 2023", status: "Usado" },
-        { name: "Mariana Costa", date: "18 Out, 2023", status: "Usado" }
-      ]
+      referralHistory: []
     };
   });
 
