@@ -1,16 +1,19 @@
+"use client";
+
 import { ArrowLeft, Gift, Tag, Users, Copy, Share, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useStore } from "../contexts/StoreContext";
+import { useUser } from "../contexts/UserContext";
 
 const Indicacao = () => {
   const { referralRewardYou, referralRewardThem } = useStore();
+  const { user } = useUser();
   const [copied, setCopied] = useState(false);
-  const referralCode = "GELA-GOURMET-92";
 
   const handleCopyCode = async () => {
     try {
-      await navigator.clipboard.writeText(referralCode);
+      await navigator.clipboard.writeText(user.referralCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -21,7 +24,7 @@ const Indicacao = () => {
   const handleShare = async () => {
     const shareData = {
       title: 'Geladinhos Gourmet',
-      text: `Use meu código ${referralCode} e ganhe ${referralRewardThem}% OFF na primeira compra! Baixe o app: [link]`,
+      text: `Use meu código ${user.referralCode} e ganhe ${referralRewardThem}% OFF na primeira compra! Baixe o app: [link]`,
       url: window.location.origin
     };
 
@@ -40,24 +43,6 @@ const Indicacao = () => {
       }
     }
   };
-
-  const usedReferrals = [
-    {
-      name: "Beatriz Souza",
-      date: "24 Out, 2023",
-      status: "Usado"
-    },
-    {
-      name: "Lucas Ferreira",
-      date: "22 Out, 2023",
-      status: "Usado"
-    },
-    {
-      name: "Mariana Costa",
-      date: "18 Out, 2023",
-      status: "Usado"
-    }
-  ];
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary pb-24 min-h-screen">
@@ -90,7 +75,6 @@ const Indicacao = () => {
 
         {/* Reward Cards */}
         <div className="grid grid-cols-2 gap-3">
-          {/* Card 1 */}
           <div className="flex flex-1 gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark p-4 flex-col shadow-sm">
             <div className="text-primary flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
               <Gift size={20} />
@@ -100,7 +84,6 @@ const Indicacao = () => {
               <p className="text-slate-500 dark:text-text-secondary text-sm font-medium leading-normal">{referralRewardYou}% OFF</p>
             </div>
           </div>
-          {/* Card 2 */}
           <div className="flex flex-1 gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark p-4 flex-col shadow-sm">
             <div className="text-primary flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
               <Tag size={20} />
@@ -120,8 +103,8 @@ const Indicacao = () => {
               <Users className="text-primary" size={20} />
             </div>
             <div className="flex items-end gap-3">
-              <p className="text-slate-900 dark:text-text-primary tracking-tight text-4xl font-black leading-none">12</p>
-              <p className="text-green-500 text-sm font-bold leading-normal mb-1 bg-green-500/10 px-2 py-0.5 rounded-full">+2 novas</p>
+              <p className="text-slate-900 dark:text-text-primary tracking-tight text-4xl font-black leading-none">{user.referralHistory.length}</p>
+              <p className="text-green-500 text-sm font-bold leading-normal mb-1 bg-green-500/10 px-2 py-0.5 rounded-full">Ativo</p>
             </div>
           </div>
         </div>
@@ -132,13 +115,13 @@ const Indicacao = () => {
             <p className="text-slate-900 dark:text-text-primary text-base font-bold leading-normal pb-2">Seu código exclusivo</p>
             <div className="group flex w-full flex-1 items-stretch rounded-xl overflow-hidden shadow-sm">
               <input
-                className="flex w-full min-w-0 flex-1 resize-none rounded-l-xl text-slate-900 dark:text-text-primary focus:outline-0 focus:ring-2 focus:ring-primary border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-dark h-14 placeholder:text-gray-400 dark:placeholder:text-text-secondary p-[15px] border-r-0 pr-2 text-lg font-mono font-medium leading-normal tracking-wide"
+                className="flex w-full min-w-0 flex-1 resize-none rounded-l-xl text-slate-900 dark:text-text-primary focus:outline-0 focus:ring-2 focus:ring-primary border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-surface-dark h-14 placeholder:text-gray-400 dark:placeholder:text-text-secondary p-[15px] border-r-0 pr-2 text-lg font-mono font-medium leading-normal tracking-wide"
                 readOnly
-                value={referralCode}
+                value={user.referralCode}
               />
               <button
                 onClick={handleCopyCode}
-                className="cursor-pointer text-primary hover:text-white hover:bg-primary transition-all flex border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-dark items-center justify-center px-5 rounded-r-xl border-l-0"
+                className="cursor-pointer text-primary hover:text-white hover:bg-primary transition-all flex border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-surface-dark items-center justify-center px-5 rounded-r-xl border-l-0"
               >
                 <Copy size={20} />
               </button>
@@ -149,26 +132,30 @@ const Indicacao = () => {
           </label>
         </div>
 
-        {/* Quem usou seu código */}
+        {/* Histórico */}
         <div className="flex flex-col gap-4 pt-2">
           <div className="flex items-center justify-between">
             <h3 className="text-slate-900 dark:text-text-primary text-base font-bold leading-normal">Quem usou seu código</h3>
           </div>
           <div className="flex flex-col border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-surface-dark overflow-hidden shadow-sm">
-            {usedReferrals.map((referral, index) => (
-              <div key={index} className={`flex items-center gap-4 p-4 ${index < usedReferrals.length - 1 ? 'border-b border-gray-100 dark:border-gray-700/50' : ''}`}>
-                <div className="bg-gray-100 dark:bg-gray-700 h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                  <User className="text-gray-500 dark:text-text-secondary" size={20} />
+            {user.referralHistory.length > 0 ? (
+              user.referralHistory.map((referral, index) => (
+                <div key={index} className={`flex items-center gap-4 p-4 ${index < user.referralHistory.length - 1 ? 'border-b border-gray-100 dark:border-gray-700/50' : ''}`}>
+                  <div className="bg-gray-100 dark:bg-gray-700 h-10 w-10 rounded-full flex items-center justify-center shrink-0">
+                    <User className="text-gray-500 dark:text-text-secondary" size={20} />
+                  </div>
+                  <div className="flex flex-1 flex-col">
+                    <p className="text-slate-900 dark:text-text-primary text-sm font-bold leading-tight">{referral.name}</p>
+                    <p className="text-slate-500 dark:text-text-secondary text-xs font-medium mt-0.5">{referral.date}</p>
+                  </div>
+                  <div className="text-xs font-bold text-slate-400 dark:text-slate-600 bg-slate-100 dark:bg-gray-700 px-2 py-1 rounded">
+                    {referral.status}
+                  </div>
                 </div>
-                <div className="flex flex-1 flex-col">
-                  <p className="text-slate-900 dark:text-text-primary text-sm font-bold leading-tight">{referral.name}</p>
-                  <p className="text-slate-500 dark:text-text-secondary text-xs font-medium mt-0.5">{referral.date}</p>
-                </div>
-                <div className="text-xs font-bold text-slate-400 dark:text-slate-600 bg-slate-100 dark:bg-gray-700 px-2 py-1 rounded">
-                  {referral.status}
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="p-8 text-center text-slate-400 text-sm italic">Nenhuma indicação ainda.</p>
+            )}
           </div>
         </div>
       </main>
