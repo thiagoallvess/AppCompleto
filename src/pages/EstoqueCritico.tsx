@@ -118,7 +118,7 @@ const EstoqueCritico = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
+    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white min-h-screen">
       <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
         <Link
           to="/gestao-estoque"
@@ -132,7 +132,7 @@ const EstoqueCritico = () => {
         </button>
       </header>
 
-      <main className="flex-1 flex flex-col gap-6 p-4 pb-24 max-w-4xl mx-auto">
+      <main className="flex-1 flex flex-col gap-6 p-4 pb-12 max-w-4xl mx-auto">
         <section aria-label="Resumo de Status">
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-3 p-4 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700/50 shadow-sm relative overflow-hidden group">
@@ -235,25 +235,6 @@ const EstoqueCritico = () => {
           )}
         </section>
       </main>
-
-      <nav className="fixed bottom-0 w-full bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-30">
-        <Link to="/visao-geral" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">dashboard</span>
-          <span className="text-[10px] font-medium">Painel</span>
-        </Link>
-        <Link to="/gestao-estoque" className="flex flex-col items-center gap-1 text-primary">
-          <span className="material-symbols-outlined fill">inventory_2</span>
-          <span className="text-[10px] font-bold">Estoque</span>
-        </Link>
-        <Link to="/gestao-pedidos" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">shopping_cart</span>
-          <span className="text-[10px] font-medium">Pedidos</span>
-        </Link>
-        <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">settings</span>
-          <span className="text-[10px] font-medium">Ajustes</span>
-        </Link>
-      </nav>
 
       <EditStockParamsModal 
         isOpen={isParamsModalOpen} 
