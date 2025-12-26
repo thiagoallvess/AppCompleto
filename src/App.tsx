@@ -62,12 +62,6 @@ import Vinculos from './pages/Vinculos';
 import Enderecos from './pages/Enderecos';
 import AddEndereco from './pages/AddEndereco';
 import EditEndereco from './pages/EditEndereco';
-import Conta from './pages/Conta';
-import Pagamentos from './pages/Pagamentos';
-import Notificacoes from './pages/Notificacoes';
-import Privacidade from './pages/Privacidade';
-import Ajuda from './pages/Ajuda';
-import ContaAdmin from './pages/ContaAdmin';
 import ProductDetails from './pages/ProductDetails';
 import NotFound from './pages/NotFound';
 
@@ -134,12 +128,6 @@ function App() {
                                   <Route path="/enderecos" element={<Enderecos />} />
                                   <Route path="/add-endereco" element={<AddEndereco />} />
                                   <Route path="/edit-endereco" element={<EditEndereco />} />
-                                  <Route path="/conta" element={<Conta />} />
-                                  <Route path="/pagamentos" element={<Pagamentos />} />
-                                  <Route path="/notificacoes" element={<Notificacoes />} />
-                                  <Route path="/privacidade" element={<Privacidade />} />
-                                  <Route path="/ajuda" element={<Ajuda />} />
-                                  <Route path="/conta-admin" element={<ContaAdmin />} />
                                   <Route path="/product-details" element={<ProductDetails />} />
                                   <Route path="*" element={<NotFound />} />
                                 </Routes>
