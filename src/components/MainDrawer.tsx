@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, Coins, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, Coins, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Bike } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -15,6 +15,7 @@ const MainDrawer = () => {
     { icon: BarChart, label: "Visão Geral", path: "/visao-geral" },
     { icon: Receipt, label: "Pedidos", path: "/gestao-pedidos" },
     { icon: Package, label: "Produtos", path: "/gestao-produtos" },
+    { icon: Bike, label: "Entregadores", path: "/gestao-entregadores" },
     { icon: LinkIcon, label: "Vínculos", path: "/vinculos" },
     { icon: Plus, label: "Adicionar Produto", path: "/add-produto" },
     { icon: ChefHat, label: "Receitas", path: "/gestao-receitas" },

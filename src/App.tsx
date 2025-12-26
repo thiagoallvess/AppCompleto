@@ -45,6 +45,7 @@ import PrevisaoProducao from "./pages/PrevisaoProducao";
 import EstoqueCritico from "./pages/EstoqueCritico";
 import GiroEstoque from "./pages/GiroEstoque";
 import RelatoriosEstoque from "./pages/RelatoriosEstoque";
+import GestaoEntregadores from "./pages/GestaoEntregadores";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -55,6 +56,7 @@ import { RecipesProvider } from "./contexts/RecipesContext";
 import { StockProvider } from "./contexts/StockContext";
 import { EquipmentProvider } from "./contexts/EquipmentContext";
 import { ExpensesProvider } from "./contexts/ExpensesProvider";
+import { DriversProvider } from "./contexts/DriversContext";
 
 const queryClient = new QueryClient();
 
@@ -68,59 +70,62 @@ const App = () => (
               <RecipesProvider>
                 <EquipmentProvider>
                   <ExpensesProvider>
-                    <CartProvider>
-                      <TooltipProvider>
-                        <BrowserRouter>
-                          <Routes>
-                            <Route path="/" element={<Index />} />
-                            <Route path="/product-details" element={<ProductDetails />} />
-                            <Route path="/cart" element={<Cart />} />
-                            <Route path="/checkout" element={<Checkout />} />
-                            <Route path="/cashback" element={<Cashback />} />
-                            <Route path="/indicacao" element={<Indicacao />} />
-                            <Route path="/meus-pedidos" element={<MeusPedidos />} />
-                            <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
-                            <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
-                            <Route path="/perfil" element={<Perfil />} />
-                            <Route path="/enderecos" element={<Enderecos />} />
-                            <Route path="/add-endereco" element={<AddEndereco />} />
-                            <Route path="/edit-endereco" element={<EditEndereco />} />
-                            <Route path="/gestao-estoque" element={<GestaoEstoque />} />
-                            <Route path="/add-insumo" element={<AddInsumo />} />
-                            <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
-                            <Route path="/gestao-produtos" element={<GestaoProdutos />} />
-                            <Route path="/add-produto" element={<AddProduto />} />
-                            <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
-                            <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
-                            <Route path="/relatorios" element={<Relatorios />} />
-                            <Route path="/clientes" element={<Clientes />} />
-                            <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
-                            <Route path="/visao-geral" element={<VisaoGeral />} />
-                            <Route path="/gestao-receitas" element={<GestaoReceitas />} />
-                            <Route path="/add-receita" element={<AddReceita />} />
-                            <Route path="/edit-receita" element={<EditReceita />} />
-                            <Route path="/detalhes-receita" element={<DetalhesReceita />} />
-                            <Route path="/gestao-producao" element={<GestaoProducao />} />
-                            <Route path="/add-producao" element={<AddProducao />} />
-                            <Route path="/detalhes-lote" element={<DetalhesLote />} />
-                            <Route path="/curva-abc" element={<CurvaABC />} />
-                            <Route path="/gestao-equipamentos" element={<GestaoEquipamentos />} />
-                            <Route path="/gestao-despesas" element={<GestaoDespesas />} />
-                            <Route path="/add-despesa" element={<AddDespesa />} />
-                            <Route path="/vinculos" element={<Vinculos />} />
-                            <Route path="/alertas-reposicao" element={<AlertasReposicao />} />
-                            <Route path="/lista-compras" element={<ListaCompras />} />
-                            <Route path="/previsao-producao" element={<PrevisaoProducao />} />
-                            <Route path="/estoque-critico" element={<EstoqueCritico />} />
-                            <Route path="/giro-estoque" element={<GiroEstoque />} />
-                            <Route path="/relatorios-estoque" element={<RelatoriosEstoque />} />
-                            <Route path="*" element={<NotFound />} />
-                          </Routes>
-                        </BrowserRouter>
-                        <Toaster />
-                        <Sonner />
-                      </TooltipProvider>
-                    </CartProvider>
+                    <DriversProvider>
+                      <CartProvider>
+                        <TooltipProvider>
+                          <BrowserRouter>
+                            <Routes>
+                              <Route path="/" element={<Index />} />
+                              <Route path="/product-details" element={<ProductDetails />} />
+                              <Route path="/cart" element={<Cart />} />
+                              <Route path="/checkout" element={<Checkout />} />
+                              <Route path="/cashback" element={<Cashback />} />
+                              <Route path="/indicacao" element={<Indicacao />} />
+                              <Route path="/meus-pedidos" element={<MeusPedidos />} />
+                              <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
+                              <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
+                              <Route path="/perfil" element={<Perfil />} />
+                              <Route path="/enderecos" element={<Enderecos />} />
+                              <Route path="/add-endereco" element={<AddEndereco />} />
+                              <Route path="/edit-endereco" element={<EditEndereco />} />
+                              <Route path="/gestao-estoque" element={<GestaoEstoque />} />
+                              <Route path="/add-insumo" element={<AddInsumo />} />
+                              <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
+                              <Route path="/gestao-produtos" element={<GestaoProdutos />} />
+                              <Route path="/add-produto" element={<AddProduto />} />
+                              <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
+                              <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
+                              <Route path="/relatorios" element={<Relatorios />} />
+                              <Route path="/clientes" element={<Clientes />} />
+                              <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
+                              <Route path="/visao-geral" element={<VisaoGeral />} />
+                              <Route path="/gestao-receitas" element={<GestaoReceitas />} />
+                              <Route path="/add-receita" element={<AddReceita />} />
+                              <Route path="/edit-receita" element={<EditReceita />} />
+                              <Route path="/detalhes-receita" element={<DetalhesReceita />} />
+                              <Route path="/gestao-producao" element={<GestaoProducao />} />
+                              <Route path="/add-producao" element={<AddProducao />} />
+                              <Route path="/detalhes-lote" element={<DetalhesLote />} />
+                              <Route path="/curva-abc" element={<CurvaABC />} />
+                              <Route path="/gestao-equipamentos" element={<GestaoEquipamentos />} />
+                              <Route path="/gestao-despesas" element={<GestaoDespesas />} />
+                              <Route path="/add-despesa" element={<AddDespesa />} />
+                              <Route path="/vinculos" element={<Vinculos />} />
+                              <Route path="/alertas-reposicao" element={<AlertasReposicao />} />
+                              <Route path="/lista-compras" element={<ListaCompras />} />
+                              <Route path="/previsao-producao" element={<PrevisaoProducao />} />
+                              <Route path="/estoque-critico" element={<EstoqueCritico />} />
+                              <Route path="/giro-estoque" element={<GiroEstoque />} />
+                              <Route path="/relatorios-estoque" element={<RelatoriosEstoque />} />
+                              <Route path="/gestao-entregadores" element={<GestaoEntregadores />} />
+                              <Route path="*" element={<NotFound />} />
+                            </Routes>
+                          </BrowserRouter>
+                          <Toaster />
+                          <Sonner />
+                        </TooltipProvider>
+                      </CartProvider>
+                    </DriversProvider>
                   </ExpensesProvider>
                 </EquipmentProvider>
               </RecipesProvider>
