@@ -20,7 +20,7 @@ const PerfilMotoboy = () => {
       <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-5 bg-background-light dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-white/5">
         <Link
           to="/pedidos-entrega"
-          className="flex size-10 items-center justify-center rounded-full bg-white dark:bg-surface-dark text-gray-900 dark:text-white shadow-sm hover:bg-gray-100 dark:hover:bg-primary/20 transition-colors"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white dark:bg-surface-dark text-gray-900 dark:text-white shadow-sm hover:bg-gray-100 dark:hover:bg-primary/20 transition-colors"
         >
           <ArrowLeft size={24} />
         </Link>
@@ -118,6 +118,18 @@ const PerfilMotoboy = () => {
                   <History size={24} />
                 </div>
                 <span className="text-base font-semibold text-gray-900 dark:text-white">Histórico de Entregas</span>
+              </div>
+              <span className="material-symbols-outlined text-gray-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+            </button>
+          </Link>
+
+          <Link to="/carteira-motoboy">
+            <button className="w-full bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 flex items-center justify-between group active:scale-[0.99] transition-transform">
+              <div className="flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-300 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                  <span className="material-symbols-outlined">account_balance_wallet</span>
+                </div>
+                <span className="text-base font-semibold text-gray-900 dark:text-white">Carteira</span>
               </div>
               <span className="material-symbols-outlined text-gray-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
             </button>
