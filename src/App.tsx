@@ -46,6 +46,7 @@ import EstoqueCritico from "./pages/EstoqueCritico";
 import GiroEstoque from "./pages/GiroEstoque";
 import RelatoriosEstoque from "./pages/RelatoriosEstoque";
 import GestaoEntregadores from "./pages/GestaoEntregadores";
+import Monitoramento from "./pages/Monitoramento";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -118,6 +119,7 @@ const App = () => (
                               <Route path="/giro-estoque" element={<GiroEstoque />} />
                               <Route path="/relatorios-estoque" element={<RelatoriosEstoque />} />
                               <Route path="/gestao-entregadores" element={<GestaoEntregadores />} />
+                              <Route path="/monitoramento" element={<Monitoramento />} />
                               <Route path="*" element={<NotFound />} />
                             </Routes>
                           </BrowserRouter>

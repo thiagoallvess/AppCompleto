@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, Coins, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, Coins, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -13,6 +13,7 @@ const MainDrawer = () => {
 
   const adminMenuItems = [
     { icon: BarChart, label: "Visão Geral", path: "/visao-geral" },
+    { icon: Map, label: "Monitoramento", path: "/monitoramento" },
     { icon: Receipt, label: "Pedidos", path: "/gestao-pedidos" },
     { icon: Package, label: "Produtos", path: "/gestao-produtos" },
     { icon: Truck, label: "Entregadores", path: "/gestao-entregadores" },
