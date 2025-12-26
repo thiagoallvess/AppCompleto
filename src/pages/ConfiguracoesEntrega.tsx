@@ -1,10 +1,9 @@
 import { ArrowLeft, Save, MapPin, Target } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { showSuccess } from "@/utils/toast";
-import { Wrapper, Status } from "@googlemaps/react-wrapper";
+import { showSuccess, showError } from "@/utils/toast";
 
 const ConfiguracoesEntrega = () => {
   const [deliveryConfigs, setDeliveryConfigs] = useState([
@@ -27,8 +26,100 @@ const ConfiguracoesEntrega = () => {
 
   const [selectedRadius, setSelectedRadius] = useState(5);
   const [center, setCenter] = useState({ lat: -23.5505, lng: -46.6333 }); // São Paulo
-  const mapRef = useRef<google.maps.Map | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const circleRef = useRef<google.maps.Circle | null>(null);
+
+  useEffect(() => {
+    // Load Google Maps script
+    const loadGoogleMaps = () => {
+      if (window.google && window.google.maps) {
+        setMapLoaded(true);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        setMapLoaded(true);
+      };
+      script.onerror = () => {
+        showError("Erro ao carregar o Google Maps. Verifique sua conexão.");
+      };
+      document.head.appendChild(script);
+    };
+
+    loadGoogleMaps();
+  }, []);
+
+  useEffect(() => {
+    if (mapLoaded && mapRef.current && !mapInstanceRef.current) {
+      try {
+        // Initialize map
+        const map = new google.maps.Map(mapRef.current, {
+          center: center,
+          zoom: 13,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+          styles: [
+            {
+              featureType: "all",
+              elementType: "geometry",
+              stylers: [{ color: "#242f3e" }]
+            },
+            {
+              featureType: "all",
+              elementType: "labels.text.stroke",
+              stylers: [{ color: "#242f3e" }]
+            },
+            {
+              featureType: "all",
+              elementType: "labels.text.fill",
+              stylers: [{ color: "#746855" }]
+            }
+          ]
+        });
+
+        mapInstanceRef.current = map;
+
+        // Add center marker
+        new google.maps.Marker({
+          position: center,
+          map: map,
+          title: 'Sua Loja',
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#dc2626',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 3,
+          }
+        });
+
+        // Add delivery radius circle
+        const circle = new google.maps.Circle({
+          strokeColor: '#1976d2',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#1976d2',
+          fillOpacity: 0.15,
+          map: map,
+          center: center,
+          radius: selectedRadius * 1000, // Convert km to meters
+        });
+
+        circleRef.current = circle;
+      } catch (error) {
+        console.error("Error initializing map:", error);
+        showError("Erro ao inicializar o mapa");
+      }
+    }
+  }, [mapLoaded, center, selectedRadius]);
 
   const handleTimeChange = (index: number, value: string) => {
     const newConfigs = [...deliveryConfigs];
@@ -50,124 +141,63 @@ const ConfiguracoesEntrega = () => {
   };
 
   const handleSave = () => {
-    // In a real app, save to backend or localStorage
+    localStorage.setItem('deliveryConfigs', JSON.stringify(deliveryConfigs));
+    localStorage.setItem('deliveryRadius', selectedRadius.toString());
     showSuccess("Configurações de entrega salvas com sucesso!");
-  };
-
-  const render = (status: Status) => {
-    switch (status) {
-      case Status.LOADING:
-        return <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-          <div className="text-gray-500">Carregando mapa...</div>
-        </div>;
-      case Status.FAILURE:
-        return <div className="flex items-center justify-center h-64 bg-red-50 rounded-lg">
-          <div className="text-red-500">Erro ao carregar mapa</div>
-        </div>;
-      case Status.SUCCESS:
-        return <MapComponent 
-          center={center} 
-          radius={selectedRadius} 
-          onMapLoad={handleMapLoad}
-        />;
-    }
-  };
-
-  const handleMapLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
-    
-    // Create circle
-    const circle = new google.maps.Circle({
-      strokeColor: '#1976d2',
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: '#1976d2',
-      fillOpacity: 0.1,
-      map,
-      center: center,
-      radius: selectedRadius * 1000,
-    });
-    
-    circleRef.current = circle;
-
-    // Add marker for center
-    new google.maps.Marker({
-      position: center,
-      map,
-      title: 'Sua Loja',
-      icon: {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 8,
-        fillColor: '#dc2626',
-        fillOpacity: 1,
-        strokeColor: '#ffffff',
-        strokeWeight: 2,
-      }
-    });
-  }, [center, selectedRadius]);
-
-  const MapComponent = ({ center, radius, onMapLoad }: any) => {
-    const ref = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      if (ref.current && !mapRef.current) {
-        const map = new google.maps.Map(ref.current, {
-          center,
-          zoom: 13,
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
-        });
-        onMapLoad(map);
-      }
-    }, [center, onMapLoad]);
-
-    return <div ref={ref} className="w-full h-64 rounded-lg" />;
   };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-20 flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between border-b border-[#333]">
+      <header className="sticky top-0 z-20 flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between border-b border-slate-200 dark:border-slate-800">
         <Link
           to="/configuracoes-admin"
-          className="text-white flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-white/10 cursor-pointer"
+          className="text-slate-900 dark:text-white flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors"
         >
           <ArrowLeft size={24} />
         </Link>
-        <h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Configurações de Entrega</h2>
+        <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Configurações de Entrega</h2>
       </header>
 
       {/* Main Content */}
-      <div className="relative flex flex-col w-full max-w-md mx-auto overflow-x-hidden">
+      <div className="relative flex flex-col w-full max-w-4xl mx-auto overflow-x-hidden px-4">
         {/* Section 1: Tempo e Taxa */}
-        <div className="pt-5 px-4">
-          <h3 className="text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Tempo e Taxa</h3>
-          <div className="p-4 rounded-xl bg-surface-dark border border-[#333] flex gap-4 items-start shadow-sm">
+        <div className="pt-5">
+          <h3 className="text-slate-900 dark:text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Tempo e Taxa</h3>
+          <div className="p-4 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 flex gap-4 items-start shadow-sm">
             <span className="material-symbols-outlined text-primary text-2xl shrink-0 mt-0.5">info</span>
             <div className="flex flex-col gap-1">
-              <p className="text-white text-base font-bold leading-tight">Entrega Parceira</p>
-              <p className="text-text-secondary text-sm font-normal leading-relaxed">Na Entrega Parceira as definições de área, tempo e taxa de entrega são feitas pelo IFood.</p>
+              <p className="text-slate-900 dark:text-white text-base font-bold leading-tight">Entrega Própria</p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm font-normal leading-relaxed">
+                Configure o raio de entrega, tempo estimado e taxa para cada distância.
+              </p>
             </div>
           </div>
         </div>
 
         {/* Section 2: Map Configuration */}
-        <div className="pt-8 px-4">
-          <h3 className="text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Raio de Entrega</h3>
+        <div className="pt-8">
+          <h3 className="text-slate-900 dark:text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Raio de Entrega</h3>
           
           {/* Map Container */}
-          <div className="mb-4 rounded-xl overflow-hidden border border-[#333]">
-            <Wrapper apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "YOUR_API_KEY"} render={render}>
-              <div className="w-full h-64 bg-gray-100" />
-            </Wrapper>
+          <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg">
+            {!mapLoaded ? (
+              <div className="w-full h-64 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Carregando mapa...</p>
+                </div>
+              </div>
+            ) : (
+              <div ref={mapRef} className="w-full h-64 bg-slate-100 dark:bg-slate-800" />
+            )}
           </div>
 
           {/* Radius Slider */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-text-secondary">Raio de Entrega</label>
-              <span className="text-white font-bold">{selectedRadius} km</span>
+          <div className="mb-6 bg-white dark:bg-surface-dark p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Raio de Entrega</label>
+              <span className="text-slate-900 dark:text-white font-bold text-lg">{selectedRadius} km</span>
             </div>
             <input
               type="range"
@@ -176,21 +206,24 @@ const ConfiguracoesEntrega = () => {
               step="0.5"
               value={selectedRadius}
               onChange={(e) => handleRadiusChange(parseFloat(e.target.value))}
-              className="w-full h-2 bg-surface-dark rounded-lg appearance-none cursor-pointer slider"
+              className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary"
+              style={{
+                background: `linear-gradient(to right, #1976d2 0%, #1976d2 ${((selectedRadius - 0.5) / 14.5) * 100}%, rgb(226 232 240) ${((selectedRadius - 0.5) / 14.5) * 100}%, rgb(226 232 240) 100%)`
+              }}
             />
-            <div className="flex justify-between text-xs text-text-secondary mt-1">
+            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-2">
               <span>0.5 km</span>
               <span>15 km</span>
             </div>
           </div>
         </div>
 
-        {/* Section 3: Padrão */}
-        <div className="pt-8 px-4">
-          <h3 className="text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Configurações por Raio</h3>
+        {/* Section 3: Configuration Table */}
+        <div className="pt-8 pb-32">
+          <h3 className="text-slate-900 dark:text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Configurações por Raio</h3>
           
           {/* Configuration Table Header */}
-          <div className="sticky top-[72px] z-10 grid grid-cols-[1fr_1.2fr_1.2fr] gap-2 bg-background-dark py-3 border-b border-[#333] mb-2 text-xs uppercase tracking-wider font-bold text-text-secondary">
+          <div className="sticky top-[72px] z-10 grid grid-cols-[1fr_1.2fr_1.2fr] gap-2 bg-background-light dark:bg-background-dark py-3 border-b border-slate-200 dark:border-slate-800 mb-2 text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
             <div className="text-center">Raio (km)</div>
             <div className="text-center">Tempo (min)</div>
             <div className="text-center">Taxa (R$)</div>
@@ -201,7 +234,7 @@ const ConfiguracoesEntrega = () => {
             {deliveryConfigs.map((config, index) => (
               <div key={index} className="grid grid-cols-[1fr_1.2fr_1.2fr] gap-2 items-center py-1">
                 {/* Radius */}
-                <div className="flex items-center justify-center h-10 rounded bg-surface-dark/50 text-white font-medium text-sm">
+                <div className="flex items-center justify-center h-10 rounded bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium text-sm">
                   {config.radius} km
                 </div>
                 
@@ -209,7 +242,7 @@ const ConfiguracoesEntrega = () => {
                 <div className="relative">
                   <Input 
                     type="number" 
-                    className="w-full h-10 bg-surface-dark border border-transparent focus:border-primary rounded text-center text-white text-sm font-bold focus:ring-0 px-2" 
+                    className="w-full h-10 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 focus:border-primary rounded text-center text-slate-900 dark:text-white text-sm font-bold focus:ring-1 focus:ring-primary px-2" 
                     value={config.time}
                     onChange={(e) => handleTimeChange(index, e.target.value)}
                   />
@@ -217,11 +250,11 @@ const ConfiguracoesEntrega = () => {
                 
                 {/* Fee Input */}
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-xs">R$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 text-xs font-medium">R$</span>
                   <Input 
                     type="number" 
                     step="0.01" 
-                    className="w-full h-10 bg-surface-dark border border-transparent focus:border-primary rounded text-right text-white text-sm font-bold focus:ring-0 pr-4 pl-8" 
+                    className="w-full h-10 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 focus:border-primary rounded text-right text-slate-900 dark:text-white text-sm font-bold focus:ring-1 focus:ring-primary pr-4 pl-8" 
                     value={config.fee.toFixed(2)}
                     onChange={(e) => handleFeeChange(index, e.target.value)}
                   />
@@ -229,12 +262,11 @@ const ConfiguracoesEntrega = () => {
               </div>
             ))}
           </div>
-          <div className="h-10"></div>
         </div>
       </div>
 
       {/* Sticky Footer Action */}
-      <div className="fixed bottom-0 left-0 w-full bg-background-dark/95 backdrop-blur-sm border-t border-[#333] p-4 flex justify-center z-30">
+      <div className="fixed bottom-0 left-0 w-full bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800 p-4 flex justify-center z-30">
         <Button 
           onClick={handleSave}
           className="w-full max-w-md bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
