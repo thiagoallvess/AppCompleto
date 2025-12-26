@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Filter, MoreVertical, ShoppingCart, Send, ContentCopy, RefreshCw } from "lucide-react";
+import { ArrowLeft, Filter, MoreVertical, ShoppingCart, Send, Copy, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -209,7 +209,7 @@ const ListaCompras = () => {
               variant="outline"
               className="flex-1 flex items-center justify-center h-12 rounded-lg border border-slate-300 dark:border-slate-800 bg-transparent text-slate-700 dark:text-white font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors gap-2"
             >
-              <ContentCopy size={20} />
+              <Copy size={20} />
               <span>Copiar</span>
             </Button>
             <Button
