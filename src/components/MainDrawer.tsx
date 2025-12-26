@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, Coins, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -16,13 +16,8 @@ const MainDrawer = () => {
     { icon: Map, label: "Monitoramento", path: "/monitoramento" },
     { icon: Receipt, label: "Pedidos", path: "/gestao-pedidos" },
     { icon: Package, label: "Produtos", path: "/gestao-produtos" },
-    { icon: Truck, label: "Entregadores", path: "/gestao-entregadores" },
-    { icon: BarChart, label: "Relatórios Entregas", path: "/relatorios-entregadores" },
-    { icon: LinkIcon, label: "Vínculos", path: "/vinculos" },
-    { icon: Plus, label: "Adicionar Produto", path: "/add-produto" },
     { icon: ChefHat, label: "Receitas", path: "/gestao-receitas" },
     { icon: Factory, label: "Produção", path: "/gestao-producao" },
-    { icon: Calendar, label: "Previsão de Produção", path: "/previsao-producao" },
     { icon: Package, label: "Estoque/Insumos", path: "/gestao-estoque" },
     { icon: AlertTriangle, label: "Estoque Crítico", path: "/estoque-critico" },
     { icon: RefreshCw, label: "Giro de Estoque", path: "/giro-estoque" },
@@ -33,6 +28,7 @@ const MainDrawer = () => {
     { icon: BarChart, label: "Curva ABC", path: "/curva-abc" },
     { icon: FileText, label: "Relatórios", path: "/relatorios" },
     { icon: FileText, label: "Relatórios Estoque", path: "/relatorios-estoque" },
+    { icon: Truck, label: "Configurações de Entrega", path: "/configuracoes-entrega" },
     { icon: Settings, label: "Configurações", path: "/configuracoes-admin" },
   ];
 
@@ -51,7 +47,7 @@ const MainDrawer = () => {
                 <span className="text-white font-bold text-lg">G</span>
               </div>
               <div>
-                <p className="text-base font-bold text-slate-900 dark:text-white">Menu</p>
+                <p className="text-base font-bold text-gray-900 dark:text-white">Menu</p>
               </div>
             </div>
           </SheetTitle>
