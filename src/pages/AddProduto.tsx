@@ -3,16 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { showSuccess } from "@/utils/toast";
 import { useRecipes } from "@/contexts/RecipesContext";
 import { useProducts } from "@/contexts/ProductsContext";
-import { showSuccess } from "@/utils/toast";
 
 const AddProduto = () => {
   const navigate = useNavigate();
-  const { recipes } = useRecipes();
   const { addProduct } = useProducts();
 
   const [productName, setProductName] = useState("");
@@ -22,6 +19,8 @@ const AddProduto = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [recipeId, setRecipeId] = useState("");
   const [isActive, setIsActive] = useState(true);
+  
+  const { recipes } = useRecipes();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,12 +50,12 @@ const AddProduto = () => {
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
             to="/gestao-produtos"
-            className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="flex items-center justify-center size-10 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft size={24} />
           </Link>
           <div className="flex flex-col">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Produtos</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Produtos</span>
             <h1 className="text-xl font-bold leading-tight tracking-tight">Adicionar Novo</h1>
           </div>
         </div>
@@ -119,7 +118,7 @@ const AddProduto = () => {
             <div className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shadow-sm">
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Produto em Promoção</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">Aplicar desconto promocional</span>
+                <span className="text-xs text-slate-500 dark:text-text-secondary">Aplicar desconto promocional</span>
               </div>
               <Switch
                 checked={isPromotion}
@@ -175,7 +174,7 @@ const AddProduto = () => {
             <div className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shadow-sm mt-2">
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ativo para Vendas</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">Produto visível no catálogo</span>
+                <span className="text-xs text-slate-500 dark:text-text-secondary">Produto visível no catálogo</span>
               </div>
               <Switch
                 checked={isActive}
@@ -194,30 +193,6 @@ const AddProduto = () => {
           </Button>
         </form>
       </div>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-background-dark/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 pb-safe z-40 max-w-md mx-auto">
-        <div className="flex justify-around items-center h-16">
-          <Link to="/" className="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-            <Home size={24} />
-            <span className="text-[10px] font-medium">Início</span>
-          </Link>
-          <Link to="/gestao-produtos" className="flex flex-col items-center justify-center gap-1 w-full h-full text-primary dark:text-primary transition-colors">
-            <IceCream size={24} />
-            <span className="text-[10px] font-bold">Produtos</span>
-          </Link>
-          <button className="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-            <Receipt size={24} />
-            <span className="text-[10px] font-medium">Pedidos</span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
-            <Settings size={24} />
-            <span className="text-[10px] font-medium">Ajustes</span>
-          </button>
-        </div>
-      </nav>
-      {/* Safe area spacer for bottom nav */}
-      <div className="h-6 w-full bg-white dark:bg-background-dark"></div>
     </div>
   );
 };
