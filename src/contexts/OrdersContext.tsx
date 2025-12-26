@@ -28,6 +28,8 @@ export interface Order {
   cancelled?: boolean;
   eta?: string;
   history: HistoryEvent[];
+  driverId?: string;
+  driverName?: string;
 }
 
 interface OrdersContextType {
@@ -43,7 +45,7 @@ const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
 export const useOrders = () => {
   const context = useContext(OrdersContext);
   if (!context) {
-    throw new Error('useOrders must be used within an OrdersProvider');
+    throw new Error('useOrders must be used within a OrdersProvider');
   }
   return context;
 };

@@ -16,12 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
 import { showSuccess } from "@/utils/toast";
+import AtribuirPedidoModal from "@/components/AtribuirPedidoModal";
 
 const GestaoEntregadores = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
+  const [selectedDriverForAssign, setSelectedDriverForAssign] = useState<Driver | null>(null);
   
   const { drivers, addDriver, updateDriver, removeDriver } = useDrivers();
 
@@ -61,6 +64,11 @@ const GestaoEntregadores = () => {
     setVehicleType(driver.vehicleType || "moto");
     setIsActive(driver.status !== 'offline');
     setIsModalOpen(true);
+  };
+
+  const handleOpenAssignModal = (driver: Driver) => {
+    setSelectedDriverForAssign(driver);
+    setIsAssignModalOpen(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -287,7 +295,10 @@ const GestaoEntregadores = () => {
                         Rastrear
                       </button>
                     ) : (
-                      <button className="w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary hover:text-white text-slate-600 dark:text-slate-300 text-sm font-bold flex items-center justify-center gap-2 transition-colors">
+                      <button 
+                        onClick={() => handleOpenAssignModal(driver)}
+                        className="w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-700 hover:text-white dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 text-sm font-bold flex items-center justify-center gap-2 transition-colors"
+                      >
                         Atribuir Pedido
                       </button>
                     )}
@@ -467,6 +478,13 @@ const GestaoEntregadores = () => {
           </footer>
         </DialogContent>
       </Dialog>
+
+      {/* Assign Order Modal */}
+      <AtribuirPedidoModal 
+        isOpen={isAssignModalOpen} 
+        onClose={() => setIsAssignModalOpen(false)} 
+        driver={selectedDriverForAssign}
+      />
 
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-30">
