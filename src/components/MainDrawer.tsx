@@ -17,6 +17,7 @@ const MainDrawer = () => {
     { icon: Receipt, label: "Pedidos", path: "/gestao-pedidos" },
     { icon: Package, label: "Produtos", path: "/gestao-produtos" },
     { icon: Truck, label: "Entregadores", path: "/gestao-entregadores" },
+    { icon: BarChart, label: "Relatórios Entregas", path: "/relatorios-entregadores" },
     { icon: LinkIcon, label: "Vínculos", path: "/vinculos" },
     { icon: Plus, label: "Adicionar Produto", path: "/add-produto" },
     { icon: ChefHat, label: "Receitas", path: "/gestao-receitas" },
