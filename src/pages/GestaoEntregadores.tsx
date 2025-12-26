@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus, Edit, Trash2, X, Phone, Camera, Bike, Car, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus, Edit, Trash2, X, Phone, Camera, Bike, Car, ShieldCheck, Unlink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDrivers, Driver } from "@/contexts/DriversContext";
@@ -17,14 +17,16 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { showSuccess } from "@/utils/toast";
 import AtribuirPedidoModal from "@/components/AtribuirPedidoModal";
+import DesatribuirPedidoModal from "@/components/DesatribuirPedidoModal";
 
 const GestaoEntregadores = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isUnassignModalOpen, setIsUnassignModalOpen] = useState(false);
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
-  const [selectedDriverForAssign, setSelectedDriverForAssign] = useState<Driver | null>(null);
+  const [selectedDriverForManage, setSelectedDriverForManage] = useState<Driver | null>(null);
   
   const { drivers, addDriver, updateDriver, removeDriver } = useDrivers();
 
@@ -67,8 +69,13 @@ const GestaoEntregadores = () => {
   };
 
   const handleOpenAssignModal = (driver: Driver) => {
-    setSelectedDriverForAssign(driver);
+    setSelectedDriverForManage(driver);
     setIsAssignModalOpen(true);
+  };
+
+  const handleOpenUnassignModal = (driver: Driver) => {
+    setSelectedDriverForManage(driver);
+    setIsUnassignModalOpen(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -262,6 +269,13 @@ const GestaoEntregadores = () => {
                     >
                       <Edit size={16} className="text-slate-500" />
                       Editar
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleOpenUnassignModal(driver)}
+                      className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800"
+                    >
+                      <Unlink size={16} className="text-slate-500" />
+                      Gerenciar Pedidos
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => handleDelete(driver.id, driver.name)}
@@ -483,7 +497,14 @@ const GestaoEntregadores = () => {
       <AtribuirPedidoModal 
         isOpen={isAssignModalOpen} 
         onClose={() => setIsAssignModalOpen(false)} 
-        driver={selectedDriverForAssign}
+        driver={selectedDriverForManage}
+      />
+
+      {/* Unassign Order Modal */}
+      <DesatribuirPedidoModal 
+        isOpen={isUnassignModalOpen} 
+        onClose={() => setIsUnassignModalOpen(false)} 
+        driver={selectedDriverForManage}
       />
 
       {/* Floating Action Button */}
