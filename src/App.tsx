@@ -41,6 +41,7 @@ import AddDespesa from "./pages/AddDespesa";
 import Vinculos from "./pages/Vinculos";
 import AlertasReposicao from "./pages/AlertasReposicao";
 import ListaCompras from "./pages/ListaCompras";
+import PrevisaoProducao from "./pages/PrevisaoProducao";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -106,6 +107,7 @@ const App = () => (
                             <Route path="/vinculos" element={<Vinculos />} />
                             <Route path="/alertas-reposicao" element={<AlertasReposicao />} />
                             <Route path="/lista-compras" element={<ListaCompras />} />
+                            <Route path="/previsao-producao" element={<PrevisaoProducao />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                         </BrowserRouter>
