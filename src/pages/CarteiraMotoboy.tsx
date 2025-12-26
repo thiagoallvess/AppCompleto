@@ -4,11 +4,20 @@ import { ArrowLeft, TrendingUp, AccountBalance, SportsMotorsports, Wallet } from
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import SolicitarSaqueModal from "@/components/SolicitarSaqueModal";
+import ProcessarRepasseModal from "@/components/ProcessarRepasseModal";
 
 const CarteiraMotoboy = () => {
   const [isSaqueModalOpen, setIsSaqueModalOpen] = useState(false);
+  const [isRepasseModalOpen, setIsRepasseModalOpen] = useState(false);
   const availableBalance = 345.50;
   const totalEarnings = 2450.00;
+
+  // Mock driver data for admin processing
+  const driver = {
+    name: "João Carlos",
+    balance: 450.00,
+    bankAccount: "Nubank (Pix)"
+  };
 
   const transactions = [
     {
@@ -154,8 +163,8 @@ const CarteiraMotoboy = () => {
           <div className="px-4 py-4 lg:px-6 lg:py-6">
             <div className="flex flex-col items-center justify-center rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-slate-200 dark:border-slate-800 p-6 relative overflow-hidden">
               {/* Decorational background gradient */}
-              <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-primary/10 blur-2xl"></div>
-              <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-slate-500/10 blur-2xl"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-slate-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none"></div>
               <div className="relative z-10 flex flex-col items-center">
                 <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Saldo Disponível</p>
                 <h1 className="text-slate-900 dark:text-white text-4xl font-extrabold tracking-tight mb-4">R$ {availableBalance.toFixed(2)}</h1>
@@ -181,6 +190,22 @@ const CarteiraMotoboy = () => {
               <div className="flex flex-col items-start">
                 <span className="text-sm font-bold leading-none">Solicitar Repasse</span>
                 <span className="text-[10px] font-medium opacity-80 leading-tight">Repasses semanais gratuitos às terças-feiras • Taxa 1,99% fora do prazo</span>
+              </div>
+            </button>
+          </div>
+
+          {/* Admin Action Button (for demonstration) */}
+          <div className="px-4 pb-6 lg:px-6">
+            <button 
+              onClick={() => setIsRepasseModalOpen(true)}
+              className="w-full shadow-2xl shadow-red-500/40 bg-red-500 hover:bg-red-600 text-white rounded-full h-14 pl-6 pr-8 flex items-center gap-3 transition-transform hover:scale-105 active:scale-95"
+            >
+              <div className="relative">
+                <AccountBalance size={24} />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-bold leading-none">Processar Repasse Manual (Admin)</span>
+                <span className="text-[10px] font-medium opacity-80 leading-tight">Para administradores processarem saques</span>
               </div>
             </button>
           </div>
@@ -244,6 +269,13 @@ const CarteiraMotoboy = () => {
         isOpen={isSaqueModalOpen} 
         onClose={() => setIsSaqueModalOpen(false)} 
         availableBalance={availableBalance} 
+      />
+
+      {/* Processar Repasse Modal */}
+      <ProcessarRepasseModal 
+        isOpen={isRepasseModalOpen} 
+        onClose={() => setIsRepasseModalOpen(false)} 
+        driver={driver} 
       />
     </div>
   );
