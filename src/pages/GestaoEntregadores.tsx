@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus, Edit, Trash2, X, Phone, Camera, Bike, Car, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDrivers, Driver } from "@/contexts/DriversContext";
@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
 import { showSuccess } from "@/utils/toast";
 
 const GestaoEntregadores = () => {
@@ -26,7 +27,10 @@ const GestaoEntregadores = () => {
 
   // Form states
   const [name, setName] = useState("");
-  const [status, setStatus] = useState<Driver['status']>("online");
+  const [phone, setPhone] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [vehicleType, setVehicleType] = useState<'moto' | 'bike' | 'car'>('moto');
+  const [isActive, setIsActive] = useState(true);
 
   const filters = ["Todos", "Online", "Em Rota", "Offline"];
 
@@ -42,14 +46,20 @@ const GestaoEntregadores = () => {
   const handleOpenAddModal = () => {
     setEditingDriver(null);
     setName("");
-    setStatus("online");
+    setPhone("");
+    setCpf("");
+    setVehicleType("moto");
+    setIsActive(true);
     setIsModalOpen(true);
   };
 
   const handleOpenEditModal = (driver: Driver) => {
     setEditingDriver(driver);
     setName(driver.name);
-    setStatus(driver.status);
+    setPhone(driver.phone || "");
+    setCpf(driver.cpf || "");
+    setVehicleType(driver.vehicleType || "moto");
+    setIsActive(driver.status !== 'offline');
     setIsModalOpen(true);
   };
 
@@ -57,17 +67,28 @@ const GestaoEntregadores = () => {
     e.preventDefault();
     if (!name.trim()) return;
 
+    const currentStatus: Driver['status'] = isActive ? (editingDriver?.status === 'route' ? 'route' : 'online') : 'offline';
+
     if (editingDriver) {
-      updateDriver(editingDriver.id, { name, status });
+      updateDriver(editingDriver.id, { 
+        name, 
+        phone, 
+        cpf, 
+        vehicleType, 
+        status: currentStatus 
+      });
       showSuccess(`Entregador "${name}" atualizado!`);
     } else {
       const newDriver: Driver = {
         id: Date.now().toString(),
         name,
-        status,
+        phone,
+        cpf,
+        vehicleType,
+        status: currentStatus,
         deliveriesToday: 0,
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
-        lastLogin: status === 'offline' ? 'Hoje, agora' : undefined
+        lastLogin: currentStatus === 'offline' ? 'Hoje, agora' : undefined
       };
       addDriver(newDriver);
       showSuccess(`"${name}" adicionado à equipe!`);
@@ -253,8 +274,10 @@ const GestaoEntregadores = () => {
                       <span className="text-sm font-bold">{driver.deliveriesToday} Hoje</span>
                     </div>
                     <div className="flex flex-col bg-slate-50 dark:bg-background-dark/50 rounded-lg p-2">
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">{driver.status === 'route' ? 'Local' : 'Status'}</span>
-                      <span className="text-sm font-medium truncate">{driver.location || 'Aguardando'}</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">{driver.status === 'route' ? 'Local' : 'Veículo'}</span>
+                      <span className="text-sm font-medium truncate">
+                        {driver.status === 'route' ? (driver.location || 'Em rota') : (driver.vehicleType || 'Não inf.')}
+                      </span>
                     </div>
                   </div>
                   <div className="flex gap-2 mt-1">
@@ -293,47 +316,155 @@ const GestaoEntregadores = () => {
 
       {/* Driver Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-md mx-auto bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800 p-6">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">
+        <DialogContent className="max-w-md mx-auto bg-[#111a22] border-none p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="sticky top-0 z-10 flex items-center bg-[#111a22] px-4 py-4 justify-between border-b border-[#324d67]/30">
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              <X className="text-white" size={24} />
+            </button>
+            <DialogTitle className="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
               {editingDriver ? "Editar Entregador" : "Adicionar Entregador"}
             </DialogTitle>
+            <div className="size-10"></div>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome Completo</Label>
-              <Input 
-                id="name" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                placeholder="Ex: Roberto Gomes" 
-                required
-                className="bg-gray-50 dark:bg-[#121a21]"
-              />
+
+          <div className="flex-1 overflow-y-auto max-h-[70vh] scrollbar-thin scrollbar-thumb-[#324d67] pb-24">
+            {/* Avatar Section */}
+            <div className="flex flex-col items-center justify-center py-6 gap-3">
+              <div className="relative size-24 rounded-full bg-[#192633] border-2 border-dashed border-[#324d67] flex items-center justify-center group cursor-pointer hover:border-primary transition-colors">
+                <Camera className="text-[#92adc9] text-3xl group-hover:text-primary transition-colors" size={32} />
+              </div>
+              <p className="text-[#92adc9] text-sm font-medium">Foto de Perfil</p>
             </div>
-            <div className="space-y-2">
-              <Label>Status Inicial</Label>
-              <div className="grid grid-cols-3 gap-2">
-                {(['online', 'route', 'offline'] as const).map((s) => (
-                  <button
-                    key={s}
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {/* Name Field */}
+              <div className="px-4 py-1">
+                <label className="flex flex-col flex-1">
+                  <p className="text-white text-base font-medium leading-normal pb-2">Nome Completo</p>
+                  <input 
+                    className="form-input flex w-full min-w-0 flex-1 rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#324d67] bg-[#192633] focus:border-primary h-14 placeholder:text-[#92adc9] p-[15px] text-base font-normal leading-normal transition-all" 
+                    placeholder="Ex: João Silva" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </label>
+              </div>
+
+              {/* Phone Field */}
+              <div className="px-4 py-1">
+                <label className="flex flex-col flex-1">
+                  <p className="text-white text-base font-medium leading-normal pb-2">Telefone / WhatsApp</p>
+                  <div className="flex w-full flex-1 items-stretch rounded-lg group">
+                    <input 
+                      className="form-input flex w-full min-w-0 flex-1 rounded-l-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#324d67] bg-[#192633] focus:border-primary h-14 placeholder:text-[#92adc9] p-[15px] border-r-0 pr-2 text-base font-normal leading-normal transition-all" 
+                      placeholder="(00) 00000-0000" 
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                    <div className="text-[#92adc9] flex border border-[#324d67] bg-[#192633] items-center justify-center pr-[15px] rounded-r-lg border-l-0 group-focus-within:border-primary group-focus-within:ring-2 group-focus-within:ring-primary/50 transition-all">
+                      <Phone size={20} />
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              {/* CPF Field */}
+              <div className="px-4 py-1">
+                <label className="flex flex-col flex-1">
+                  <p className="text-white text-base font-medium leading-normal pb-2">CPF <span className="text-[#92adc9] text-sm font-normal">(Opcional)</span></p>
+                  <input 
+                    className="form-input flex w-full min-w-0 flex-1 rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#324d67] bg-[#192633] focus:border-primary h-14 placeholder:text-[#92adc9] p-[15px] text-base font-normal leading-normal transition-all" 
+                    placeholder="000.000.000-00" 
+                    value={cpf}
+                    onChange={(e) => setCpf(e.target.value)}
+                  />
+                </label>
+              </div>
+
+              {/* Vehicle Selection */}
+              <div className="px-4 py-4">
+                <p className="text-white text-base font-medium leading-normal pb-3">Tipo de Veículo</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <button 
                     type="button"
-                    onClick={() => setStatus(s)}
-                    className={`py-2 text-xs font-bold rounded-lg border transition-all ${
-                      status === s 
-                      ? 'bg-primary border-primary text-white' 
-                      : 'bg-gray-50 dark:bg-[#121a21] border-slate-200 dark:border-slate-800 text-slate-500'
+                    onClick={() => setVehicleType('moto')}
+                    className={`flex flex-col items-center justify-center gap-2 rounded-xl p-3 cursor-pointer transition-all ${
+                      vehicleType === 'moto' 
+                      ? 'bg-primary/20 border-2 border-primary shadow-sm' 
+                      : 'bg-[#192633] border border-[#324d67] opacity-70 hover:opacity-100'
                     }`}
                   >
-                    {s === 'online' ? 'Online' : s === 'route' ? 'Em Rota' : 'Offline'}
+                    <Truck size={24} className={vehicleType === 'moto' ? 'text-primary' : 'text-white'} />
+                    <span className={`text-sm ${vehicleType === 'moto' ? 'text-white font-semibold' : 'text-[#92adc9] font-medium'}`}>Moto</span>
                   </button>
-                ))}
+                  <button 
+                    type="button"
+                    onClick={() => setVehicleType('bike')}
+                    className={`flex flex-col items-center justify-center gap-2 rounded-xl p-3 cursor-pointer transition-all ${
+                      vehicleType === 'bike' 
+                      ? 'bg-primary/20 border-2 border-primary shadow-sm' 
+                      : 'bg-[#192633] border border-[#324d67] opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <Bike size={24} className={vehicleType === 'bike' ? 'text-primary' : 'text-white'} />
+                    <span className={`text-sm ${vehicleType === 'bike' ? 'text-white font-semibold' : 'text-[#92adc9] font-medium'}`}>Bike</span>
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setVehicleType('car')}
+                    className={`flex flex-col items-center justify-center gap-2 rounded-xl p-3 cursor-pointer transition-all ${
+                      vehicleType === 'car' 
+                      ? 'bg-primary/20 border-2 border-primary shadow-sm' 
+                      : 'bg-[#192633] border border-[#324d67] opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <Car size={24} className={vehicleType === 'car' ? 'text-primary' : 'text-white'} />
+                    <span className={`text-sm ${vehicleType === 'car' ? 'text-white font-semibold' : 'text-[#92adc9] font-medium'}`}>Carro</span>
+                  </button>
+                </div>
               </div>
-            </div>
-            <Button type="submit" className="w-full h-12 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl mt-6">
+
+              {/* Status Toggle */}
+              <div className="px-4 py-2">
+                <div className="flex items-center justify-between p-4 rounded-lg bg-[#192633] border border-[#324d67]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center size-10 rounded-full bg-[#111a22] text-[#92adc9]">
+                      <ShieldCheck size={20} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-white font-medium text-base">Status do Entregador</span>
+                      <span className="text-[#92adc9] text-xs">Permitir acesso ao app</span>
+                    </div>
+                  </div>
+                  <Switch 
+                    checked={isActive}
+                    onCheckedChange={setIsActive}
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
+
+          {/* Footer Actions */}
+          <footer className="absolute bottom-0 left-0 right-0 bg-[#111a22] border-t border-[#324d67] p-4 flex flex-col gap-3 backdrop-blur-md bg-opacity-95">
+            <button 
+              onClick={handleSubmit}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-white font-bold text-base hover:bg-blue-600 active:scale-[0.98] transition-all shadow-lg shadow-blue-500/20"
+            >
+              <Plus size={20} />
               {editingDriver ? "Salvar Alterações" : "Adicionar à Equipe"}
-            </Button>
-          </form>
+            </button>
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-transparent py-3 px-6 text-[#92adc9] font-semibold text-base hover:text-white hover:bg-white/5 transition-all"
+            >
+              Cancelar
+            </button>
+          </footer>
         </DialogContent>
       </Dialog>
 
