@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Settings, Group, AccountBalanceWallet, History, Filter } from "lucide-react";
+import { ArrowLeft, Settings, Group, Wallet, History, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDrivers } from "@/contexts/DriversContext";
@@ -153,7 +153,7 @@ const PainelRepasses = () => {
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Acumulado de todos os motoboys</p>
               </div>
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary">
-                <AccountBalanceWallet size={24} />
+                <Wallet size={24} />
               </div>
             </div>
             <Link to="/carteira-motoboy" className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
