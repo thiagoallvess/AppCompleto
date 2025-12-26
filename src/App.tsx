@@ -61,6 +61,7 @@ import HistoricoEntregas from './pages/HistoricoEntregas';
 import PrevisaoProducao from './pages/PrevisaoProducao';
 import Vinculos from './pages/Vinculos';
 import Monitoramento from './pages/Monitoramento';
+import PerfilMotoboy from './pages/PerfilMotoboy';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -126,6 +127,7 @@ function App() {
                               <Route path="/previsao-producao" element={<PrevisaoProducao />} />
                               <Route path="/vinculos" element={<Vinculos />} />
                               <Route path="/monitoramento" element={<Monitoramento />} />
+                              <Route path="/perfil-motoboy" element={<PerfilMotoboy />} />
                               <Route path="*" element={<NotFound />} />
                             </Routes>
                           </EquipmentProvider>
