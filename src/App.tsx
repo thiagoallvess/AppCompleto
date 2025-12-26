@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
 import Cashback from "./pages/Cashback";
 import Indicacao from "./pages/Indicacao";
 import MeusPedidos from "./pages/MeusPedidos";
@@ -81,6 +82,7 @@ const App = () => (
                               <Route path="/product-details" element={<ProductDetails />} />
                               <Route path="/cart" element={<Cart />} />
                               <Route path="/checkout" element={<Checkout />} />
+                              <Route path="/order-success" element={<OrderSuccess />} />
                               <Route path="/cashback" element={<Cashback />} />
                               <Route path="/indicacao" element={<Indicacao />} />
                               <Route path="/meus-pedidos" element={<MeusPedidos />} />

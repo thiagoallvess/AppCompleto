@@ -1,6 +1,7 @@
 import { ArrowLeft, Filter, Edit, AlertTriangle, Package, Factory, IceCream, ChefHat, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import EditStockParamsModal from "@/components/EditStockParamsModal";
 
 interface CriticalStockItem {
   id: string;
@@ -70,6 +71,9 @@ const mockItems: CriticalStockItem[] = [
 
 const EstoqueCritico = () => {
   const [activeFilter, setActiveFilter] = useState("Todos");
+  const [selectedItem, setSelectedItem] = useState<CriticalStockItem | null>(null);
+  const [isParamsModalOpen, setIsParamsModalOpen] = useState(false);
+  
   const filters = ["Todos", "Insumos", "Produtos Finais", "Embalagens"];
 
   const filteredItems = mockItems.filter(item => {
@@ -109,9 +113,13 @@ const EstoqueCritico = () => {
     };
   };
 
+  const handleEditParams = (item: CriticalStockItem) => {
+    setSelectedItem(item);
+    setIsParamsModalOpen(true);
+  };
+
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
-      {/* Header */}
       <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
         <Link
           to="/gestao-estoque"
@@ -125,12 +133,9 @@ const EstoqueCritico = () => {
         </button>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col gap-6 p-4 pb-24 max-w-4xl mx-auto">
-        {/* Stats Overview */}
         <section aria-label="Resumo de Status">
           <div className="grid grid-cols-2 gap-3">
-            {/* Critical Card */}
             <div className="flex flex-col gap-3 p-4 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700/50 shadow-sm relative overflow-hidden group">
               <div className="absolute right-0 top-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                 <AlertTriangle className="text-red-500" size={40} />
@@ -144,7 +149,6 @@ const EstoqueCritico = () => {
                 <p className="text-xs text-red-600 dark:text-red-400 font-medium mt-1">Itens abaixo do mínimo</p>
               </div>
             </div>
-            {/* Alert Card */}
             <div className="flex flex-col gap-3 p-4 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700/50 shadow-sm relative overflow-hidden group">
               <div className="absolute right-0 top-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                 <AlertTriangle className="text-amber-500" size={40} />
@@ -161,7 +165,6 @@ const EstoqueCritico = () => {
           </div>
         </section>
 
-        {/* Filters (Chips) */}
         <section aria-label="Filtros" className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
           {filters.map(filter => (
             <button
@@ -178,7 +181,6 @@ const EstoqueCritico = () => {
           ))}
         </section>
 
-        {/* Inventory List */}
         <section aria-label="Lista de Itens" className="flex flex-col gap-4">
           <div className="flex items-center justify-between px-1">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Itens Monitorados ({filteredItems.length})</h2>
@@ -201,11 +203,12 @@ const EstoqueCritico = () => {
                       </span>
                     </div>
                   </div>
-                  <Link to={`/detalhes-insumo?id=${item.id}`}>
-                    <button className="text-slate-400 hover:text-primary transition-colors">
-                      <Edit size={20} />
-                    </button>
-                  </Link>
+                  <button 
+                    onClick={() => handleEditParams(item)}
+                    className="text-slate-400 hover:text-primary transition-colors"
+                  >
+                    <Edit size={20} />
+                  </button>
                 </div>
                 <div className="grid grid-cols-3 gap-2 mt-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                   <div className="flex flex-col">
@@ -234,25 +237,9 @@ const EstoqueCritico = () => {
               </div>
             );
           })}
-          
-          {filteredItems.length === 0 && (
-            <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-              Nenhum item encontrado com o filtro ativo.
-            </div>
-          )}
         </section>
       </main>
 
-      {/* Floating Action Button for Adding New Item/Rule */}
-      <div className="fixed bottom-20 right-6 z-40">
-        <Link to="/add-insumo">
-          <button className="group flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-background-dark">
-            <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
-          </button>
-        </Link>
-      </div>
-
-      {/* Bottom Navigation (Simplified for Context) */}
       <nav className="fixed bottom-0 w-full bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-30">
         <Link to="/visao-geral" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
           <span className="material-symbols-outlined">dashboard</span>
@@ -271,6 +258,12 @@ const EstoqueCritico = () => {
           <span className="text-[10px] font-medium">Ajustes</span>
         </Link>
       </nav>
+
+      <EditStockParamsModal 
+        isOpen={isParamsModalOpen} 
+        onClose={() => setIsParamsModalOpen(false)} 
+        item={selectedItem} 
+      />
     </div>
   );
 };

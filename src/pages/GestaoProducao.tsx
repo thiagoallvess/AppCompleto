@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Plus, Search, MoreVertical, Package, TrendingUp, DollarSign, Calendar, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Search, MoreVertical, Package, TrendingUp, DollarSign, Calendar, Edit, Trash2, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,13 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { showSuccess } from "@/utils/toast";
+import ProductionFilterModal from "@/components/ProductionFilterModal";
 
 const GestaoProducao = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [productionLots, setProductionLots] = useState<any[]>([]);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  // Carregar dados reais do localStorage
   useEffect(() => {
     const loadLots = () => {
       const storedLots = localStorage.getItem('productionLots');
@@ -37,13 +38,15 @@ const GestaoProducao = () => {
     }
   };
 
+  const handleApplyFilters = (filters: any) => {
+    setActiveFilter(filters.status);
+    // In a real app, we would also filter by period
+  };
+
   const filteredLots = productionLots.filter(lot => {
     const matchesSearch = lot.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          lot.id.toString().includes(searchTerm.toLowerCase());
-    const matchesFilter = activeFilter === "Todos" ||
-                         (activeFilter === "Em Produção" && lot.status === "Em Produção") ||
-                         (activeFilter === "Finalizado" && lot.status === "Finalizado") ||
-                         (activeFilter === "Em Estoque" && lot.status === "Em Estoque");
+    const matchesFilter = activeFilter === "Todos" || lot.status === activeFilter;
     return matchesSearch && matchesFilter;
   });
 
@@ -64,7 +67,6 @@ const GestaoProducao = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
@@ -78,7 +80,13 @@ const GestaoProducao = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight">Gestão de Produção</h1>
           </div>
         </div>
-        <div className="flex items-center justify-end pr-4">
+        <div className="flex items-center justify-end pr-4 gap-2">
+          <button 
+            onClick={() => setIsFilterModalOpen(true)}
+            className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <Filter size={20} />
+          </button>
           <Link
             to="/add-producao"
             className="flex items-center justify-center size-10 rounded-full text-primary hover:bg-primary/10 transition-colors"
@@ -88,7 +96,6 @@ const GestaoProducao = () => {
         </div>
       </header>
 
-      {/* Search Bar */}
       <div className="px-4 py-4 w-full">
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -104,7 +111,6 @@ const GestaoProducao = () => {
         </div>
       </div>
 
-      {/* Stats Summary */}
       <div className="px-4 py-4 grid grid-cols-3 gap-3">
         <div className="bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
@@ -135,7 +141,6 @@ const GestaoProducao = () => {
         </div>
       </div>
 
-      {/* Filter Chips */}
       <div className="w-full overflow-x-auto no-scrollbar pb-2 pl-4 pr-4">
         <div className="flex gap-3 min-w-max">
           {filters.map((filter) => (
@@ -154,7 +159,6 @@ const GestaoProducao = () => {
         </div>
       </div>
 
-      {/* Production Lots List */}
       <div className="flex-1 px-4 pb-20 space-y-3">
         <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 mt-2">Lotes Recentes</h3>
         
@@ -235,7 +239,6 @@ const GestaoProducao = () => {
         )}
       </div>
 
-      {/* Floating Action Button */}
       <Link
         to="/add-producao"
         className="fixed bottom-20 right-4 w-14 h-14 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-all active:scale-95 z-30"
@@ -243,7 +246,6 @@ const GestaoProducao = () => {
         <Plus size={28} />
       </Link>
 
-      {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800/80 backdrop-blur-lg bg-opacity-95">
         <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
           <span className="material-symbols-outlined text-[24px]">dashboard</span>
@@ -262,6 +264,12 @@ const GestaoProducao = () => {
           <span className="text-[10px] font-medium">Finanças</span>
         </Link>
       </nav>
+
+      <ProductionFilterModal 
+        isOpen={isFilterModalOpen} 
+        onClose={() => setIsFilterModalOpen(false)} 
+        onApply={handleApplyFilters} 
+      />
     </div>
   );
 };
