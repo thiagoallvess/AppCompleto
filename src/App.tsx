@@ -40,6 +40,7 @@ import GestaoDespesas from "./pages/GestaoDespesas";
 import AddDespesa from "./pages/AddDespesa";
 import Vinculos from "./pages/Vinculos";
 import AlertasReposicao from "./pages/AlertasReposicao";
+import ListaCompras from "./pages/ListaCompras";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -104,6 +105,7 @@ const App = () => (
                             <Route path="/add-despesa" element={<AddDespesa />} />
                             <Route path="/vinculos" element={<Vinculos />} />
                             <Route path="/alertas-reposicao" element={<AlertasReposicao />} />
+                            <Route path="/lista-compras" element={<ListaCompras />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                         </BrowserRouter>
