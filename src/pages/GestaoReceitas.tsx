@@ -48,6 +48,14 @@ const GestaoReceitas = () => {
   const finishedRecipes = recipes.filter(r => !r.isDraft).length;
   const draftRecipes = recipes.filter(r => r.isDraft).length;
 
+  // Calcular custo médio das receitas filtradas
+  const averageCost = filteredRecipes.length > 0 
+    ? filteredRecipes.reduce((sum, recipe) => {
+        const displayCost = realCosts[recipe.name] || recipe.cost || 0;
+        return sum + displayCost;
+      }, 0) / filteredRecipes.length
+    : 0;
+
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       {/* Header */}
@@ -109,8 +117,8 @@ const GestaoReceitas = () => {
       {/* Stats Summary */}
       <div className="px-4 mb-2">
         <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Visão Geral</p>
-        <div className="flex gap-4 mt-2">
-          <div className="flex flex-1 flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-slate-200 dark:border-slate-700">
+        <div className="flex gap-4 mt-2 overflow-x-auto no-scrollbar">
+          <div className="flex flex-1 min-w-[120px] flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-1">
               <ChefHat className="text-primary" size={20} />
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total</span>
@@ -119,7 +127,7 @@ const GestaoReceitas = () => {
               <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{totalRecipes}</p>
             </div>
           </div>
-          <div className="flex flex-1 flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-1 min-w-[120px] flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-1">
               <Package className="text-green-500" size={20} />
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Finalizadas</span>
@@ -128,13 +136,22 @@ const GestaoReceitas = () => {
               <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{finishedRecipes}</p>
             </div>
           </div>
-          <div className="flex flex-1 flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-1 min-w-[120px] flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-1">
               <Clock className="text-amber-500" size={20} />
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rascunhos</span>
             </div>
             <div>
               <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{draftRecipes}</p>
+            </div>
+          </div>
+          <div className="flex flex-1 min-w-[120px] flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-2 mb-1">
+              <DollarSign className="text-blue-500" size={20} />
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Custo Médio</span>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">R$ {averageCost.toFixed(2)}</p>
             </div>
           </div>
         </div>
