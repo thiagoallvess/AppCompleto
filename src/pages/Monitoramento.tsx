@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Menu, Search, Navigation, MapPin, Truck, Clock, ArrowRight, User, MoreVertical, Layers, MyLocation } from "lucide-react";
+import { ArrowLeft, Menu, Search, Navigation, MapPin, Truck, Clock, ArrowRight, User, MoreVertical, Layers, LocateFixed } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useOrders } from "@/contexts/OrdersContext";
 import { useDrivers } from "@/contexts/DriversContext";
@@ -72,7 +72,7 @@ const Monitoramento = () => {
           {/* Map Controls */}
           <div className="absolute right-4 bottom-[45%] flex flex-col gap-2 z-10">
             <button className="size-10 bg-surface-dark/90 backdrop-blur rounded-lg flex items-center justify-center text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
-              <MyLocation size={20} />
+              <LocateFixed size={20} />
             </button>
             <button className="size-10 bg-surface-dark/90 backdrop-blur rounded-lg flex items-center justify-center text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
               <Layers size={20} />
