@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Settings, Edit, Badge, TwoWheeler, History, LogOut, PowerSettingsNew, Star } from "lucide-react";
+import { ArrowLeft, Settings, Edit, Badge, History, LogOut, Power, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -53,7 +53,7 @@ const PerfilMotoboy = () => {
         <section className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-              <PowerSettingsNew size={24} />
+              <Power size={24} />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold text-gray-900 dark:text-white">Status Online</span>
@@ -101,7 +101,7 @@ const PerfilMotoboy = () => {
           <button className="w-full bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 flex items-center justify-between group active:scale-[0.99] transition-transform">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-300 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                <TwoWheeler size={24} />
+                <span className="material-symbols-outlined">two_wheeler</span>
               </div>
               <div className="flex flex-col items-start">
                 <span className="text-base font-semibold text-gray-900 dark:text-white">Veículo</span>
