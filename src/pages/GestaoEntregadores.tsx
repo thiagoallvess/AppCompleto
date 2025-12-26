@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, LocalShipping, Moon, Plus } from "lucide-react";
+import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDrivers, Driver } from "@/contexts/DriversContext";
@@ -164,7 +164,7 @@ const GestaoEntregadores = () => {
                   <div>
                     <h3 className="font-bold text-slate-900 dark:text-white">{driver.name}</h3>
                     <div className={`flex items-center gap-1 text-xs font-medium ${getStatusColor(driver.status)}`}>
-                      {driver.status === 'route' ? <LocalShipping size={12} className="fill-current" /> : 
+                      {driver.status === 'route' ? <Truck size={12} className="fill-current" /> : 
                        driver.status === 'online' ? <Wifi size={12} /> : <Moon size={12} />}
                       {getStatusLabel(driver.status)}
                     </div>
