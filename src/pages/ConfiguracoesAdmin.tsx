@@ -1,11 +1,10 @@
-import { ArrowLeft, Home, IceCream, Receipt, Settings, Store, Bolt, HardHat, DollarSign, Gift, Coins } from "lucide-react";
+import { ArrowLeft, Save, MapPin, Store, Target } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { useStore } from "../contexts/StoreContext";
-import { showSuccess } from "../utils/toast";
+import { showSuccess, showError } from "../utils/toast";
 
 const ConfiguracoesAdmin = () => {
   const { 
@@ -25,6 +24,17 @@ const ConfiguracoesAdmin = () => {
   const [tempRewardYou, setTempRewardYou] = useState(referralRewardYou);
   const [tempRewardThem, setTempRewardThem] = useState(referralRewardThem);
   const [tempCashback, setTempCashback] = useState(cashbackPercent);
+
+  // Store address state
+  const [storeAddress, setStoreAddress] = useState(() => {
+    return localStorage.getItem('storeAddress') || '';
+  });
+  const [storeLat, setStoreLat] = useState(() => {
+    return parseFloat(localStorage.getItem('storeLat') || '-23.5505');
+  });
+  const [storeLng, setStoreLng] = useState(() => {
+    return parseFloat(localStorage.getItem('storeLng') || '-46.6333');
+  });
 
   // Gas configurations
   const [gasWeight, setGasWeight] = useState("13");
@@ -52,6 +62,11 @@ const ConfiguracoesAdmin = () => {
     setReferralRewardThem(tempRewardThem);
     setCashbackPercent(tempCashback);
     
+    // Save store address
+    localStorage.setItem('storeAddress', storeAddress);
+    localStorage.setItem('storeLat', storeLat.toString());
+    localStorage.setItem('storeLng', storeLng.toString());
+    
     showSuccess("Todas as configurações foram salvas!");
   };
 
@@ -65,18 +80,42 @@ const ConfiguracoesAdmin = () => {
     }));
   };
 
+  // Geocoding function to convert address to coordinates
+  const geocodeAddress = useCallback(async (address: string) => {
+    if (!address.trim()) return;
+    
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`
+      );
+      const data = await response.json();
+      
+      if (data.status === 'OK' && data.results.length > 0) {
+        const location = data.results[0].geometry.location;
+        setStoreLat(location.lat);
+        setStoreLng(location.lng);
+        showSuccess("Endereço localizado com sucesso!");
+      } else {
+        showError("Endereço não encontrado. Tente ser mais específico.");
+      }
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      showError("Erro ao localizar endereço. Verifique sua conexão.");
+    }
+  }, []);
+
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
             to="/visao-geral"
-            className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="flex items-center justify-center size-10 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft size={24} />
           </Link>
           <div className="flex flex-col">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Administração</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Administração</span>
             <h1 className="text-xl font-bold leading-tight tracking-tight">Configurações</h1>
           </div>
         </div>
@@ -97,10 +136,73 @@ const ConfiguracoesAdmin = () => {
               <span className="text-slate-900 dark:text-white text-sm font-semibold">Loja Aberta</span>
               <span className="text-slate-500 dark:text-slate-400 text-xs">Ative ou desative a loja para receber pedidos.</span>
             </div>
-            <Switch
-              checked={storeOpen}
-              onCheckedChange={setStoreOpen}
-            />
+            <div className="relative flex h-[24px] w-[44px] cursor-pointer items-center rounded-full border-none bg-slate-300 dark:bg-slate-700 p-0.5 transition-all duration-300">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={storeOpen}
+                onChange={(e) => setStoreOpen(e.target.checked)}
+              />
+              <div className={`h-[20px] w-[20px] rounded-full bg-white shadow-sm transform transition-transform ${storeOpen ? 'translate-x-5' : ''}`}></div>
+            </div>
+          </div>
+
+          {/* Store Address Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <MapPin className="text-primary text-lg" />
+              <h4 className="text-slate-900 dark:text-white text-base font-semibold">Endereço da Loja</h4>
+            </div>
+            <div className="space-y-3">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Endereço Completo</label>
+                <div className="flex gap-2">
+                  <input 
+                    className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] text-base font-normal leading-normal transition-all" 
+                    placeholder="Rua das Flores, 123 - Centro, São Paulo - SP" 
+                    value={storeAddress}
+                    onChange={(e) => setStoreAddress(e.target.value)}
+                  />
+                  <Button 
+                    onClick={() => geocodeAddress(storeAddress)}
+                    className="bg-primary hover:bg-primary/90 text-white px-4"
+                  >
+                    <Target size={18} />
+                  </Button>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Digite o endereço completo e clique no ícone para localizar automaticamente.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Latitude</label>
+                  <input 
+                    className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] text-base font-normal leading-normal transition-all" 
+                    type="number"
+                    step="0.000001"
+                    placeholder="-23.5505"
+                    value={storeLat}
+                    onChange={(e) => setStoreLat(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Longitude</label>
+                  <input 
+                    className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] text-base font-normal leading-normal transition-all" 
+                    type="number"
+                    step="0.000001"
+                    placeholder="-46.6333"
+                    value={storeLng}
+                    onChange={(e) => setStoreLng(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                As coordenadas são usadas para calcular distâncias e taxas de entrega automaticamente.
+              </p>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -113,18 +215,18 @@ const ConfiguracoesAdmin = () => {
                 <div key={day.key} className="flex items-center gap-4">
                   <span className="text-sm font-medium text-slate-700 dark:text-slate-300 w-32">{day.label}</span>
                   <div className="flex items-center gap-2 flex-1">
-                    <Input
+                    <input
+                      className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] text-base font-normal leading-normal transition-all" 
                       type="time"
                       value={tempBusinessHours[day.key as keyof typeof tempBusinessHours].open}
                       onChange={(e) => handleTimeChange(day.key, 'open', e.target.value)}
-                      className="h-10 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
                     />
                     <span className="text-slate-500 dark:text-slate-400">até</span>
-                    <Input
+                    <input
+                      className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] text-base font-normal leading-normal transition-all" 
                       type="time"
                       value={tempBusinessHours[day.key as keyof typeof tempBusinessHours].close}
                       onChange={(e) => handleTimeChange(day.key, 'close', e.target.value)}
-                      className="h-10 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
                     />
                   </div>
                 </div>
@@ -136,7 +238,7 @@ const ConfiguracoesAdmin = () => {
         {/* Configurações de Cashback */}
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-            <Coins className="text-primary" size={24} />
+            <span className="material-symbols-outlined text-primary text-xl">savings</span>
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
               Configurações de Cashback
             </h3>
@@ -149,12 +251,12 @@ const ConfiguracoesAdmin = () => {
               Porcentagem de Cashback (%)
             </label>
             <div className="relative max-w-[200px]">
-              <Input
+              <input
                 id="cashback-percent"
                 type="number"
                 value={tempCashback}
                 onChange={(e) => setTempCashback(e.target.value)}
-                className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-10"
+                className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] pr-10 text-base font-normal leading-normal transition-all" 
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
             </div>
@@ -164,7 +266,7 @@ const ConfiguracoesAdmin = () => {
         {/* Configurações de Indicação */}
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-            <Gift className="text-primary" size={24} />
+            <span className="material-symbols-outlined text-primary text-xl">share</span>
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">
               Programa de Indicação
             </h3>
@@ -173,11 +275,11 @@ const ConfiguracoesAdmin = () => {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Recompensa "Pra Você" (%)</label>
               <div className="relative">
-                <Input
+                <input
                   type="number"
                   value={tempRewardYou}
                   onChange={(e) => setTempRewardYou(e.target.value)}
-                  className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-10"
+                  className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] pr-10 text-base font-normal leading-normal transition-all" 
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
               </div>
@@ -185,11 +287,11 @@ const ConfiguracoesAdmin = () => {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Recompensa "Pra Ele" (%)</label>
               <div className="relative">
-                <Input
+                <input
                   type="number"
                   value={tempRewardThem}
                   onChange={(e) => setTempRewardThem(e.target.value)}
-                  className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-10"
+                  className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] pr-10 text-base font-normal leading-normal transition-all" 
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
               </div>
@@ -200,21 +302,21 @@ const ConfiguracoesAdmin = () => {
         {/* Custos de Produção (Gás, Energia, Mão de Obra) */}
         <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-surface-dark p-6 shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-700/50">
-            <Bolt className="text-primary" size={24} />
+            <span className="material-symbols-outlined text-primary text-xl">bolt</span>
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Custos de Produção</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Preço Botijão Gás (R$)</label>
-              <Input value={gasPrice} onChange={(e) => setGasPrice(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
+              <input value={gasPrice} onChange={(e) => setGasPrice(e.target.value)} className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] text-base font-normal leading-normal transition-all" />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Custo kWh Energia (R$)</label>
-              <Input value={energyCost} onChange={(e) => setEnergyCost(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
+              <input value={energyCost} onChange={(e) => setEnergyCost(e.target.value)} className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] text-base font-normal leading-normal transition-all" />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Mão de Obra (R$/hora)</label>
-              <Input value={laborCost} onChange={(e) => setLaborCost(e.target.value)} className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700" />
+              <input value={laborCost} onChange={(e) => setLaborCost(e.target.value)} className="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark h-12 placeholder:text-slate-400 dark:placeholder-slate-600 p-[15px] text-base font-normal leading-normal transition-all" />
             </div>
           </div>
           <Link
@@ -232,7 +334,7 @@ const ConfiguracoesAdmin = () => {
             onClick={handleSaveAllSettings}
             className="bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 px-8"
           >
-            <span className="material-symbols-outlined">save</span>
+            <Save size={20} />
             Salvar Todas as Configurações
           </Button>
         </div>
