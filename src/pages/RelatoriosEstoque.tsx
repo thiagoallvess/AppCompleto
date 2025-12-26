@@ -1,37 +1,115 @@
-import { ArrowLeft, Calendar, Filter, Package, TrendingUp, DollarSign, AlertTriangle, Trash2, Warehouse, BarChart3 } from "lucide-react";
+"use client";
+
+import { ArrowLeft, Filter, TrendingUp, TrendingDown, Star, Clock, Truck, Search, Calendar, ChevronRight, BarChart3, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useStock } from "@/contexts/StockContext";
+import { useProducts } from "@/contexts/ProductsContext";
+import { useOrders } from "@/contexts/OrdersContext";
+import { useExpenses } from "@/contexts/ExpensesContext";
 
 const RelatoriosEstoque = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("30days");
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const { ingredients, packagingItems, getStockMovementsForDisplay } = useStock();
+  const { products } = useProducts();
+  const { orders } = useOrders();
+  const { expenses } = useExpenses();
 
-  const periodFilters = [
-    { key: "30days", label: "30 Dias" },
-    { key: "month", label: "Este Mês" },
-    { key: "quarter", label: "Trimestre" },
-  ];
+  const periods = ["30days", "month", "quarter"];
 
-  const categoryFilters = [
-    { key: "Todos", label: "Todos" },
-    { key: "Insumos", label: "Insumos" },
-    { key: "Produtos Finais", label: "Produtos Finais" },
-    { key: "Embalagens", label: "Embalagens" },
-  ];
+  // Calcular métricas reais
+  const allStockItems = [...ingredients, ...packagingItems];
+  const totalStockValue = allStockItems.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
+  const totalItems = allStockItems.length;
+  
+  // Ocupação: baseado no valor total do estoque vs um valor máximo estimado
+  const maxStockValue = 10000; // Valor máximo estimado para cálculo de ocupação
+  const occupancyRate = Math.min((totalStockValue / maxStockValue) * 100, 100);
 
-  // Mock Data
-  const kpis = [
-    { label: "Ocupação", value: "85%", trend: "+5% vs mês ant.", trendColor: "text-emerald-500", icon: "inventory_2", iconColor: "text-primary" },
-    { label: "Perdas", value: "R$ 45,00", trend: "Vencimentos", trendColor: "text-red-500", icon: "delete_forever", iconColor: "text-red-500" },
-    { label: "Custos Arm.", value: "R$ 340", trend: "Estável", trendColor: "text-slate-400", icon: "warehouse", iconColor: "text-slate-400" },
-    { label: "Giro Estoque", value: "4.2x", trend: "Alta rotatividade", trendColor: "text-emerald-500", icon: "autorenew", iconColor: "text-emerald-500" },
-  ];
+  // Perdas: calcular baseado em itens com status crítico ou perdas registradas
+  const criticalItems = allStockItems.filter(item => item.status === "Crítico");
+  const lossesValue = criticalItems.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
 
+  // Custos de Armazenamento: calcular baseado em despesas de utilidades
+  const storageCosts = expenses
+    .filter(exp => exp.category === "Utilidades" || exp.category === "Operacional")
+    .reduce((sum, exp) => sum + exp.amount, 0);
+
+  // Giro de Estoque: calcular turnover rate baseado em vendas vs estoque médio
+  const soldItems = orders
+    .filter(order => !order.cancelled)
+    .reduce((sum, order) => sum + order.items.length, 0);
+  
+  const avgStockValue = totalStockValue; // Simplificado para este cálculo
+  const turnoverRate = avgStockValue > 0 ? (soldItems / avgStockValue) * 100 : 0;
+
+  // Tendência de Consumo: calcular baseado em movimentações recentes
+  const stockMovements = getStockMovementsForDisplay();
+  const recentMovements = stockMovements.slice(0, 30); // Últimos 30 dias
+  const totalConsumed = recentMovements
+    .filter(m => m.quantity < 0) // Movimentações de saída
+    .reduce((sum, m) => sum + Math.abs(m.quantity), 0);
+
+  // Alertas baseados em dados reais
   const alerts = [
-    { id: 1, name: "Leite Condensado", detail: "Estoque Crítico (2 un)", color: "red", icon: "warning" },
-    { id: 2, name: "Geladinho Ninho", detail: "Vence em 3 dias", color: "orange", icon: "history" },
-    { id: 3, name: "Pedido #1209", detail: "Insumos chegando hoje", color: "blue", icon: "shopping_cart" },
+    ...(criticalItems.length > 0 ? [{
+      id: 1,
+      name: `${criticalItems.length} item(ns) crítico(s)`,
+      detail: "Estoque abaixo do mínimo",
+      color: "red",
+      icon: "warning"
+    }] : []),
+    ...(lossesValue > 0 ? [{
+      id: 2,
+      name: "Perdas identificadas",
+      detail: `R$ ${lossesValue.toFixed(2)} em itens críticos`,
+      color: "orange",
+      icon: "delete_forever"
+    }] : []),
+    ...(totalConsumed > 0 ? [{
+      id: 3,
+      name: "Consumo ativo",
+      detail: `${totalConsumed.toFixed(1)} unidades consumidas`,
+      color: "blue",
+      icon: "trending_down"
+    }] : [])
+  ];
+
+  const kpis = [
+    { 
+      label: "Ocupação", 
+      value: `${occupancyRate.toFixed(0)}%`, 
+      trend: occupancyRate > 80 ? "Alta ocupação" : "Ocupação normal", 
+      trendColor: occupancyRate > 90 ? "text-red-500" : "text-emerald-500", 
+      icon: "inventory_2", 
+      iconColor: occupancyRate > 90 ? "text-red-500" : "text-emerald-500" 
+    },
+    { 
+      label: "Perdas", 
+      value: `R$ ${lossesValue.toFixed(0)}`, 
+      trend: lossesValue > 100 ? "Perdas elevadas" : "Controle adequado", 
+      trendColor: lossesValue > 100 ? "text-red-500" : "text-emerald-500", 
+      icon: "delete_forever", 
+      iconColor: lossesValue > 100 ? "text-red-500" : "text-emerald-500" 
+    },
+    { 
+      label: "Custos Arm.", 
+      value: `R$ ${storageCosts.toFixed(0)}`, 
+      trend: storageCosts > 500 ? "Custos elevados" : "Custos controlados", 
+      trendColor: storageCosts > 500 ? "text-red-500" : "text-emerald-500", 
+      icon: "warehouse", 
+      iconColor: storageCosts > 500 ? "text-red-500" : "text-emerald-500" 
+    },
+    { 
+      label: "Giro Estoque", 
+      value: `${turnoverRate.toFixed(1)}x`, 
+      trend: turnoverRate > 2 ? "Giro saudável" : "Giro lento", 
+      trendColor: turnoverRate > 2 ? "text-emerald-500" : "text-amber-500", 
+      icon: "autorenew", 
+      iconColor: turnoverRate > 2 ? "text-emerald-500" : "text-amber-500" 
+    },
   ];
 
   const getAlertColor = (color: string) => {
@@ -44,172 +122,150 @@ const RelatoriosEstoque = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-        <Link
-          to="/visao-geral"
-          className="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
-        >
-          <ArrowLeft size={24} />
-        </Link>
-        <h1 className="text-lg font-bold leading-tight tracking-tight text-slate-900 dark:text-white">Desempenho de Estoque</h1>
-        <button className="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300">
-          <Calendar size={24} />
-        </button>
-      </header>
+    <div className="bg-background-light dark:bg-background-dark min-h-screen text-slate-900 dark:text-white font-display antialiased">
+      <div className="max-w-4xl mx-auto w-full flex flex-col min-h-screen border-x border-neutral-800/20 dark:border-neutral-800">
+        
+        {/* Header */}
+        <header className="sticky top-0 z-50 flex items-center justify-between p-4 pb-2 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-neutral-800/10 dark:border-neutral-800/50">
+          <Link
+            to="/visao-geral"
+            className="flex size-10 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-white/5 transition-all active:scale-95"
+          >
+            <ArrowLeft size={24} />
+          </Link>
+          <h1 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Desempenho de Estoque</h1>
+          <button className="flex size-10 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-white/5 transition-colors">
+            <Filter size={24} />
+          </button>
+        </header>
 
-      {/* Filters (Chips) */}
-      <div className="w-full overflow-x-auto no-scrollbar py-4 pl-4">
-        <div className="flex gap-3 pr-4">
-          {periodFilters.map(filter => (
+        {/* Date Filters */}
+        <div className="flex gap-3 p-4 overflow-x-auto no-scrollbar">
+          {periods.map(period => (
             <button
-              key={filter.key}
-              onClick={() => setSelectedPeriod(filter.key)}
-              className={`flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 transition-transform active:scale-95 ${
-                selectedPeriod === filter.key
-                  ? "bg-primary text-white shadow-lg shadow-primary/20 font-bold"
-                  : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800"
+              key={period}
+              onClick={() => setSelectedPeriod(period)}
+              className={`flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full px-4 transition active:scale-95 text-sm font-bold ${
+                selectedPeriod === period 
+                ? "bg-primary text-white shadow-lg shadow-primary/20"
+                : "bg-slate-200 dark:bg-surface-highlight text-slate-600 dark:text-neutral-300"
               }`}
             >
-              {filter.label}
-            </button>
-          ))}
-          {categoryFilters.map(filter => (
-            <button
-              key={filter.key}
-              onClick={() => setActiveCategory(filter.key)}
-              className={`flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 transition-transform active:scale-95 ${
-                activeCategory === filter.key
-                  ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold"
-                  : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800"
-              }`}
-            >
-              {filter.label}
+              {period === "30days" ? "30 Dias" : period === "month" ? "Este Mês" : "Trimestre"}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* KPI Grid */}
-      <main className="px-4 pb-2 space-y-6 max-w-4xl mx-auto">
-        <div className="grid grid-cols-2 gap-3">
-          {kpis.map((kpi, index) => (
-            <div key={index} className="flex flex-col gap-2 rounded-xl bg-white dark:bg-surface-dark p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{kpi.label}</span>
-                <span className={`material-symbols-outlined ${kpi.iconColor}`} style={{ fontSize: '20px' }}>{kpi.icon}</span>
+        {/* KPI Grid */}
+        <div className="px-4 pb-2">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+            {kpis.map((stat, idx) => (
+              <div key={idx} className="flex min-w-[140px] flex-1 flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-neutral-800/10 dark:border-neutral-800 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-slate-100 dark:bg-neutral-700/50 rounded-md">
+                    <span className={`material-symbols-outlined ${stat.iconColor}`} style={{ fontSize: '18px' }}>{stat.icon}</span>
+                  </div>
+                  <p className="text-slate-500 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider">{stat.label}</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold tracking-tight">{stat.value}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    <p className={`text-[10px] font-bold ${stat.trendColor}`}>
+                      {stat.trend}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{kpi.value}</p>
-                <p className={`text-xs font-medium flex items-center gap-1 mt-1 ${kpi.trendColor}`}>
-                  {kpi.trendColor !== 'text-slate-400' && (
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-                      {kpi.trendColor === 'text-emerald-500' ? 'trending_up' : 'trending_down'}
-                    </span>
-                  )}
-                  {kpi.trend}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Main Chart: Consumption Trend */}
-        <section className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Tendência de Consumo</h2>
-            <button className="text-primary text-sm font-semibold hover:underline">Detalhes</button>
+            ))}
           </div>
-          <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-end gap-3 mb-6">
-              <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Consumido</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">2.450 un</p>
+        </div>
+
+        {/* Chart Section */}
+        <div className="px-4 py-2">
+          <div className="flex flex-col gap-2 rounded-xl bg-white dark:bg-surface-dark p-5 border border-neutral-800/10 dark:border-neutral-800 shadow-sm">
+            <div className="flex justify-between items-end mb-2">
+              <div className="flex flex-col">
+                <p className="text-slate-500 dark:text-neutral-400 text-sm font-bold uppercase tracking-wider">Tendência de Consumo</p>
+                <p className="text-2xl font-bold mt-1">{totalConsumed.toFixed(1)} Unidades</p>
               </div>
-              <div className="mb-1 rounded-full bg-emerald-500/10 px-2 py-0.5">
-                <p className="text-xs font-bold text-emerald-500">+15%</p>
+              <div className="bg-slate-100 dark:bg-neutral-800 px-2 py-1 rounded text-[10px] font-bold text-slate-500 dark:text-neutral-300">
+                {selectedPeriod === "30days" ? "Últimos 30 dias" : selectedPeriod === "month" ? "Este mês" : "Este trimestre"}
               </div>
             </div>
-            {/* SVG Chart */}
-            <div className="relative h-40 w-full">
-              <svg className="h-full w-full overflow-visible" fill="none" preserveAspectRatio="none" viewBox="0 0 300 100">
-                {/* Grid Lines */}
-                <line opacity="0.3" stroke="#334155" strokeDasharray="4 4" strokeWidth="1" x1="0" x2="300" y1="0" y2="0"></line>
-                <line opacity="0.3" stroke="#334155" strokeDasharray="4 4" strokeWidth="1" x1="0" x2="300" y1="50" y2="50"></line>
-                <line opacity="0.3" stroke="#334155" strokeDasharray="4 4" strokeWidth="1" x1="0" x2="300" y1="100" y2="100"></line>
-                {/* Gradient Definition */}
+            
+            {/* SVG Chart Simulation */}
+            <div className="w-full h-[120px] relative overflow-hidden mt-4">
+              <svg className="h-full w-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 478 150" width="100%">
                 <defs>
-                  <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#1173d4" stopOpacity="0.3"></stop>
-                    <stop offset="100%" stopColor="#1173d4" stopOpacity="0"></stop>
+                  <linearGradient id="chart_grad" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor="#137fec" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#137fec" stopOpacity="0" />
                   </linearGradient>
                 </defs>
-                {/* Area Path */}
-                <path d="M0,70 C40,70 40,30 80,30 C120,30 120,60 160,60 C200,60 200,20 240,20 C280,20 280,50 300,50 V100 H0 Z" fill="url(#chartGradient)"></path>
-                {/* Stroke Path */}
-                <path d="M0,70 C40,70 40,30 80,30 C120,30 120,60 160,60 C200,60 200,20 240,20 C280,20 280,50 300,50" fill="none" stroke="#1173d4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3"></path>
-                {/* Data Points */}
-                <circle cx="80" cy="30" fill="#1173d4" r="4" stroke="#101922" strokeWidth="2"></circle>
-                <circle cx="160" cy="60" fill="#1173d4" r="4" stroke="#101922" strokeWidth="2"></circle>
-                <circle cx="240" cy="20" fill="#1173d4" r="4" stroke="#101922" strokeWidth="2"></circle>
+                <path d="M0 100 L0 70 L16.6 60 L33.2 80 L50 40 L66.6 50 L83.2 30 L100 45 L100 100 Z" fill="url(#chart_grad)" />
+                <path d="M0 70 L16.6 60 L33.2 80 L50 40 L66.6 50 L83.2 30 L100 45" fill="none" stroke="#137fec" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
               </svg>
             </div>
-            <div className="mt-4 flex justify-between px-2">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Sem 1</span>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Sem 2</span>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Sem 3</span>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Sem 4</span>
+            <div className="flex justify-between mt-2 px-1">
+              {["Sem 1", "Sem 2", "Sem 3", "Sem 4"].map(s => (
+                <p key={s} className="text-slate-400 dark:text-neutral-500 text-[10px] font-bold uppercase tracking-wider">{s}</p>
+              ))}
             </div>
           </div>
-        </section>
+        </div>
 
         {/* Alerts / Action Items */}
-        <section className="mt-8">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Alertas de Estoque</h2>
+        <section className="px-4 py-4">
+          <h2 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white mb-3">Alertas de Estoque</h2>
           <div className="flex flex-col gap-3">
             {alerts.map(alert => {
               const classes = getAlertColor(alert.color);
               return (
-                <div key={alert.id} className={`flex items-center gap-4 rounded-xl bg-white dark:bg-surface-dark p-3 pr-4 border-l-4 ${classes.border} border border-slate-200 dark:border-slate-800 shadow-sm`}>
+                <div key={alert.id} className={`flex items-center gap-4 rounded-xl bg-white dark:bg-surface-dark p-4 pr-4 border-l-4 ${classes.border} border border-slate-200 dark:border-slate-800 shadow-sm`}>
                   <div className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${classes.bg}`}>
                     <span className={`material-symbols-outlined ${classes.text}`}>{alert.icon}</span>
                   </div>
-                  <div className="flex flex-1 flex-col">
+                  <div className="flex-1">
                     <p className="text-base font-bold text-slate-900 dark:text-white">{alert.name}</p>
                     <p className={`text-sm ${classes.detailText}`}>{alert.detail}</p>
                   </div>
-                  <Link to="/alertas-reposicao">
+                  <Link to="/estoque-critico">
                     <button className="flex size-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 active:bg-slate-200 dark:active:bg-slate-700">
-                      <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>chevron_right</span>
+                      <ChevronRight size={16} />
                     </button>
                   </Link>
                 </div>
               );
             })}
+            {alerts.length === 0 && (
+              <div className="text-center py-8 opacity-50">
+                <p>Nenhum alerta ativo no momento.</p>
+              </div>
+            )}
           </div>
         </section>
-      </main>
 
-      {/* Bottom Navigation (Simplified for Context) */}
-      <nav className="fixed bottom-0 w-full bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-30">
-        <Link to="/visao-geral" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">dashboard</span>
-          <span className="text-[10px] font-medium">Painel</span>
-        </Link>
-        <Link to="/gestao-estoque" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">inventory_2</span>
-          <span className="text-[10px] font-medium">Estoque</span>
-        </Link>
-        <Link to="/relatorios" className="flex flex-col items-center gap-1 text-primary">
-          <span className="material-symbols-outlined fill">bar_chart</span>
-          <span className="text-[10px] font-bold">Relatórios</span>
-        </Link>
-        <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">settings</span>
-          <span className="text-[10px] font-medium">Ajustes</span>
-        </Link>
-      </nav>
+        {/* Bottom Navigation */}
+        <nav className="fixed bottom-0 w-full bg-background-light dark:bg-background-dark border-t border-neutral-800/10 dark:border-neutral-800 px-6 py-3 flex justify-between items-center z-30">
+          <Link to="/visao-geral" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">dashboard</span>
+            <span className="text-[10px] font-medium">Painel</span>
+          </Link>
+          <Link to="/gestao-estoque" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">inventory_2</span>
+            <span className="text-[10px] font-medium">Estoque</span>
+          </Link>
+          <Link to="/relatorios" className="flex flex-col items-center gap-1 text-primary">
+            <span className="material-symbols-outlined fill">bar_chart</span>
+            <span className="text-[10px] font-bold">Relatórios</span>
+          </Link>
+          <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">settings</span>
+            <span className="text-[10px] font-medium">Ajustes</span>
+          </Link>
+        </nav>
+
+      </div>
     </div>
   );
 };
