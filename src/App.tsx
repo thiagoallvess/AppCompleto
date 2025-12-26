@@ -1,1 +1,1 @@
-<Route path="/historico-entregas" element={<HistoricoEntregas />} />
+export default App;
