@@ -55,7 +55,7 @@ const GestaoReceitas = () => {
         <div className="flex items-center justify-between px-4 py-3">
           <Link
             to="/visao-geral"
-            className="flex items-center justify-center size-10 rounded-full text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+            className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft size={24} />
           </Link>
@@ -228,26 +228,6 @@ const GestaoReceitas = () => {
           })}
         </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 w-full bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
-        <Link to="/visao-geral" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <ArrowLeft size={20} />
-          <span className="text-[10px] font-medium">Início</span>
-        </Link>
-        <button className="flex flex-col items-center gap-1 text-primary">
-          <ChefHat size={20} />
-          <span className="text-[10px] font-medium">Receitas</span>
-        </button>
-        <Link to="/gestao-producao" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <Package size={20} />
-          <span className="text-[10px] font-medium">Produção</span>
-        </Link>
-        <Link to="/relatorios" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <DollarSign size={20} />
-          <span className="text-[10px] font-medium">Finanças</span>
-        </Link>
-      </nav>
     </div>
   );
 };
