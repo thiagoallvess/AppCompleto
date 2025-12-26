@@ -142,7 +142,7 @@ const GestaoProdutos = () => {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className={`group relative flex flex-col gap-3 bg-white dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-primary/50 dark:hover:border-primary/50 transition-all ${
+              className={`group relative flex flex-col gap-3 bg-white dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:border-primary/50 ${
                 !product.isActive ? "opacity-60 grayscale-[30%]" : ""
               }`}
             >
@@ -160,8 +160,10 @@ const GestaoProdutos = () => {
                   )}
                 </div>
                 <div className="flex flex-col flex-1 min-w-0 justify-center">
-                  <div className="flex items-start justify-between">
-                    <h3 className="text-base font-semibold truncate pr-2 text-slate-800 dark:text-slate-100">
+                  <div className="flex justify-between items-start">
+                    <h3 className={`text-base font-semibold truncate pr-2 text-slate-800 dark:text-slate-100 ${
+                      !product.isActive ? "text-slate-400 dark:text-slate-500" : ""
+                    }`}>
                       {product.name}
                     </h3>
                     
@@ -208,26 +210,6 @@ const GestaoProdutos = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 w-full bg-white/90 dark:bg-surface-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-50">
-        <Link to="/visao-geral" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <ArrowLeft size={20} />
-          <span className="text-[10px] font-medium">Início</span>
-        </Link>
-        <button className="flex flex-col items-center gap-1 text-primary">
-          <IceCream size={20} />
-          <span className="text-[10px] font-medium">Produtos</span>
-        </button>
-        <Link to="/gestao-pedidos" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <Receipt size={20} />
-          <span className="text-[10px] font-medium">Pedidos</span>
-        </Link>
-        <Link to="/configuracoes-admin" className="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-          <Settings size={20} />
-          <span className="text-[10px] font-medium">Ajustes</span>
-        </Link>
-      </nav>
-      
       <AddProdutoModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
