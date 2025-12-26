@@ -106,7 +106,7 @@ const ConfiguracoesEntrega = () => {
                 <div className="relative">
                   <Input 
                     type="number" 
-                    className="w-full h-10 bg-input-dark border border-transparent focus:border-primary rounded text-center text-white text-sm font-bold focus:ring-0 px-2" 
+                    className="w-full h-10 bg-surface-dark border border-transparent focus:border-primary rounded text-center text-white text-sm font-bold focus:ring-0 px-2" 
                     value={config.time}
                     onChange={(e) => handleTimeChange(index, e.target.value)}
                   />
@@ -118,7 +118,7 @@ const ConfiguracoesEntrega = () => {
                   <Input 
                     type="number" 
                     step="0.01" 
-                    className="w-full h-10 bg-input-dark border border-transparent focus:border-primary rounded text-right text-white text-sm font-bold focus:ring-0 pr-4 pl-8" 
+                    className="w-full h-10 bg-surface-dark border border-transparent focus:border-primary rounded text-right text-white text-sm font-bold focus:ring-0 pr-4 pl-8" 
                     value={config.fee.toFixed(2)}
                     onChange={(e) => handleFeeChange(index, e.target.value)}
                   />
