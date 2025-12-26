@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Bell, MapPin, Clock, DollarSign, Bike, CheckCircle, X } from "lucide-react";
+import { Bell, MapPin, Clock, DollarSign, Bike } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { showSuccess, showError } from "@/utils/toast";
@@ -8,7 +8,6 @@ import { showSuccess, showError } from "@/utils/toast";
 const PedidosEntrega = () => {
   const [isOnline, setIsOnline] = useState(true);
 
-  // Mock data for available deliveries
   const availableDeliveries = [
     {
       id: "PED-001",
@@ -50,12 +49,10 @@ const PedidosEntrega = () => {
 
   const handleAcceptOrder = (orderId: string, value: number) => {
     showSuccess(`Corrida aceita! Você receberá R$ ${value.toFixed(2)}`);
-    // In a real app, this would update the order status and assign to driver
   };
 
   const handleRejectOrder = (orderId: string) => {
     showError("Corrida rejeitada");
-    // In a real app, this would remove the order from available list
   };
 
   const toggleOnlineStatus = () => {
@@ -65,7 +62,6 @@ const PedidosEntrega = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-white dark:bg-[#121212] border-x dark:border-[#2a2a2a] overflow-x-hidden shadow-2xl">
-      {/* Top App Bar */}
       <div className="sticky top-0 z-50 bg-white/90 dark:bg-[#121212]/90 backdrop-blur-md border-b border-gray-200 dark:border-[#2a2a2a]">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
@@ -84,7 +80,6 @@ const PedidosEntrega = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Status Toggle */}
             <button 
               onClick={toggleOnlineStatus}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors ${
@@ -98,7 +93,6 @@ const PedidosEntrega = () => {
                 {isOnline ? 'Online' : 'Offline'}
               </span>
             </button>
-            {/* Bell */}
             <button className="flex items-center justify-center size-10 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] transition-colors relative">
               <Bell size={24} />
               <div className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-[#121212]"></div>
@@ -107,9 +101,7 @@ const PedidosEntrega = () => {
         </div>
       </div>
 
-      {/* Scrollable Content */}
       <div className="flex-1 flex flex-col pb-24">
-        {/* Stats Section */}
         <div className="px-4 py-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col p-4 rounded-xl bg-gray-50 dark:bg-[#1e1e1e] border border-gray-100 dark:border-[#2a2a2a]">
@@ -131,7 +123,6 @@ const PedidosEntrega = () => {
           </div>
         </div>
 
-        {/* Header for List */}
         <div className="px-4 pb-2 flex items-center justify-between">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Disponíveis agora</h3>
           <span className="px-2 py-0.5 rounded-md bg-gray-200 dark:bg-[#2a2a2a] text-xs font-bold text-gray-600 dark:text-gray-300">
@@ -139,7 +130,6 @@ const PedidosEntrega = () => {
           </span>
         </div>
 
-        {/* Order List */}
         <div className="flex flex-col gap-4 px-4">
           {availableDeliveries.map((delivery, index) => (
             <div 
@@ -148,7 +138,6 @@ const PedidosEntrega = () => {
                 index === 2 ? 'opacity-90' : ''
               }`}
             >
-              {/* Map/Header Visual */}
               <div 
                 className="h-24 w-full bg-cover bg-center relative" 
                 style={{
@@ -165,9 +154,7 @@ const PedidosEntrega = () => {
                 </div>
               </div>
 
-              {/* Content */}
               <div className="p-4 pt-2">
-                {/* Restaurant & Earnings Row */}
                 <div className="flex justify-between items-end mb-4 border-b border-gray-100 dark:border-[#2a2a2a] pb-4">
                   <div className="flex flex-col">
                     <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">Restaurante</span>
@@ -183,7 +170,6 @@ const PedidosEntrega = () => {
                   </div>
                 </div>
 
-                {/* Address */}
                 <div className="flex gap-3 mb-5">
                   <div className="mt-1 flex items-center justify-center size-8 rounded-full bg-gray-100 dark:bg-[#2a2a2a] shrink-0 text-gray-600 dark:text-gray-300">
                     <MapPin size={18} />
@@ -199,7 +185,6 @@ const PedidosEntrega = () => {
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="grid grid-cols-2 gap-3">
                   <button 
                     onClick={() => handleRejectOrder(delivery.id)}
@@ -218,9 +203,8 @@ const PedidosEntrega = () => {
             </div>
           ))}
         </div>
-      </main>
+      </div>
 
-      {/* Bottom Navigation */}
       <div className="fixed bottom-0 z-50 w-full max-w-md bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-[#2a2a2a]">
         <div className="flex items-center justify-around h-20 pb-4">
           <Link to="/pedidos-entrega" className="flex flex-col items-center gap-1 p-2 text-primary">
