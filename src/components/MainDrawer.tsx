@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History, AccountBalanceWallet, Person } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -37,8 +37,8 @@ const MainDrawer = () => {
   const deliveryMenuItems = [
     { icon: Bike, label: "Pedidos Disponíveis", path: "/pedidos-entrega" },
     { icon: History, label: "Histórico Entregas", path: "/historico-entregas" },
-    { icon: AccountBalanceWallet, label: "Carteira", path: "/carteira-motoboy" },
-    { icon: Person, label: "Perfil", path: "/perfil-motoboy" },
+    { icon: Wallet, label: "Carteira", path: "/carteira-motoboy" },
+    { icon: User, label: "Perfil", path: "/perfil-motoboy" },
   ];
 
   return (
