@@ -1,10 +1,13 @@
 "use client";
 
-import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus } from "lucide-react";
+import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDrivers, Driver } from "@/contexts/DriversContext";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +19,14 @@ import { showSuccess } from "@/utils/toast";
 const GestaoEntregadores = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const { drivers, removeDriver } = useDrivers();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
+  
+  const { drivers, addDriver, updateDriver, removeDriver } = useDrivers();
+
+  // Form states
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState<Driver['status']>("online");
 
   const filters = ["Todos", "Online", "Em Rota", "Offline"];
 
@@ -28,6 +38,42 @@ const GestaoEntregadores = () => {
                          (activeFilter === "Offline" && driver.status === "offline");
     return matchesSearch && matchesFilter;
   });
+
+  const handleOpenAddModal = () => {
+    setEditingDriver(null);
+    setName("");
+    setStatus("online");
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (driver: Driver) => {
+    setEditingDriver(driver);
+    setName(driver.name);
+    setStatus(driver.status);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    if (editingDriver) {
+      updateDriver(editingDriver.id, { name, status });
+      showSuccess(`Entregador "${name}" atualizado!`);
+    } else {
+      const newDriver: Driver = {
+        id: Date.now().toString(),
+        name,
+        status,
+        deliveriesToday: 0,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+        lastLogin: status === 'offline' ? 'Hoje, agora' : undefined
+      };
+      addDriver(newDriver);
+      showSuccess(`"${name}" adicionado à equipe!`);
+    }
+    setIsModalOpen(false);
+  };
 
   const handleDelete = (id: string, name: string) => {
     if (confirm(`Remover "${name}" da equipe?`)) {
@@ -81,7 +127,10 @@ const GestaoEntregadores = () => {
             <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300">
               <MapIcon size={20} />
             </button>
-            <button className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white shadow-lg hover:bg-blue-600 transition-colors">
+            <button 
+              onClick={handleOpenAddModal}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white shadow-lg hover:bg-blue-600 transition-colors"
+            >
               <UserPlus size={20} />
             </button>
           </div>
@@ -178,13 +227,18 @@ const GestaoEntregadores = () => {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-32 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
-                    <DropdownMenuItem className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">
+                    <DropdownMenuItem 
+                      onClick={() => handleOpenEditModal(driver)}
+                      className="flex items-center gap-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800"
+                    >
+                      <Edit size={16} className="text-slate-500" />
                       Editar
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => handleDelete(driver.id, driver.name)}
                       className="flex items-center gap-2 cursor-pointer text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
                     >
+                      <Trash2 size={16} />
                       Remover
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -237,9 +291,58 @@ const GestaoEntregadores = () => {
         </section>
       </main>
 
+      {/* Driver Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-md mx-auto bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800 p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">
+              {editingDriver ? "Editar Entregador" : "Adicionar Entregador"}
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome Completo</Label>
+              <Input 
+                id="name" 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                placeholder="Ex: Roberto Gomes" 
+                required
+                className="bg-gray-50 dark:bg-[#121a21]"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Status Inicial</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['online', 'route', 'offline'] as const).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setStatus(s)}
+                    className={`py-2 text-xs font-bold rounded-lg border transition-all ${
+                      status === s 
+                      ? 'bg-primary border-primary text-white' 
+                      : 'bg-gray-50 dark:bg-[#121a21] border-slate-200 dark:border-slate-800 text-slate-500'
+                    }`}
+                  >
+                    {s === 'online' ? 'Online' : s === 'route' ? 'Em Rota' : 'Offline'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <Button type="submit" className="w-full h-12 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl mt-6">
+              {editingDriver ? "Salvar Alterações" : "Adicionar à Equipe"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-30">
-        <button className="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-blue-600 hover:scale-105 transition-all">
+        <button 
+          onClick={handleOpenAddModal}
+          className="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-blue-600 hover:scale-105 transition-all"
+        >
           <Plus size={28} />
         </button>
       </div>
