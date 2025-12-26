@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Settings, TrendingUp, AccountBalance, SportsMotorsports, Payments } from "lucide-react";
+import { ArrowLeft, Settings, TrendingUp, AccountBalance, SportsMotorsports, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CarteiraMotoboy = () => {
@@ -104,7 +104,7 @@ const CarteiraMotoboy = () => {
         {/* Action Button */}
         <div className="px-4 pb-6">
           <button className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-primary hover:bg-blue-600 transition-colors text-white gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98] transform duration-100">
-            <Payments size={20} />
+            <Wallet size={20} />
             <span className="text-base font-bold tracking-wide">Sacar Dinheiro</span>
           </button>
         </div>
