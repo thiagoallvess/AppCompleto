@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useExpenses, Expense } from "@/contexts/ExpensesContext";
+import { useExpenses, Expense } from "@/contexts/ExpensesProvider";
 import { showSuccess } from "@/utils/toast";
 import AddDespesaModal from "@/components/AddDespesaModal";
 
