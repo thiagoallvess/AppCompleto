@@ -28,6 +28,7 @@ const MainDrawer = () => {
     { icon: Users, label: "Clientes", path: "/clientes" },
     { icon: BarChart, label: "Curva ABC", path: "/curva-abc" },
     { icon: FileText, label: "Relatórios", path: "/relatorios" },
+    { icon: FileText, label: "DRE Completa", path: "/dre-completa" },
     { icon: Truck, label: "Relatórios Entregadores", path: "/relatorios-entregadores" },
     { icon: Map, label: "Configurações Entrega", path: "/configuracoes-entrega" },
     { icon: Settings, label: "Configurações", path: "/configuracoes-admin" },

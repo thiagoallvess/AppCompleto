@@ -53,6 +53,7 @@ import GestaoClientes from './pages/Clientes';
 import DetalhesCliente from './pages/DetalhesCliente';
 import CurvaABC from './pages/CurvaABC';
 import Relatorios from './pages/Relatorios';
+import DRECompleta from './pages/DRECompleta';
 import RelatoriosEntregadores from './pages/RelatoriosEntregadores';
 import ConfiguracoesEntrega from './pages/ConfiguracoesEntrega';
 import ConfiguracoesAdmin from './pages/ConfiguracoesAdmin';
@@ -120,6 +121,7 @@ function App() {
                               <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
                               <Route path="/curva-abc" element={<CurvaABC />} />
                               <Route path="/relatorios" element={<Relatorios />} />
+                              <Route path="/dre-completa" element={<DRECompleta />} />
                               <Route path="/relatorios-entregadores" element={<RelatoriosEntregadores />} />
                               <Route path="/configuracoes-entrega" element={<ConfiguracoesEntrega />} />
                               <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
