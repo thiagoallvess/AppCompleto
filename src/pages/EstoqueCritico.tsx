@@ -1,82 +1,81 @@
-import { ArrowLeft, Filter, Edit, AlertTriangle, Package, Factory, IceCream, ChefHat, Plus } from "lucide-react";
+"use client";
+
+import { ArrowLeft, Filter, Edit, AlertTriangle, Package, IceCream, ChefHat } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useStock } from "@/contexts/StockContext";
+import { useProducts } from "@/contexts/ProductsContext";
 import EditStockParamsModal from "@/components/EditStockParamsModal";
 
-interface CriticalStockItem {
-  id: string;
-  name: string;
-  type: 'Insumo' | 'Produto Final' | 'Embalagem';
-  status: 'Crítico' | 'Alerta';
-  statusColor: 'red' | 'amber';
-  currentStock: string;
-  minStock: string;
-  reorderPoint: string;
-  safetyStock: string;
-  unit: string;
-  leadTime?: string;
-}
-
-const mockItems: CriticalStockItem[] = [
-  {
-    id: '1',
-    name: 'Leite Condensado',
-    type: 'Insumo',
-    status: 'Crítico',
-    statusColor: 'red',
-    currentStock: '18kg',
-    minStock: '20kg',
-    reorderPoint: '35kg',
-    safetyStock: '5kg',
-    unit: 'kg',
-  },
-  {
-    id: '2',
-    name: 'Emulsificante Neutro',
-    type: 'Insumo',
-    status: 'Alerta',
-    statusColor: 'amber',
-    currentStock: '2.1kg',
-    minStock: '2.0kg',
-    reorderPoint: '3.5kg',
-    safetyStock: '0.5kg',
-    unit: 'kg',
-  },
-  {
-    id: '3',
-    name: 'Geladinho Gourmet Ninho',
-    type: 'Produto Final',
-    status: 'Crítico',
-    statusColor: 'red',
-    currentStock: '12 un',
-    minStock: '20 un',
-    reorderPoint: '50 un',
-    safetyStock: '0 un',
-    unit: 'un',
-    leadTime: '1 dia',
-  },
-  {
-    id: '4',
-    name: 'Saquinho 5x24',
-    type: 'Embalagem',
-    status: 'Alerta',
-    statusColor: 'amber',
-    currentStock: '1050 un',
-    minStock: '1000 un',
-    reorderPoint: '2000 un',
-    safetyStock: '200 un',
-    unit: 'un',
-  },
-];
-
 const EstoqueCritico = () => {
+  const { ingredients, packagingItems } = useStock();
+  const { products } = useProducts();
+  
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const [selectedItem, setSelectedItem] = useState<CriticalStockItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isParamsModalOpen, setIsParamsModalOpen] = useState(false);
   
   const filters = ["Todos", "Insumos", "Produtos Finais", "Embalagens"];
 
-  const filteredItems = mockItems.filter(item => {
+  // Processamento dos dados reais
+  const criticalItems = useMemo(() => {
+    const list: any[] = [];
+
+    // 1. Insumos (Ingredientes)
+    ingredients.forEach(item => {
+      if (item.status === "Baixo" || item.status === "Crítico") {
+        list.push({
+          id: item.id,
+          name: item.name,
+          type: 'Insumo',
+          status: item.status,
+          statusColor: item.status === 'Crítico' ? 'red' : 'amber',
+          currentStock: `${item.quantity} ${item.unit}`,
+          minStock: `${item.minQuantity || 0} ${item.unit}`,
+          unit: item.unit,
+          raw: item
+        });
+      }
+    });
+
+    // 2. Embalagens
+    packagingItems.forEach(item => {
+      if (item.status === "Baixo" || item.status === "Crítico") {
+        list.push({
+          id: item.id,
+          name: item.name,
+          type: 'Embalagem',
+          status: item.status,
+          statusColor: item.status === 'Crítico' ? 'red' : 'amber',
+          currentStock: `${item.quantity} ${item.unit}`,
+          minStock: `${item.minQuantity || 0} ${item.unit}`,
+          unit: item.unit,
+          raw: item
+        });
+      }
+    });
+
+    // 3. Produtos Finais (Regra: < 10 unidades é crítico)
+    products.forEach(item => {
+      if (item.isActive && (item.stock || 0) <= 10) {
+        list.push({
+          id: item.id,
+          name: item.name,
+          type: 'Produto Final',
+          status: item.stock <= 5 ? 'Crítico' : 'Baixo',
+          statusColor: item.stock <= 5 ? 'red' : 'amber',
+          currentStock: `${item.stock || 0} un`,
+          minStock: '10 un',
+          unit: 'un',
+          raw: item
+        });
+      }
+    });
+
+    return list;
+  }, [ingredients, packagingItems, products]);
+
+  const filteredItems = criticalItems.filter(item => {
     if (activeFilter === "Todos") return true;
     if (activeFilter === "Insumos" && item.type === "Insumo") return true;
     if (activeFilter === "Produtos Finais" && item.type === "Produto Final") return true;
@@ -84,8 +83,8 @@ const EstoqueCritico = () => {
     return false;
   });
 
-  const totalCritical = mockItems.filter(item => item.status === 'Crítico').length;
-  const totalAlert = mockItems.filter(item => item.status === 'Alerta').length;
+  const totalCritical = criticalItems.filter(item => item.status === 'Crítico').length;
+  const totalAlert = criticalItems.filter(item => item.status === 'Baixo').length;
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -113,14 +112,14 @@ const EstoqueCritico = () => {
     };
   };
 
-  const handleEditParams = (item: CriticalStockItem) => {
+  const handleEditParams = (item: any) => {
     setSelectedItem(item);
     setIsParamsModalOpen(true);
   };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
-      <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
         <Link
           to="/gestao-estoque"
           className="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
@@ -146,7 +145,7 @@ const EstoqueCritico = () => {
               </div>
               <div>
                 <p className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{totalCritical}</p>
-                <p className="text-xs text-red-600 dark:text-red-400 font-medium mt-1">Itens abaixo do mínimo</p>
+                <p className="text-xs text-red-600 dark:text-red-400 font-medium mt-1">Abaixo do mínimo</p>
               </div>
             </div>
             <div className="flex flex-col gap-3 p-4 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700/50 shadow-sm relative overflow-hidden group">
@@ -155,7 +154,7 @@ const EstoqueCritico = () => {
               </div>
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-amber-500"></div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Em Alerta</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Baixo</p>
               </div>
               <div>
                 <p className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{totalAlert}</p>
@@ -220,23 +219,20 @@ const EstoqueCritico = () => {
                     <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{item.minStock}</span>
                   </div>
                   <div className="flex flex-col border-l border-slate-100 dark:border-slate-800 pl-3">
-                    <span className="text-[10px] uppercase text-slate-500 font-semibold mb-0.5">Ressup. (Calc)</span>
-                    <span className="text-sm font-bold text-primary">{item.reorderPoint}</span>
+                    <span className="text-[10px] uppercase text-slate-500 font-semibold mb-0.5">Tipo</span>
+                    <span className="text-sm font-bold text-primary truncate">{item.type}</span>
                   </div>
-                </div>
-                <div className="mt-2 text-xs text-slate-400 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[14px]">shield</span>
-                  Segurança: {item.safetyStock}
-                  {item.leadTime && (
-                    <>
-                      <span className="ml-3 material-symbols-outlined text-[14px]">timer</span>
-                      Lead Time: {item.leadTime}
-                    </>
-                  )}
                 </div>
               </div>
             );
           })}
+          
+          {filteredItems.length === 0 && (
+            <div className="text-center py-12 opacity-50">
+               <Package size={48} className="mx-auto mb-3" />
+               <p>Nenhum item com estoque baixo no momento.</p>
+            </div>
+          )}
         </section>
       </main>
 
