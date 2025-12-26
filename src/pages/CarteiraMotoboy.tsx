@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, TrendingUp, AccountBalance, SportsMotorsports, Wallet } from "lucide-react";
+import { ArrowLeft, TrendingUp, SportsMotorsports, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import SolicitarSaqueModal from "@/components/SolicitarSaqueModal";
@@ -201,7 +201,7 @@ const CarteiraMotoboy = () => {
               className="w-full shadow-2xl shadow-red-500/40 bg-red-500 hover:bg-red-600 text-white rounded-full h-14 pl-6 pr-8 flex items-center gap-3 transition-transform hover:scale-105 active:scale-95"
             >
               <div className="relative">
-                <AccountBalance size={24} />
+                <span className="material-symbols-outlined text-2xl">account_balance</span>
               </div>
               <div className="flex flex-col items-start">
                 <span className="text-sm font-bold leading-none">Processar Repasse Manual (Admin)</span>
