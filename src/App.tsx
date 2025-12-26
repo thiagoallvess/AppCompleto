@@ -43,6 +43,7 @@ import AlertasReposicao from "./pages/AlertasReposicao";
 import ListaCompras from "./pages/ListaCompras";
 import PrevisaoProducao from "./pages/PrevisaoProducao";
 import EstoqueCritico from "./pages/EstoqueCritico";
+import GiroEstoque from "./pages/GiroEstoque";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./contexts/CartContext";
 import { StoreProvider } from "./contexts/StoreContext";
@@ -110,6 +111,7 @@ const App = () => (
                             <Route path="/lista-compras" element={<ListaCompras />} />
                             <Route path="/previsao-producao" element={<PrevisaoProducao />} />
                             <Route path="/estoque-critico" element={<EstoqueCritico />} />
+                            <Route path="/giro-estoque" element={<GiroEstoque />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                         </BrowserRouter>
