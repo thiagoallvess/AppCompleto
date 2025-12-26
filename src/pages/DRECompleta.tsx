@@ -4,9 +4,25 @@ import { ArrowLeft, Share2, TrendingUp, Calendar, ChevronDown, Plus, Minus, Perc
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import DREFilterModal from "@/components/DREFilterModal";
 
 const DRECompleta = () => {
-  const [period, setPeriod] = useState("Mensal");
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [currentPeriod, setCurrentPeriod] = useState("Mensal");
+  const [currentDateRange, setCurrentDateRange] = useState("Out 2023");
+
+  const handleApplyFilters = (period: string, startDate?: string, endDate?: string) => {
+    setCurrentPeriod(period);
+    if (period === "Intervalo Personalizado" && startDate && endDate) {
+      setCurrentDateRange(`${startDate} a ${endDate}`);
+    } else if (period === "Mensal") {
+      setCurrentDateRange("Out 2023");
+    } else if (period === "Trimestral") {
+      setCurrentDateRange("Jul - Set 2023");
+    } else if (period === "Anual") {
+      setCurrentDateRange("2023");
+    }
+  };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
@@ -31,23 +47,16 @@ const DRECompleta = () => {
 
         {/* Filter Chips */}
         <div className="flex gap-2 py-3 overflow-x-auto no-scrollbar items-center max-w-4xl mx-auto">
-          {["Mensal", "Trimestral", "Anual"].map((p) => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`flex h-9 min-w-[80px] shrink-0 items-center justify-center px-4 rounded-full text-sm font-semibold transition-all active:scale-95 ${
-                period === p
-                  ? "bg-primary text-white shadow-lg shadow-primary/20"
-                  : "bg-gray-200 dark:bg-surface-dark text-gray-600 dark:text-text-secondary hover:bg-gray-300 dark:hover:bg-white/10"
-              }`}
-            >
-              {p}
-            </button>
-          ))}
+          <button
+            onClick={() => setIsFilterModalOpen(true)}
+            className="flex h-9 min-w-[80px] shrink-0 items-center justify-center px-4 rounded-full bg-primary text-white text-sm font-semibold shadow-lg shadow-primary/20 transition-transform active:scale-95"
+          >
+            {currentPeriod}
+          </button>
           <div className="w-px h-6 bg-gray-300 dark:bg-white/10 mx-1 shrink-0"></div>
           <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-text-secondary font-medium shrink-0">
             <Calendar size={16} />
-            Out 2023
+            {currentDateRange}
           </div>
         </div>
       </header>
@@ -301,6 +310,12 @@ const DRECompleta = () => {
           </div>
         </div>
       </main>
+
+      <DREFilterModal 
+        isOpen={isFilterModalOpen} 
+        onClose={() => setIsFilterModalOpen(false)} 
+        onApply={handleApplyFilters} 
+      />
     </div>
   );
 };
