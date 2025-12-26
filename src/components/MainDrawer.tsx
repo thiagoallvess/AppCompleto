@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History, AccountBalanceWallet, Person } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -20,17 +20,25 @@ const MainDrawer = () => {
     { icon: Factory, label: "Produção", path: "/gestao-producao" },
     { icon: Package, label: "Estoque/Insumos", path: "/gestao-estoque" },
     { icon: AlertTriangle, label: "Estoque Crítico", path: "/estoque-critico" },
-    { icon: RefreshCw, label: "Giro de Estoque", path: "/giro-estoque" },
     { icon: ShoppingCart, label: "Lista de Compras", path: "/lista-compras" },
-    { icon: Wallet, label: "Despesas", path: "/gestao-despesas" },
+    { icon: TrendingUp, label: "Giro de Estoque", path: "/giro-estoque" },
+    { icon: FileText, label: "Relatórios Estoque", path: "/relatorios-estoque" },
+    { icon: DollarSign, label: "Despesas", path: "/gestao-despesas" },
     { icon: Factory, label: "Equipamentos", path: "/gestao-equipamentos" },
     { icon: Users, label: "Clientes", path: "/clientes" },
     { icon: BarChart, label: "Curva ABC", path: "/curva-abc" },
     { icon: FileText, label: "Relatórios", path: "/relatorios" },
-    { icon: FileText, label: "Relatórios Estoque", path: "/relatorios-estoque" },
-    { icon: Truck, label: "Configurações de Entrega", path: "/configuracoes-entrega" },
+    { icon: Truck, label: "Relatórios Entregadores", path: "/relatorios-entregadores" },
+    { icon: Map, label: "Configurações Entrega", path: "/configuracoes-entrega" },
     { icon: Settings, label: "Configurações", path: "/configuracoes-admin" },
-    { icon: Bike, label: "Pedidos de Entrega", path: "/pedidos-entrega" },
+    { icon: LinkIcon, label: "Vínculos", path: "/vinculos" },
+  ];
+
+  const deliveryMenuItems = [
+    { icon: Bike, label: "Pedidos Disponíveis", path: "/pedidos-entrega" },
+    { icon: History, label: "Histórico Entregas", path: "/historico-entregas" },
+    { icon: AccountBalanceWallet, label: "Carteira", path: "/carteira-motoboy" },
+    { icon: Person, label: "Perfil", path: "/perfil-motoboy" },
   ];
 
   return (
@@ -82,6 +90,28 @@ const MainDrawer = () => {
             <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Admin</p>
             <nav className="flex flex-col gap-1">
               {adminMenuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                  >
+                    <Icon className="text-gray-600 dark:text-gray-400 group-hover:text-primary" size={20} />
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary">
+                      {item.label}
+                    </span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Delivery Section */}
+          <div className="px-4 pt-4 pb-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Entregador</p>
+            <nav className="flex flex-col gap-1">
+              {deliveryMenuItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
