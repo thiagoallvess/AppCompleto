@@ -33,6 +33,7 @@ const MainDrawer = () => {
     { icon: Map, label: "Configurações Entrega", path: "/configuracoes-entrega" },
     { icon: Settings, label: "Configurações", path: "/configuracoes-admin" },
     { icon: LinkIcon, label: "Vínculos", path: "/vinculos" },
+    { icon: Wallet, label: "Painel Repasses", path: "/painel-repasses" },
   ];
 
   const deliveryMenuItems = [
