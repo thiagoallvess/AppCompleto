@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, Warning } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Gift, TrendingUp, Plus, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -20,7 +20,7 @@ const MainDrawer = () => {
     { icon: ChefHat, label: "Receitas", path: "/gestao-receitas" },
     { icon: Factory, label: "Produção", path: "/gestao-producao" },
     { icon: Package, label: "Estoque/Insumos", path: "/gestao-estoque" },
-    { icon: Warning, label: "Alertas de Reposição", path: "/alertas-reposicao" },
+    { icon: AlertTriangle, label: "Alertas de Reposição", path: "/alertas-reposicao" },
     { icon: Wallet, label: "Despesas", path: "/gestao-despesas" },
     { icon: Factory, label: "Equipamentos", path: "/gestao-equipamentos" },
     { icon: Users, label: "Clientes", path: "/clientes" },
