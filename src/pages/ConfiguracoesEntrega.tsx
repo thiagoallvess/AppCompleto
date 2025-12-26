@@ -1,9 +1,10 @@
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, MapPin, Target } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { showSuccess } from "@/utils/toast";
+import { Wrapper, Status } from "@googlemaps/react-wrapper";
 
 const ConfiguracoesEntrega = () => {
   const [deliveryConfigs, setDeliveryConfigs] = useState([
@@ -24,6 +25,11 @@ const ConfiguracoesEntrega = () => {
     { radius: 14.5, time: 68, fee: 24.99 }, { radius: 15, time: 69, fee: 24.99 }
   ]);
 
+  const [selectedRadius, setSelectedRadius] = useState(5);
+  const [center, setCenter] = useState({ lat: -23.5505, lng: -46.6333 }); // São Paulo
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const circleRef = useRef<google.maps.Circle | null>(null);
+
   const handleTimeChange = (index: number, value: string) => {
     const newConfigs = [...deliveryConfigs];
     newConfigs[index].time = parseInt(value) || 0;
@@ -36,9 +42,87 @@ const ConfiguracoesEntrega = () => {
     setDeliveryConfigs(newConfigs);
   };
 
+  const handleRadiusChange = (radius: number) => {
+    setSelectedRadius(radius);
+    if (circleRef.current) {
+      circleRef.current.setRadius(radius * 1000); // Convert km to meters
+    }
+  };
+
   const handleSave = () => {
     // In a real app, save to backend or localStorage
     showSuccess("Configurações de entrega salvas com sucesso!");
+  };
+
+  const render = (status: Status) => {
+    switch (status) {
+      case Status.LOADING:
+        return <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
+          <div className="text-gray-500">Carregando mapa...</div>
+        </div>;
+      case Status.FAILURE:
+        return <div className="flex items-center justify-center h-64 bg-red-50 rounded-lg">
+          <div className="text-red-500">Erro ao carregar mapa</div>
+        </div>;
+      case Status.SUCCESS:
+        return <MapComponent 
+          center={center} 
+          radius={selectedRadius} 
+          onMapLoad={handleMapLoad}
+        />;
+    }
+  };
+
+  const handleMapLoad = useCallback((map: google.maps.Map) => {
+    mapRef.current = map;
+    
+    // Create circle
+    const circle = new google.maps.Circle({
+      strokeColor: '#1976d2',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#1976d2',
+      fillOpacity: 0.1,
+      map,
+      center: center,
+      radius: selectedRadius * 1000,
+    });
+    
+    circleRef.current = circle;
+
+    // Add marker for center
+    new google.maps.Marker({
+      position: center,
+      map,
+      title: 'Sua Loja',
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 8,
+        fillColor: '#dc2626',
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+      }
+    });
+  }, [center, selectedRadius]);
+
+  const MapComponent = ({ center, radius, onMapLoad }: any) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (ref.current && !mapRef.current) {
+        const map = new google.maps.Map(ref.current, {
+          center,
+          zoom: 13,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+        });
+        onMapLoad(map);
+      }
+    }, [center, onMapLoad]);
+
+    return <div ref={ref} className="w-full h-64 rounded-lg" />;
   };
 
   return (
@@ -68,24 +152,43 @@ const ConfiguracoesEntrega = () => {
           </div>
         </div>
 
-        {/* Section 2: Padrão */}
+        {/* Section 2: Map Configuration */}
         <div className="pt-8 px-4">
-          <h3 className="text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Padrão</h3>
-          {/* Delivery Method Field */}
-          <div className="mb-6">
-            <label className="block mb-2 text-sm font-medium text-text-secondary">Método de entrega</label>
-            <div className="flex w-full items-center rounded-lg bg-input-dark border border-transparent focus-within:border-primary/50 transition-colors">
-              <input 
-                className="w-full bg-transparent border-none text-white placeholder-text-secondary h-12 px-4 focus:ring-0 text-base" 
-                readOnly 
-                value="O entregador leva até você agora"
-              />
-              <div className="pr-4 text-text-secondary">
-                <span className="material-symbols-outlined">edit</span>
-              </div>
-            </div>
+          <h3 className="text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Raio de Entrega</h3>
+          
+          {/* Map Container */}
+          <div className="mb-4 rounded-xl overflow-hidden border border-[#333]">
+            <Wrapper apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "YOUR_API_KEY"} render={render}>
+              <div className="w-full h-64 bg-gray-100" />
+            </Wrapper>
           </div>
 
+          {/* Radius Slider */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-text-secondary">Raio de Entrega</label>
+              <span className="text-white font-bold">{selectedRadius} km</span>
+            </div>
+            <input
+              type="range"
+              min="0.5"
+              max="15"
+              step="0.5"
+              value={selectedRadius}
+              onChange={(e) => handleRadiusChange(parseFloat(e.target.value))}
+              className="w-full h-2 bg-surface-dark rounded-lg appearance-none cursor-pointer slider"
+            />
+            <div className="flex justify-between text-xs text-text-secondary mt-1">
+              <span>0.5 km</span>
+              <span>15 km</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 3: Padrão */}
+        <div className="pt-8 px-4">
+          <h3 className="text-white tracking-tight text-xl font-bold leading-tight text-left pb-3">Configurações por Raio</h3>
+          
           {/* Configuration Table Header */}
           <div className="sticky top-[72px] z-10 grid grid-cols-[1fr_1.2fr_1.2fr] gap-2 bg-background-dark py-3 border-b border-[#333] mb-2 text-xs uppercase tracking-wider font-bold text-text-secondary">
             <div className="text-center">Raio (km)</div>
