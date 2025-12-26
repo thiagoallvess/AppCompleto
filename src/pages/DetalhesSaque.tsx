@@ -1,9 +1,24 @@
 "use client";
 
-import { ArrowLeft, HelpCircle } from "lucide-react";
+import { ArrowLeft, HelpCircle, Copy } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { showSuccess } from "@/utils/toast";
 
 const DetalhesSaque = () => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyId = async () => {
+    try {
+      await navigator.clipboard.writeText("#948392");
+      setCopied(true);
+      showSuccess("ID copiado!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
       {/* TopAppBar */}
@@ -11,6 +26,7 @@ const DetalhesSaque = () => {
         <Link
           to="/carteira-motoboy"
           className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-slate-700 dark:text-white"
+          aria-label="Voltar"
         >
           <ArrowLeft size={24} />
         </Link>
@@ -43,8 +59,12 @@ const DetalhesSaque = () => {
               <p className="text-slate-500 dark:text-text-secondary text-xs font-medium uppercase tracking-wider mb-1">ID do Saque</p>
               <div className="flex items-center gap-2">
                 <span className="text-slate-900 dark:text-white font-medium">#948392</span>
-                <button className="text-primary hover:text-primary/80 transition-colors">
-                  <span className="material-symbols-outlined text-[16px]">content_copy</span>
+                <button
+                  onClick={handleCopyId}
+                  className="text-primary hover:text-primary/80 transition-colors"
+                  aria-label="Copiar ID"
+                >
+                  <Copy size={16} />
                 </button>
               </div>
             </div>
