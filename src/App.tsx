@@ -63,6 +63,7 @@ import Enderecos from './pages/Enderecos';
 import AddEndereco from './pages/AddEndereco';
 import EditEndereco from './pages/EditEndereco';
 import ProductDetails from './pages/ProductDetails';
+import ConfiguracoesEntrega from './pages/ConfiguracoesEntrega';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -124,6 +125,7 @@ function App() {
                                   <Route path="/previsao-producao" element={<PrevisaoProducao />} />
                                   <Route path="/relatorios" element={<Relatorios />} />
                                   <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
+                                  <Route path="/configuracoes-entrega" element={<ConfiguracoesEntrega />} />
                                   <Route path="/vinculos" element={<Vinculos />} />
                                   <Route path="/enderecos" element={<Enderecos />} />
                                   <Route path="/add-endereco" element={<AddEndereco />} />
