@@ -1,9 +1,12 @@
 "use client";
 
-import { ArrowLeft, Settings, TrendingUp, AccountBalance, SportsMotorsports, Wallet } from "lucide-react";
+import { ArrowLeft, TrendingUp, AccountBalance, SportsMotorsports, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import SolicitarSaqueModal from "@/components/SolicitarSaqueModal";
 
 const CarteiraMotoboy = () => {
+  const [isSaqueModalOpen, setIsSaqueModalOpen] = useState(false);
   const availableBalance = 345.50;
   const totalEarnings = 2450.00;
 
@@ -142,9 +145,7 @@ const CarteiraMotoboy = () => {
             <ArrowLeft className="text-slate-900 dark:text-white" size={24} />
           </Link>
           <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">Minha Carteira</h2>
-          <button className="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
-            <Settings className="text-slate-900 dark:text-white" size={24} />
-          </button>
+          <div className="size-10"></div>
         </div>
 
         {/* Main Content Scroll Area */}
@@ -169,13 +170,19 @@ const CarteiraMotoboy = () => {
 
           {/* Action Button */}
           <div className="px-4 pb-6 lg:px-6">
-            <button className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-primary hover:bg-blue-600 transition-colors text-white gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98] transform duration-100">
-              <Wallet size={20} />
-              <span className="text-base font-bold tracking-wide">Solicitar Repasse</span>
+            <button 
+              onClick={() => setIsSaqueModalOpen(true)}
+              className="w-full shadow-2xl shadow-primary/40 bg-primary hover:bg-blue-700 text-white rounded-full h-14 pl-6 pr-8 flex items-center gap-3 transition-transform hover:scale-105 active:scale-95"
+            >
+              <div className="relative">
+                <Wallet size={24} />
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 ring-2 ring-primary">{transactions.filter(t => t.type === 'income').length}</span>
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-bold leading-none">Solicitar Repasse</span>
+                <span className="text-[10px] font-medium opacity-80 leading-tight">Repasses semanais gratuitos às terças-feiras • Taxa 1,99% fora do prazo</span>
+              </div>
             </button>
-            <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-2">
-              Repasses semanais gratuitos às terças-feiras • Taxa 1,99% fora do prazo
-            </p>
           </div>
 
           {/* Transactions Header */}
@@ -187,7 +194,7 @@ const CarteiraMotoboy = () => {
           {/* Transactions List */}
           <div className="flex flex-col px-4 gap-3 lg:px-6">
             {transactions.map((transaction) => (
-              <div key={transaction.id} className={`flex items-center gap-4 bg-surface-light dark:bg-surface-dark rounded-xl p-3 border border-slate-100 dark:border-slate-800 shadow-sm ${transaction.type === 'withdrawal' ? 'opacity-80' : ''}`}>
+              <div key={transaction.id} className={`flex items-center gap-4 bg-surface-light dark:bg-surface-dark rounded-xl p-3 border border-slate-100 dark:border-slate-800 shadow-sm ${transaction.type === 'withdrawal' ? 'opacity-90' : ''}`}>
                 <div className={`flex items-center justify-center rounded-full shrink-0 size-12 ${transaction.iconBg}`}>
                   <span className={`material-symbols-outlined ${transaction.iconColor}`}>{transaction.icon}</span>
                 </div>
@@ -231,6 +238,13 @@ const CarteiraMotoboy = () => {
           </Link>
         </div>
       </div>
+
+      {/* Solicitar Saque Modal */}
+      <SolicitarSaqueModal 
+        isOpen={isSaqueModalOpen} 
+        onClose={() => setIsSaqueModalOpen(false)} 
+        availableBalance={availableBalance} 
+      />
     </div>
   );
 };
