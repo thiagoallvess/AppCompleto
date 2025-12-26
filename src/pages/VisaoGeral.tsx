@@ -53,7 +53,7 @@ const VisaoGeral = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 pb-32">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 pb-12">
         {/* Overview Section */}
         <section className="mt-4">
           <div className="flex items-center justify-between pb-3">
@@ -226,33 +226,6 @@ const VisaoGeral = () => {
           </div>
         </section>
       </main>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 border-t border-gray-200 dark:border-gray-800 bg-background-light dark:bg-background-dark/95 backdrop-blur-md pb-safe max-w-7xl mx-auto z-20">
-        <div className="flex justify-around items-center h-16 px-4">
-          <Link to="/visao-geral" className="flex flex-col items-center justify-center w-full h-full text-primary">
-            <Grid3X3 className="filled" size={24} />
-            <span className="text-[10px] font-medium mt-1">Painel</span>
-          </Link>
-          <Link to="/gestao-pedidos" className="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-            <Receipt size={24} />
-            <span className="text-[10px] font-medium mt-1">Pedidos</span>
-          </Link>
-          <div className="relative w-full h-full flex flex-col items-center justify-center group">
-            <Link to="/add-producao" className="flex items-center justify-center size-12 rounded-full bg-primary text-white shadow-lg shadow-primary/30 transform -translate-y-4 transition-transform hover:scale-105 active:scale-95">
-              <Plus size={24} />
-            </Link>
-          </div>
-          <Link to="/gestao-produtos" className="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-            <Package size={24} />
-            <span className="text-[10px] font-medium mt-1">Produtos</span>
-          </Link>
-          <Link to="/perfil" className="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-            <User size={24} />
-            <span className="text-[10px] font-medium mt-1">Perfil</span>
-          </Link>
-        </div>
-      </nav>
     </div>
   );
 };
