@@ -85,7 +85,7 @@ const AddEntregadorModal = ({ isOpen, onClose, driverToEdit }: AddEntregadorModa
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto no-scrollbar bg-[#111a22]">
-          <form onSubmit={handleSubmit} className="pb-24">
+          <form onSubmit={handleSubmit} className="pb-32">
             {/* Avatar Section */}
             <div className="flex flex-col items-center justify-center py-6 gap-3">
               <div className="relative size-24 rounded-full bg-[#192633] border-2 border-dashed border-[#324d67] flex items-center justify-center group cursor-pointer hover:border-[#137fec] transition-colors">
@@ -196,7 +196,7 @@ const AddEntregadorModal = ({ isOpen, onClose, driverToEdit }: AddEntregadorModa
         </div>
 
         {/* Footer */}
-        <footer className="absolute bottom-0 left-0 right-0 bg-[#111a22] border-t border-[#324d67] p-4 flex flex-col gap-3 backdrop-blur-md bg-opacity-95">
+        <footer className="absolute bottom-0 left-0 right-0 bg-[#111a22] border-t border-[#324d67] p-4 flex flex-col gap-3 backdrop-blur-md bg-opacity-95 z-20">
           <Button 
             onClick={handleSubmit}
             className="w-full bg-[#137fec] hover:bg-blue-600 text-white font-bold h-14 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]"
