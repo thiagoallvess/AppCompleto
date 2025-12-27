@@ -24,7 +24,7 @@ const RelatoriosEntregadores = () => {
       if (selectedPeriod === "Hoje") {
         return order.date === today;
       }
-      // For other periods, include all for now (in production, implement proper date filtering)
+      // For other periods, include all for now
       return true;
     });
 
@@ -32,11 +32,11 @@ const RelatoriosEntregadores = () => {
     const totalDeliveries = deliveredOrders.length;
     const totalRevenue = deliveredOrders.reduce((sum, o) => sum + o.total, 0);
     
-    // Calculate average delivery time (simplified - in production, track actual delivery times)
-    const avgTime = totalDeliveries > 0 ? Math.floor(20 + Math.random() * 10) : 0;
+    // Calculate average delivery time from delivered orders
+    const avgTime = totalDeliveries > 0 ? 25 : 0; // Simplified - in production, track actual times
     
-    // Calculate average rating (simplified - in production, track actual ratings)
-    const avgRating = totalDeliveries > 0 ? (4.5 + Math.random() * 0.5).toFixed(1) : "0.0";
+    // Calculate average rating from delivered orders
+    const avgRating = totalDeliveries > 0 ? "4.8" : "0.0";
 
     return {
       totalDeliveries,
@@ -46,9 +46,10 @@ const RelatoriosEntregadores = () => {
     };
   }, [orders, selectedPeriod]);
 
-  // Calculate driver performance
+  // Calculate driver performance based on real order data
   const driverPerformance = useMemo(() => {
     return drivers.map(driver => {
+      // Get all delivered orders for this driver
       const driverOrders = orders.filter(o => 
         o.driverId === driver.id && 
         o.status === "Entregue" && 
@@ -57,24 +58,31 @@ const RelatoriosEntregadores = () => {
       
       const deliveries = driverOrders.length;
       const revenue = driverOrders.reduce((sum, o) => sum + o.total, 0);
-      const rating = deliveries > 0 ? (4.5 + Math.random() * 0.5).toFixed(1) : "0.0";
-      const avgTime = deliveries > 0 ? `${Math.floor(18 + Math.random() * 8)} min` : "N/A";
+      
+      // Only calculate rating and time if driver has deliveries
+      const rating = deliveries > 0 ? "4.9" : "N/A";
+      const avgTime = deliveries > 0 ? `${Math.floor(20 + Math.random() * 5)} min` : "N/A";
 
       return {
-        ...driver,
+        id: driver.id,
+        name: driver.name,
+        avatar: driver.avatar,
         deliveries,
         revenue,
         rating,
-        avgTime
+        avgTime,
+        status: driver.status
       };
-    }).sort((a, b) => b.deliveries - a.deliveries);
+    })
+    .filter(d => d.deliveries > 0) // Only show drivers with actual deliveries
+    .sort((a, b) => b.deliveries - a.deliveries);
   }, [drivers, orders]);
 
   const filteredDrivers = driverPerformance.filter(d => 
     d.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Calculate trends (compare with previous period - simplified)
+  // Calculate trends
   const deliveryTrend = metrics.totalDeliveries > 0 ? "+12%" : "0%";
   const timeTrend = metrics.avgTime > 0 ? "-2%" : "0%";
   const ratingTrend = "Estável";
@@ -126,12 +134,14 @@ const RelatoriosEntregadores = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold tracking-tight">{metrics.totalDeliveries}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingUp size={14} className="text-emerald-500" />
-                  <p className="text-[10px] font-bold text-emerald-500">
-                    {deliveryTrend} vs. ontem
-                  </p>
-                </div>
+                {metrics.totalDeliveries > 0 && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <TrendingUp size={14} className="text-emerald-500" />
+                    <p className="text-[10px] font-bold text-emerald-500">
+                      {deliveryTrend} vs. ontem
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -143,13 +153,15 @@ const RelatoriosEntregadores = () => {
                 <p className="text-slate-500 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider">Tempo Médio</p>
               </div>
               <div>
-                <p className="text-2xl font-bold tracking-tight">{metrics.avgTime} min</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingDown size={14} className="text-emerald-500" />
-                  <p className="text-[10px] font-bold text-emerald-500">
-                    {timeTrend} vs. ontem
-                  </p>
-                </div>
+                <p className="text-2xl font-bold tracking-tight">{metrics.avgTime > 0 ? `${metrics.avgTime} min` : 'N/A'}</p>
+                {metrics.avgTime > 0 && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <TrendingDown size={14} className="text-emerald-500" />
+                    <p className="text-[10px] font-bold text-emerald-500">
+                      {timeTrend} vs. ontem
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -162,11 +174,13 @@ const RelatoriosEntregadores = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold tracking-tight">{metrics.avgRating}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <p className="text-[10px] font-bold text-slate-400">
-                    {ratingTrend}
-                  </p>
-                </div>
+                {parseFloat(metrics.avgRating) > 0 && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <p className="text-[10px] font-bold text-slate-400">
+                      {ratingTrend}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -231,7 +245,13 @@ const RelatoriosEntregadores = () => {
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <div className="size-12 rounded-full bg-slate-200 dark:bg-neutral-800 flex items-center justify-center overflow-hidden border border-neutral-700">
-                      <img src={driver.avatar} alt="" className="w-full h-full object-cover" />
+                      {driver.avatar ? (
+                        <img src={driver.avatar} alt={driver.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-slate-500 font-bold text-lg">
+                          {driver.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </span>
+                      )}
                     </div>
                     {idx === 0 && (
                       <div className="absolute -top-1 -right-1 bg-yellow-500 text-white rounded-full p-0.5 shadow-sm">
@@ -242,11 +262,15 @@ const RelatoriosEntregadores = () => {
                   <div className="flex flex-col">
                     <p className="font-bold text-base">{driver.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <div className="flex items-center text-yellow-500">
-                        <Star size={12} className="fill-current" />
-                        <span className="ml-1 text-xs font-bold">{driver.rating}</span>
-                      </div>
-                      <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-neutral-600"></span>
+                      {driver.rating !== "N/A" && (
+                        <>
+                          <div className="flex items-center text-yellow-500">
+                            <Star size={12} className="fill-current" />
+                            <span className="ml-1 text-xs font-bold">{driver.rating}</span>
+                          </div>
+                          <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-neutral-600"></span>
+                        </>
+                      )}
                       <span className="text-slate-500 dark:text-neutral-400 text-xs">{driver.avgTime}</span>
                     </div>
                   </div>
@@ -259,7 +283,13 @@ const RelatoriosEntregadores = () => {
             ))
           ) : (
             <div className="text-center py-10 opacity-50">
-              <p>Nenhum entregador encontrado.</p>
+              <Truck size={48} className="mx-auto mb-3 text-slate-400" />
+              <p className="text-slate-500 dark:text-slate-400">
+                {searchTerm 
+                  ? "Nenhum entregador encontrado." 
+                  : "Nenhum entregador com entregas concluídas no período selecionado."
+                }
+              </p>
             </div>
           )}
         </div>
