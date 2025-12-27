@@ -84,7 +84,8 @@ const AddEntregadorModal = ({ isOpen, onClose, driverToEdit }: AddEntregadorModa
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto no-scrollbar bg-[#111a22]">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#324d67] scrollbar-track-transparent bg-[#111a22]">
           <form onSubmit={handleSubmit} className="pb-32">
             {/* Avatar Section */}
             <div className="flex flex-col items-center justify-center py-6 gap-3">
@@ -195,7 +196,7 @@ const AddEntregadorModal = ({ isOpen, onClose, driverToEdit }: AddEntregadorModa
           </form>
         </div>
 
-        {/* Footer */}
+        {/* Fixed Footer */}
         <footer className="absolute bottom-0 left-0 right-0 bg-[#111a22] border-t border-[#324d67] p-4 flex flex-col gap-3 backdrop-blur-md bg-opacity-95 z-20">
           <Button 
             onClick={handleSubmit}
