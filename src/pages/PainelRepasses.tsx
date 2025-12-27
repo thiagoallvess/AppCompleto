@@ -207,7 +207,7 @@ const PainelRepasses = () => {
                     <Group size={24} />
                   </div>
                 </div>
-                <Link to="/gestao-entregadores" className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-slate-100 dark:bg-surface-border/50 text-slate-700 dark:text-white text-sm font-semibold hover:bg-slate-200 dark:hover:bg-surface-border transition-colors">
+                <Link to="/gestao-entregadores" className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold hover:opacity-90 transition-all active:scale-[0.98]">
                   Gestão de Entregadores
                   <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </Link>
@@ -303,7 +303,7 @@ const PainelRepasses = () => {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 w-full bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-surface-border pb-safe lg:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 w-full bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-surface-border pb-safe lg:hidden">
         <div className="flex items-center justify-around h-16 max-w-md mx-auto">
           <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary dark:text-slate-500 dark:hover:text-primary transition-colors">
             <span className="material-symbols-outlined text-[24px]">home</span>
