@@ -1,37 +1,40 @@
 "use client";
 
-import { ArrowLeft, Menu, Search, Navigation, MapPin, Truck, Clock, ArrowRight, User, MoreVertical, Layers, LocateFixed } from "lucide-react";
+import { Bell, MapPin, Clock, DollarSign, Bike } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useOrders } from "@/contexts/OrdersContext";
 import { useDrivers } from "@/contexts/DriversContext";
-import { useState } from "react";
-import MainDrawer from "@/components/MainDrawer";
+import MainDrawer from "../components/MainDrawer";
 
 const Monitoramento = () => {
   const { orders } = useOrders();
   const { drivers } = useDrivers();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Stats calculation
-  const pending = orders.filter(o => o.status === "Novo").length;
+  // Cálculos baseados em dados reais
+  const pending = orders.filter(o => o.status === "Novo" || o.status === "Preparo").length;
   const preparing = orders.filter(o => o.status === "Preparo").length;
   const inRoute = orders.filter(o => o.status === "Rota").length;
   const delivered = orders.filter(o => o.status === "Entregue").length;
 
-  const activeDeliveries = orders.filter(o => o.status !== "Entregue" && !o.cancelled);
+  const activeDeliveries = orders.filter(order => order.status !== "Entregue" && !order.cancelled);
+
+  // Filtrar entregadores ativos (online ou em rota)
+  const activeDrivers = drivers.filter(d => d.status === 'online' || d.status === 'route');
 
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden h-screen w-full flex flex-col antialiased">
+    <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased">
       {/* Header */}
-      <header className="flex items-center bg-background-dark p-4 pb-2 justify-between border-b border-white/5 z-20 shrink-0">
-        <div className="flex items-center gap-2">
-            <MainDrawer />
-            <h2 className="text-white text-lg font-bold leading-tight tracking-tight">Monitoramento</h2>
+      <header className="sticky top-0 z-10 flex items-center bg-background-light dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 justify-between border-b border-gray-200 dark:border-gray-800 max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-3">
+          <MainDrawer />
+          <h2 className="text-white text-lg font-bold leading-tight tracking-tight">Monitoramento</h2>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <div className="size-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/40">
-            <User className="text-primary" size={16} />
-          </div>
+        <div className="flex items-center justify-end gap-2">
+          <button className="flex items-center justify-center size-10 rounded-full bg-transparent hover:bg-white/5 transition-colors">
+            <Bell className="text-white" size={24} />
+          </button>
         </div>
       </header>
 
@@ -48,34 +51,28 @@ const Monitoramento = () => {
           ></div>
           <div className="absolute inset-0 bg-gradient-to-b from-background-dark/90 via-transparent to-background-dark/90 pointer-events-none"></div>
           
-          {/* Simulated Markers */}
-          {/* Driver 1 */}
-          <div className="absolute top-[30%] left-[45%] flex flex-col items-center gap-1 cursor-pointer group">
-            <div className="bg-surface-dark px-2 py-1 rounded text-[10px] font-bold shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap mb-1">Carlos Silva</div>
-            <div className="size-10 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-2 border-white z-10 animate-bounce">
-              <Truck size={18} className="text-white" />
+          {/* Marcadores baseados em dados reais */}
+          {activeDrivers.slice(0, 2).map((driver, index) => (
+            <div key={driver.id} className={`absolute ${index === 0 ? 'top-[30%] left-[45%]' : 'top-[45%] left-[20%]'} flex flex-col items-center gap-1 cursor-pointer group`}>
+              <div className="bg-surface-dark px-2 py-1 rounded text-[10px] font-bold shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap mb-1">{driver.name}</div>
+              <div className="size-10 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-2 border-white z-10 animate-bounce">
+                <Bike size={18} className="text-white" />
+              </div>
             </div>
-          </div>
-          
-          {/* Driver 2 */}
-          <div className="absolute top-[45%] left-[20%] flex flex-col items-center gap-1 cursor-pointer group">
-            <div className="bg-surface-dark px-2 py-1 rounded text-[10px] font-bold shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap mb-1">Ana Souza</div>
-            <div className="size-8 bg-surface-dark rounded-full flex items-center justify-center shadow-lg border-2 border-white z-10">
-              <Navigation size={14} className="text-white fill-current" />
-            </div>
-          </div>
+          ))}
 
-          {/* Delivery Points */}
-          <div className="absolute top-[35%] left-[65%] size-3 bg-white rounded-full shadow-md border-2 border-primary"></div>
-          <div className="absolute top-[55%] left-[30%] size-3 bg-white/50 rounded-full shadow-md"></div>
+          {/* Pontos de entrega baseados em pedidos ativos */}
+          {activeDeliveries.slice(0, 2).map((order, index) => (
+            <div key={order.id} className={`absolute ${index === 0 ? 'top-[35%] left-[65%]' : 'top-[55%] left-[30%]'} size-3 bg-white rounded-full shadow-md border-2 border-primary`}></div>
+          ))}
 
           {/* Map Controls */}
           <div className="absolute right-4 bottom-[45%] flex flex-col gap-2 z-10">
             <button className="size-10 bg-surface-dark/90 backdrop-blur rounded-lg flex items-center justify-center text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
-              <LocateFixed size={20} />
+              <span className="material-symbols-outlined">my_location</span>
             </button>
             <button className="size-10 bg-surface-dark/90 backdrop-blur rounded-lg flex items-center justify-center text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
-              <Layers size={20} />
+              <span className="material-symbols-outlined">layers</span>
             </button>
           </div>
         </div>
@@ -84,7 +81,7 @@ const Monitoramento = () => {
         <div className="relative z-10 flex flex-col gap-4 p-4 w-full">
           {/* Search Bar */}
           <div className="w-full bg-surface-dark/90 backdrop-blur-md border border-white/10 rounded-xl flex items-center h-12 px-3 shadow-xl">
-            <Search className="text-slate-400 mr-2" size={18} />
+            <span className="material-symbols-outlined text-slate-400 mr-2">search</span>
             <input 
               className="bg-transparent border-none text-white placeholder-slate-400 text-sm w-full focus:ring-0" 
               placeholder="Buscar pedido ou entregador..." 
@@ -100,30 +97,42 @@ const Monitoramento = () => {
             <div className="flex min-w-[110px] flex-1 flex-col gap-1 rounded-xl p-3 bg-surface-dark/90 backdrop-blur-md border border-white/5 shadow-lg">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-orange-500"></div>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Pendente</p>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Pendentes</p>
               </div>
-              <p className="text-white text-xl font-bold">{pending}</p>
+              <div>
+                <p className="text-white text-2xl font-bold tracking-tight">{pending}</p>
+                <p className="text-primary text-[10px] font-medium mt-1">Aguardando ação</p>
+              </div>
             </div>
             <div className="flex min-w-[110px] flex-1 flex-col gap-1 rounded-xl p-3 bg-surface-dark/90 backdrop-blur-md border border-white/5 shadow-lg">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-yellow-500"></div>
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Preparo</p>
               </div>
-              <p className="text-white text-xl font-bold">{preparing}</p>
+              <div>
+                <p className="text-white text-2xl font-bold tracking-tight">{preparing}</p>
+                <p className="text-slate-400 text-[10px] font-medium mt-1">Na cozinha</p>
+              </div>
             </div>
             <div className="flex min-w-[110px] flex-1 flex-col gap-1 rounded-xl p-3 bg-primary/90 backdrop-blur-md border border-primary/20 shadow-lg shadow-primary/20">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-white animate-pulse"></div>
                 <p className="text-white/90 text-[10px] font-bold uppercase tracking-wider">Rota</p>
               </div>
-              <p className="text-white text-xl font-bold">{inRoute}</p>
+              <div>
+                <p className="text-white text-2xl font-bold tracking-tight">{inRoute}</p>
+                <p className="text-white/80 text-[10px] font-medium mt-1">Em trânsito</p>
+              </div>
             </div>
             <div className="flex min-w-[110px] flex-1 flex-col gap-1 rounded-xl p-3 bg-surface-dark/90 backdrop-blur-md border border-white/5 shadow-lg">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-emerald-500"></div>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Entregue</p>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Entregues</p>
               </div>
-              <p className="text-white text-xl font-bold">{delivered}</p>
+              <div>
+                <p className="text-white text-2xl font-bold tracking-tight">{delivered}</p>
+                <p className="text-emerald-500 text-[10px] font-medium mt-1">Finalizados</p>
+              </div>
             </div>
           </div>
         </div>
@@ -142,21 +151,16 @@ const Monitoramento = () => {
               <p className="text-slate-500 text-xs mt-0.5">Tempo real • {activeDeliveries.length} pedidos</p>
             </div>
             <Link to="/gestao-pedidos" className="text-primary text-sm font-bold flex items-center gap-1 hover:opacity-80 transition-opacity">
-              Ver lista <ArrowRight size={16} />
+              Ver lista <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </Link>
           </div>
 
           {/* List of Deliveries */}
           <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3 scrollbar-thin scrollbar-thumb-slate-800">
-            {activeDeliveries.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10 text-center opacity-40">
-                <Clock size={40} className="mb-2" />
-                <p className="text-sm font-medium">Nenhuma entrega em andamento</p>
-              </div>
-            ) : (
+            {activeDeliveries.length > 0 ? (
               activeDeliveries.map((order) => (
                 <div key={order.id} className="bg-[#161f28] p-4 rounded-2xl border border-white/5 flex flex-col gap-3 shadow-sm hover:border-primary/30 transition-colors">
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`size-10 rounded-xl flex items-center justify-center text-primary border border-primary/20 ${order.status === 'Rota' ? 'bg-primary/20' : 'bg-slate-800/40'}`}>
                         <span className="material-symbols-outlined">{order.statusIcon}</span>
@@ -166,26 +170,24 @@ const Monitoramento = () => {
                         <p className="text-slate-500 text-xs">{order.customer} • {order.status === 'Rota' ? 'Em Trânsito' : 'Na Loja'}</p>
                       </div>
                     </div>
-                    <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                      order.status === 'Rota' ? 'bg-primary/20 text-primary border border-primary/20' : 
-                      order.status === 'Preparo' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-                      'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+                    <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase border ${
+                      order.status === 'Rota' ? 'bg-primary/20 text-primary border-primary/20' : 
+                      order.status === 'Preparo' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                      'bg-orange-500/10 text-orange-500 border-orange-500/20'
                     }`}>
                       {order.status}
                     </div>
                   </div>
                   
-                  <div className="h-px w-full bg-white/5"></div>
-                  
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Truck size={14} className="text-slate-500" />
+                      <span className="material-symbols-outlined text-slate-500 text-sm">schedule</span>
                       <span className="text-slate-300 text-xs font-medium">
                         {order.status === 'Rota' ? 'Entregador em percurso' : 'Aguardando coleta'}
                       </span>
                     </div>
                     {order.eta && (
-                      <div className="flex items-center gap-1.5 text-emerald-400">
+                      <div className="flex items-center gap-1 text-emerald-400">
                         <Clock size={14} />
                         <span className="text-xs font-bold">~{order.eta}</span>
                       </div>
@@ -193,6 +195,11 @@ const Monitoramento = () => {
                   </div>
                 </div>
               ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-center opacity-40">
+                <Clock size={40} className="mb-2" />
+                <p className="text-sm font-medium">Nenhuma entrega em andamento</p>
+              </div>
             )}
           </div>
         </div>
