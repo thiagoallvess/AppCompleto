@@ -34,11 +34,9 @@ interface ExpensesProviderProps {
 export const ExpensesProvider: React.FC<ExpensesProviderProps> = ({ children }) => {
   const [expenses, setExpenses] = useState<Expense[]>(() => {
     const saved = localStorage.getItem('expenses');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', description: 'Contador', amount: 150, category: 'Pessoal', date: new Date().toISOString(), status: 'Pago' },
-      { id: '2', description: 'Energia Elétrica', amount: 85.50, category: 'Utilidades', date: new Date().toISOString(), status: 'Pendente' },
-      { id: '3', description: 'MEI / Impostos', amount: 72, category: 'Impostos', date: new Date().toISOString(), status: 'Pago' }
-    ];
+    if (saved) return JSON.parse(saved);
+    
+    return [];
   });
 
   useEffect(() => {
