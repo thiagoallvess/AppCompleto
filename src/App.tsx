@@ -65,6 +65,7 @@ import Monitoramento from './pages/Monitoramento';
 import PerfilMotoboy from './pages/PerfilMotoboy';
 import CarteiraMotoboy from './pages/CarteiraMotoboy';
 import PainelRepasses from './pages/PainelRepasses';
+import GestaoEntregadores from './pages/GestaoEntregadores';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -134,6 +135,7 @@ function App() {
                               <Route path="/perfil-motoboy" element={<PerfilMotoboy />} />
                               <Route path="/carteira-motoboy" element={<CarteiraMotoboy />} />
                               <Route path="/painel-repasses" element={<PainelRepasses />} />
+                              <Route path="/gestao-entregadores" element={<GestaoEntregadores />} />
                               <Route path="*" element={<NotFound />} />
                             </Routes>
                           </EquipmentProvider>
