@@ -12,70 +12,64 @@ const CarteiraMotoboy = () => {
   const availableBalance = 345.50;
   const totalEarnings = 2450.00;
 
+  // Mock data for payouts (in a real app, this would come from a context)
+  const payouts = [
+    {
+      id: "1",
+      driverName: "João Paulo",
+      driverInitials: "JP",
+      type: "Automático",
+      date: "14 Out • 10:42 AM",
+      grossAmount: 155.00,
+      fee: 5.00,
+      netAmount: 150.00,
+      status: "Concluído",
+      statusColor: "emerald"
+    },
+    {
+      id: "2",
+      driverName: "Maria Silva",
+      driverInitials: "MS",
+      type: "Manual",
+      date: "13 Out • 18:20 PM",
+      grossAmount: 320.50,
+      fee: 0.00,
+      netAmount: 320.50,
+      status: "Pendente",
+      statusColor: "amber"
+    },
+    {
+      id: "3",
+      driverName: "Carlos Almeida",
+      driverInitials: "CA",
+      type: "Automático",
+      date: "12 Out • 09:15 AM",
+      grossAmount: 89.90,
+      fee: 0.00,
+      netAmount: 89.90,
+      status: "Concluído",
+      statusColor: "emerald"
+    },
+    {
+      id: "4",
+      driverName: "Roberto B.",
+      driverInitials: "RB",
+      type: "Automático",
+      date: "11 Out • 14:00 PM",
+      grossAmount: 210.00,
+      fee: 0.00,
+      netAmount: 210.00,
+      status: "Falha",
+      statusColor: "red"
+    }
+  ];
+
   // Mock driver data for admin processing
   const driver = {
     name: "João Carlos",
     balance: 450.00,
     bankAccount: "Nubank (Pix)"
   };
-
-  const transactions = [
-    {
-      id: "123",
-      type: "income",
-      description: "Entrega Pedido #123",
-      amount: 8.00,
-      date: "Hoje, 14:30",
-      restaurant: "Geladinho Gourmet",
-      icon: "sports_motorsports",
-      iconBg: "bg-green-500/10",
-      iconColor: "text-green-500"
-    },
-    {
-      id: "120",
-      type: "income",
-      description: "Entrega Pedido #120",
-      amount: 12.50,
-      date: "Hoje, 11:15",
-      restaurant: "Geladinho Gourmet",
-      icon: "sports_motorsports",
-      iconBg: "bg-green-500/10",
-      iconColor: "text-green-500"
-    },
-    {
-      id: "withdrawal",
-      type: "withdrawal",
-      description: "Saque via PIX",
-      amount: 100.00,
-      date: "Ontem, 18:45",
-      restaurant: "Processado",
-      icon: "account_balance",
-      iconBg: "bg-slate-200 dark:bg-slate-700",
-      iconColor: "text-slate-600 dark:text-slate-300"
-    },
-    {
-      id: "115",
-      type: "income",
-      description: "Entrega Pedido #115",
-      amount: 15.00,
-      date: "Ontem, 16:20",
-      restaurant: "Geladinho Gourmet",
-      icon: "sports_motorsports",
-      iconBg: "bg-green-500/10",
-      iconColor: "text-green-500"
-    },
-    {
-      id: "112",
-      type: "income",
-      description: "Entrega Pedido #112",
-      amount: 9.50,
-      date: "Ontem, 14:10",
-      restaurant: "Geladinho Gourmet",
-      icon: "sports_motorsports",
-      iconBg: "bg-green-500/10",
-      iconColor: "text-green-500"
-    }
-  ];
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark border-x dark:border-[#2a2a2a] overflow-x-hidden shadow-2xl lg:max-w-7xl lg:flex-row lg:min-h-screen">
@@ -149,11 +143,11 @@ const CarteiraMotoboy = () => {
         <div className="flex items-center px-4 pt-6 pb-2 justify-between bg-background-light dark:bg-background-dark z-10 sticky top-0 lg:hidden">
           <Link
             to="/perfil-motoboy"
-            className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-slate-700 dark:text-white"
           >
-            <ArrowLeft className="text-slate-900 dark:text-white" size={24} />
+            <ArrowLeft size={24} />
           </Link>
-          <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">Minha Carteira</h2>
+          <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Minha Carteira</h2>
           <div className="size-10"></div>
         </div>
 
@@ -185,7 +179,7 @@ const CarteiraMotoboy = () => {
             >
               <div className="relative">
                 <Wallet size={24} />
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 ring-2 ring-primary">{transactions.filter(t => t.type === 'income').length}</span>
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 ring-2 ring-primary">{payouts.filter(t => t.type === 'income').length}</span>
               </div>
               <div className="flex flex-col items-start">
                 <span className="text-sm font-bold leading-none">Solicitar Repasse</span>
@@ -211,28 +205,28 @@ const CarteiraMotoboy = () => {
           </div>
 
           {/* Transactions Header */}
-          <div className="flex items-center justify-between px-4 pb-2 pt-2 lg:px-6">
+          <div className="px-4 pb-2 pt-2 lg:px-6">
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Transações Recentes</h3>
-            <button className="text-primary text-sm font-semibold hover:underline">Ver tudo</button>
+            <button className="text-sm font-medium text-primary hover:underline">Ver filtros</button>
           </div>
 
           {/* Transactions List */}
           <div className="flex flex-col px-4 gap-3 lg:px-6">
-            {transactions.map((transaction) => (
-              <div key={transaction.id} className={`flex items-center gap-4 bg-surface-light dark:bg-surface-dark rounded-xl p-3 border border-slate-100 dark:border-slate-800 shadow-sm ${transaction.type === 'withdrawal' ? 'opacity-90' : ''}`}>
-                <div className={`flex items-center justify-center rounded-full shrink-0 size-12 ${transaction.iconBg}`}>
-                  <span className={`material-symbols-outlined ${transaction.iconColor}`}>{transaction.icon}</span>
+            {payouts.map((payout) => (
+              <div key={payout.id} className={`flex items-center gap-4 bg-surface-light dark:bg-surface-dark rounded-xl p-3 border border-slate-100 dark:border-slate-800 shadow-sm ${payout.type === 'withdrawal' ? 'opacity-90' : ''}`}>
+                <div className={`flex items-center justify-center size-10 rounded-full ${payout.iconBg}`}>
+                  <span className={`material-symbols-outlined ${payout.iconColor}`}>{payout.icon}</span>
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-start">
-                    <p className="text-slate-900 dark:text-white text-base font-bold truncate pr-2">{transaction.description}</p>
-                    <p className={`font-bold whitespace-nowrap ${transaction.type === 'income' ? 'text-primary' : 'text-slate-500 dark:text-slate-400'}`}>
-                      {transaction.type === 'income' ? '+' : '-'} R$ {transaction.amount.toFixed(2)}
+                    <p className="text-slate-900 dark:text-white text-base font-bold truncate pr-2">{payout.description}</p>
+                    <p className={`font-bold whitespace-nowrap ${payout.type === 'income' ? 'text-primary' : 'text-slate-500 dark:text-slate-400'}`}>
+                      {payout.type === 'income' ? '+' : '-'} R$ {payout.amount.toFixed(2)}
                     </p>
                   </div>
                   <div className="flex justify-between items-center mt-0.5">
-                    <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">{transaction.date}</p>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-medium">{transaction.restaurant}</span>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">{payout.date}</p>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-medium">{payout.restaurant}</span>
                   </div>
                 </div>
               </div>
@@ -243,22 +237,23 @@ const CarteiraMotoboy = () => {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="fixed bottom-0 z-50 w-full max-w-md bg-surface-light dark:bg-surface-dark border-t border-slate-200 dark:border-slate-800 lg:hidden">
-        <div className="flex items-center justify-around h-20 pb-4 px-2">
-          <Link to="/pedidos-entrega" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-2xl">home</span>
+      <div className="fixed bottom-0 left-0 right-0 z-50 w-full bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-surface-border pb-safe lg:hidden">
+        <div className="flex items-center justify-around h-16 max-w-md mx-auto">
+          <Link to="/pedidos-entrega" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary dark:text-slate-500 dark:hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-[24px]">home</span>
             <span className="text-[10px] font-medium">Início</span>
           </Link>
-          <Link to="/historico-entregas" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-2xl">history</span>
+          <Link to="/historico-entregas" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary dark:text-slate-500 dark:hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-[24px]">history</span>
             <span className="text-[10px] font-medium">Histórico</span>
           </Link>
-          <button className="flex flex-col items-center gap-1 p-2 w-16 text-primary">
-            <span className="material-symbols-outlined text-2xl fill-1">account_balance_wallet</span>
+          <button className="relative flex flex-col items-center gap-1 p-2 w-16 text-primary transition-colors">
+            <span className="absolute -top-1 right-2 w-2 h-2 rounded-full bg-red-500"></span>
+            <span className="material-symbols-outlined text-[24px] fill-current">account_balance_wallet</span>
             <span className="text-[10px] font-bold">Carteira</span>
           </button>
-          <Link to="/perfil-motoboy" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-2xl">person</span>
+          <Link to="/perfil-motoboy" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary dark:text-slate-500 dark:hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-[24px]">person</span>
             <span className="text-[10px] font-medium">Perfil</span>
           </Link>
         </div>
