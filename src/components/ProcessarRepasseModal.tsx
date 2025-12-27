@@ -47,50 +47,42 @@ const ProcessarRepasseModal = ({ isOpen, onClose, driver }: ProcessarRepasseModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-slate-200 dark:border-slate-800 p-0 overflow-hidden shadow-2xl rounded-t-3xl sm:rounded-3xl h-[92vh] sm:h-auto flex flex-col">
-        <DialogHeader className="sticky top-0 z-10 flex flex-col items-center bg-background-light dark:bg-background-dark px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="h-1.5 w-12 rounded-full bg-slate-200 dark:bg-slate-700 mb-4 sm:hidden"></div>
-          <div className="w-full flex justify-between items-center">
-            <DialogTitle className="text-xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
-              Processar Repasse
-            </DialogTitle>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+      <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-none p-0 overflow-hidden shadow-2xl rounded-t-3xl sm:rounded-3xl h-[92vh] sm:h-auto flex flex-col">
+        <DialogHeader className="sticky top-0 z-10 flex flex-col items-center bg-[#111a22] px-6 py-4 border-b border-[#324d67]">
+          <div className="h-1.5 w-12 rounded-full bg-[#324d67] mb-4 sm:hidden"></div>
+          <div className="w-full flex justify-between items-start">
+            <div>
+              <h1 className="text-[#92adc9] text-sm font-medium uppercase tracking-wider mb-1">Processar Repasse</h1>
+              <DialogTitle className="text-white text-2xl font-bold leading-tight">{driver.name}</DialogTitle>
+              <div className="flex items-center gap-1 mt-1">
+                <span className="material-symbols-outlined text-[#137fec] text-sm">verified</span>
+                <span className="text-xs text-[#92adc9]">Motoboy Verificado</span>
+              </div>
+            </div>
+            <button onClick={onClose} className="text-[#92adc9] hover:bg-[#324d67]/30 transition-colors rounded-full p-2">
               <X size={24} />
             </button>
           </div>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto no-scrollbar">
-          {/* Driver Info */}
-          <div className="px-6 py-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-slate-900 dark:text-white text-2xl font-bold leading-tight">{driver.name}</h2>
-                <div className="flex items-center gap-1 mt-1">
-                  <span className="material-symbols-outlined text-primary text-sm">verified</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">Motoboy Verificado</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Balance Card */}
-          <div className="px-6 pb-4">
-            <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-5 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
+          <div className="px-6 py-4">
+            <div className="bg-[#192633] rounded-lg p-5 border border-[#324d67] shadow-sm relative overflow-hidden group">
               <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <span className="material-symbols-outlined text-6xl text-slate-600 dark:text-slate-400">account_balance_wallet</span>
+                <span className="material-symbols-outlined text-6xl text-white">account_balance_wallet</span>
               </div>
-              <p className="text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">Saldo Disponível para Repasse</p>
-              <p className="text-slate-900 dark:text-white text-3xl font-bold tracking-tight">R$ {driver.balance.toFixed(2)}</p>
+              <p className="text-[#92adc9] text-sm font-medium mb-1">Saldo Disponível para Repasse</p>
+              <p className="text-white text-3xl font-bold tracking-tight">R$ {driver.balance.toFixed(2)}</p>
             </div>
           </div>
 
           {/* Amount Input */}
           <div className="px-6 pb-4">
-            <label className="block text-slate-900 dark:text-white text-base font-medium mb-2" htmlFor="amount">Valor a Repassar</label>
+            <label className="block text-white text-base font-medium mb-2" htmlFor="amount">Valor a Repassar</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span className="text-slate-500 dark:text-slate-400 text-lg font-medium">R$</span>
+                <span className="text-[#92adc9] text-lg font-medium">R$</span>
               </div>
               <Input
                 id="amount"
@@ -99,10 +91,10 @@ const ProcessarRepasseModal = ({ isOpen, onClose, driver }: ProcessarRepasseModa
                 placeholder="0,00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full h-14 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary pl-12 text-xl font-semibold"
+                className="w-full bg-[#111a22] border border-[#324d67] rounded-lg py-4 pl-12 pr-4 text-white text-xl font-semibold placeholder:text-[#324d67] focus:border-[#137fec] focus:ring-1 focus:ring-[#137fec] transition-all"
               />
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1">
+            <p className="text-xs text-[#92adc9] mt-2 flex items-center gap-1">
               <span className="material-symbols-outlined text-sm">info</span>
               Valor máximo permitido: R$ {driver.balance.toFixed(2)}
             </p>
@@ -110,58 +102,61 @@ const ProcessarRepasseModal = ({ isOpen, onClose, driver }: ProcessarRepasseModa
 
           {/* Bank Account */}
           <div className="px-6 pb-4">
-            <p className="text-slate-600 dark:text-slate-400 text-sm font-medium mb-2">Conta de Destino</p>
-            <div className="flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 cursor-pointer hover:border-primary transition-colors">
+            <p className="text-[#92adc9] text-sm font-medium mb-2">Conta de Destino</p>
+            <div className="flex items-center justify-between bg-[#192633] border border-[#324d67] rounded-lg p-4 cursor-pointer hover:border-[#92adc9] transition-colors">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                <div className="h-10 w-10 rounded-full bg-[#324d67] flex items-center justify-center text-white">
                   <span className="material-symbols-outlined">account_balance</span>
                 </div>
                 <div>
-                  <p className="text-slate-900 dark:text-white text-sm font-medium">{driver.bankAccount}</p>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs">Chave: ***.***.123-45</p>
+                  <p className="text-white text-sm font-medium">{driver.bankAccount}</p>
+                  <p className="text-[#92adc9] text-xs">Chave: ***.***.123-45</p>
                 </div>
               </div>
-              <span className="material-symbols-outlined text-slate-400 dark:text-slate-500">expand_more</span>
+              <span className="material-symbols-outlined text-[#92adc9]">expand_more</span>
             </div>
           </div>
 
           {/* Calculation */}
           <div className="px-6 pb-6">
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 space-y-3 border border-slate-200 dark:border-slate-700/50">
+            <div className="bg-[#192633]/50 rounded-lg p-4 space-y-3 border border-[#324d67]/50">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-600 dark:text-slate-400">Valor Bruto</span>
-                <span className="text-slate-900 dark:text-white font-medium">R$ {numericAmount.toFixed(2)}</span>
+                <span className="text-[#92adc9]">Valor Bruto</span>
+                <span className="text-white font-medium">R$ {numericAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <span className="text-[#92adc9] flex items-center gap-1">
                   Taxa Admin (1,99%)
                   <span className="material-symbols-outlined text-xs cursor-help" title="Taxa operacional">help</span>
                 </span>
-                <span className="text-red-500 dark:text-red-400 font-medium">- R$ {fee.toFixed(2)}</span>
+                <span className="text-red-400 font-medium">- R$ {fee.toFixed(2)}</span>
               </div>
-              <div className="h-px bg-slate-200 dark:bg-slate-700 my-2"></div>
+              <div className="h-px bg-[#324d67] my-2"></div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-900 dark:text-white font-medium">Valor Líquido a Receber</span>
-                <span className="text-primary text-lg font-bold">R$ {netAmount.toFixed(2)}</span>
+                <span className="text-white font-medium">Valor Líquido a Receber</span>
+                <span className="text-[#137fec] text-lg font-bold">R$ {netAmount.toFixed(2)}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 pt-4 bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800">
-          <Button 
-            onClick={handleConfirm}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-          >
-            <span>Confirmar Repasse</span>
-          </Button>
-          <button 
-            onClick={handleCancel}
-            className="w-full bg-transparent text-slate-600 dark:text-slate-400 font-medium py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors mt-3"
-          >
-            Cancelar
-          </button>
+        <div className="px-6 pt-2 pb-8 bg-[#111a22]">
+          <div className="flex flex-col gap-3">
+            <Button 
+              onClick={handleConfirm}
+              className="w-full bg-[#137fec] hover:bg-[#137fec]/90 text-white font-bold py-4 px-6 rounded-lg shadow-lg shadow-blue-900/20 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined">check_circle</span>
+              Confirmar Repasse
+            </Button>
+            <button 
+              onClick={handleCancel}
+              className="w-full bg-transparent hover:bg-[#324d67]/20 text-[#92adc9] hover:text-white font-medium py-3 px-6 rounded-lg transition-colors border border-transparent hover:border-[#324d67]"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
