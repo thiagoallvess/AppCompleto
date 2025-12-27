@@ -11,14 +11,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, Search, MoreVertical, MapPin, Bike, Wifi, Moon, Plus, UserPlus, Navigation, Info } from "lucide-react";
+import { ArrowLeft, Search, MoreVertical, MapPin, Bike, Wifi, Moon, Plus, UserPlus, Navigation, Info, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import AtribuirPedidoModal from "@/components/AtribuirPedidoModal";
 import DesatribuirPedidoModal from "@/components/DesatribuirPedidoModal";
 import HistoricoEntregasModal from "@/components/HistoricoEntregasModal";
+import AddEntregadorModal from "@/components/AddEntregadorModal";
+import { showSuccess } from "@/utils/toast";
 
 const GestaoEntregadores = () => {
-  const { drivers } = useDrivers();
+  const { drivers, removeDriver } = useDrivers();
   const { orders } = useOrders();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
@@ -28,6 +30,8 @@ const GestaoEntregadores = () => {
   const [isAtribuirOpen, setIsAtribuirOpen] = useState(false);
   const [isDesatribuirOpen, setIsDesatribuirOpen] = useState(false);
   const [isHistoricoOpen, setIsHistoricoOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [driverToEdit, setDriverToEdit] = useState<Driver | null>(null);
 
   const filters = ["Todos", "Online", "Em Rota", "Offline"];
 
@@ -39,6 +43,23 @@ const GestaoEntregadores = () => {
                          (activeFilter === "Offline" && driver.status === "offline");
     return matchesSearch && matchesFilter;
   });
+
+  const handleAddClick = () => {
+    setDriverToEdit(null);
+    setIsAddModalOpen(true);
+  };
+
+  const handleEditClick = (driver: Driver) => {
+    setDriverToEdit(driver);
+    setIsAddModalOpen(true);
+  };
+
+  const handleDelete = (id: string, name: string) => {
+    if (confirm(`Tem certeza que deseja remover o entregador "${name}"?`)) {
+      removeDriver(id);
+      showSuccess(`Entregador "${name}" removido.`);
+    }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -85,7 +106,10 @@ const GestaoEntregadores = () => {
             <Link to="/monitoramento" className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300">
               <MapPin size={24} />
             </Link>
-            <button className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white shadow-lg hover:bg-blue-600 transition-colors">
+            <button 
+              onClick={handleAddClick}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white shadow-lg hover:bg-blue-600 transition-colors"
+            >
               <UserPlus size={24} />
             </button>
           </div>
@@ -182,13 +206,21 @@ const GestaoEntregadores = () => {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800">
+                      <DropdownMenuItem onClick={() => handleEditClick(driver)} className="flex items-center gap-2 cursor-pointer">
+                        <Edit size={16} />
+                        Editar Dados
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => { setSelectedDriver(driver); setIsHistoricoOpen(true); }} className="flex items-center gap-2 cursor-pointer">
-                        <span className="material-symbols-outlined text-[18px]">history</span>
+                        <Info size={16} />
                         Ver Histórico
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => { setSelectedDriver(driver); setIsDesatribuirOpen(true); }} className="flex items-center gap-2 cursor-pointer text-red-500">
-                        <span className="material-symbols-outlined text-[18px]">remove_circle_outline</span>
+                        <Trash2 size={16} />
                         Remover Pedidos
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDelete(driver.id, driver.name)} className="flex items-center gap-2 cursor-pointer text-red-600">
+                        <Trash2 size={16} />
+                        Excluir Entregador
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -243,10 +275,18 @@ const GestaoEntregadores = () => {
         onClose={() => setIsHistoricoOpen(false)} 
         driver={selectedDriver} 
       />
+      <AddEntregadorModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        driverToEdit={driverToEdit}
+      />
 
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-30">
-        <button className="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-blue-600 hover:scale-105 transition-all active:scale-95">
+        <button 
+          onClick={handleAddClick}
+          className="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-blue-600 hover:scale-105 transition-all active:scale-95"
+        >
           <Plus size={28} />
         </button>
       </div>
