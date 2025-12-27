@@ -1,12 +1,11 @@
 "use client";
 
-import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Info, Wifi, Truck, Moon, Plus, Edit, Trash2, X, Phone, Camera, Bike, Car, ShieldCheck, Unlink, History } from "lucide-react";
+import { ArrowLeft, Search, Map as MapIcon, UserPlus, MoreVertical, Navigation, Wifi, Moon, Plus, Edit, Trash2, X, Phone, Camera, Bike, Truck, Car, ShieldCheck, Unlink, History, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDrivers, Driver } from "@/contexts/DriversContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -358,128 +357,118 @@ const GestaoEntregadores = () => {
 
       {/* Driver Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-md mx-auto bg-[#111a22] border-none p-0 overflow-hidden shadow-2xl">
-          <DialogHeader className="sticky top-0 z-10 flex items-center bg-[#111a22] px-4 py-4 justify-between border-b border-[#324d67]/30">
+        <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-none p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="sticky top-0 z-10 flex items-center bg-white dark:bg-surface-dark px-4 py-4 justify-between border-b border-slate-200 dark:border-slate-800">
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/5 transition-colors cursor-pointer"
+              className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
             >
-              <X className="text-white" size={24} />
+              <X size={24} />
             </button>
-            <DialogTitle className="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
+            <DialogTitle className="text-lg font-bold leading-tight tracking-tight flex-1 text-center">
               {editingDriver ? "Editar Entregador" : "Adicionar Entregador"}
             </DialogTitle>
             <div className="size-10"></div>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto max-h-[70vh] scrollbar-thin scrollbar-thumb-[#324d67] pb-24">
+          <div className="flex-1 overflow-y-auto max-h-[70vh] pb-24">
             {/* Avatar Section */}
             <div className="flex flex-col items-center justify-center py-6 gap-3">
-              <div className="relative size-24 rounded-full bg-[#192633] border-2 border-dashed border-[#324d67] flex items-center justify-center group cursor-pointer hover:border-primary transition-colors">
-                <Camera className="text-[#92adc9] text-3xl group-hover:text-primary transition-colors" size={32} />
+              <div className="relative size-24 rounded-full bg-slate-100 dark:bg-surface-dark border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center group cursor-pointer hover:border-primary transition-colors">
+                <Camera className="text-slate-400 group-hover:text-primary transition-colors" size={32} />
               </div>
-              <p className="text-[#92adc9] text-sm font-medium">Foto de Perfil</p>
+              <p className="text-slate-500 text-sm font-medium">Foto de Perfil</p>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {/* Name Field */}
               <div className="px-4 py-1">
                 <label className="flex flex-col flex-1">
-                  <p className="text-white text-base font-medium leading-normal pb-2">Nome Completo</p>
-                  <input 
-                    className="form-input flex w-full min-w-0 flex-1 rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#324d67] bg-[#192633] focus:border-primary h-14 placeholder:text-[#92adc9] p-[15px] text-base font-normal leading-normal transition-all" 
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 pb-2">Nome Completo</p>
+                  <Input 
                     placeholder="Ex: João Silva" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    className="h-12"
                   />
                 </label>
               </div>
 
-              {/* Phone Field */}
               <div className="px-4 py-1">
                 <label className="flex flex-col flex-1">
-                  <p className="text-white text-base font-medium leading-normal pb-2">Telefone / WhatsApp</p>
-                  <div className="flex w-full flex-1 items-stretch rounded-lg group">
-                    <input 
-                      className="form-input flex w-full min-w-0 flex-1 rounded-l-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#324d67] bg-[#192633] focus:border-primary h-14 placeholder:text-[#92adc9] p-[15px] border-r-0 pr-2 text-base font-normal leading-normal transition-all" 
-                      placeholder="(00) 00000-0000" 
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                    <div className="text-[#92adc9] flex border border-[#324d67] bg-[#192633] items-center justify-center pr-[15px] rounded-r-lg border-l-0 group-focus-within:border-primary group-focus-within:ring-2 group-focus-within:ring-primary/50 transition-all">
-                      <Phone size={20} />
-                    </div>
-                  </div>
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 pb-2">Telefone / WhatsApp</p>
+                  <Input 
+                    placeholder="(00) 00000-0000" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="h-12"
+                  />
                 </label>
               </div>
 
-              {/* CPF Field */}
               <div className="px-4 py-1">
                 <label className="flex flex-col flex-1">
-                  <p className="text-white text-base font-medium leading-normal pb-2">CPF <span className="text-[#92adc9] text-sm font-normal">(Opcional)</span></p>
-                  <input 
-                    className="form-input flex w-full min-w-0 flex-1 rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#324d67] bg-[#192633] focus:border-primary h-14 placeholder:text-[#92adc9] p-[15px] text-base font-normal leading-normal transition-all" 
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 pb-2">CPF <span className="text-slate-400 text-xs font-normal">(Opcional)</span></p>
+                  <Input 
                     placeholder="000.000.000-00" 
                     value={cpf}
                     onChange={(e) => setCpf(e.target.value)}
+                    className="h-12"
                   />
                 </label>
               </div>
 
-              {/* Vehicle Selection */}
               <div className="px-4 py-4">
-                <p className="text-white text-base font-medium leading-normal pb-3">Tipo de Veículo</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 pb-3">Tipo de Veículo</p>
                 <div className="grid grid-cols-3 gap-3">
                   <button 
                     type="button"
                     onClick={() => setVehicleType('moto')}
                     className={`flex flex-col items-center justify-center gap-2 rounded-xl p-3 cursor-pointer transition-all ${
                       vehicleType === 'moto' 
-                      ? 'bg-primary/20 border-2 border-primary shadow-sm' 
-                      : 'bg-[#192633] border border-[#324d67] opacity-70 hover:opacity-100'
+                      ? 'bg-primary/10 border-2 border-primary shadow-sm' 
+                      : 'bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <Truck size={24} className={vehicleType === 'moto' ? 'text-primary' : 'text-white'} />
-                    <span className={`text-sm ${vehicleType === 'moto' ? 'text-white font-semibold' : 'text-[#92adc9] font-medium'}`}>Moto</span>
+                    <Truck size={24} className={vehicleType === 'moto' ? 'text-primary' : 'text-slate-500'} />
+                    <span className={`text-xs ${vehicleType === 'moto' ? 'text-primary font-bold' : 'text-slate-500 font-medium'}`}>Moto</span>
                   </button>
                   <button 
                     type="button"
                     onClick={() => setVehicleType('bike')}
                     className={`flex flex-col items-center justify-center gap-2 rounded-xl p-3 cursor-pointer transition-all ${
                       vehicleType === 'bike' 
-                      ? 'bg-primary/20 border-2 border-primary shadow-sm' 
-                      : 'bg-[#192633] border border-[#324d67] opacity-70 hover:opacity-100'
+                      ? 'bg-primary/10 border-2 border-primary shadow-sm' 
+                      : 'bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <Bike size={24} className={vehicleType === 'bike' ? 'text-primary' : 'text-white'} />
-                    <span className={`text-sm ${vehicleType === 'bike' ? 'text-white font-semibold' : 'text-[#92adc9] font-medium'}`}>Bike</span>
+                    <Bike size={24} className={vehicleType === 'bike' ? 'text-primary' : 'text-slate-500'} />
+                    <span className={`text-xs ${vehicleType === 'bike' ? 'text-primary font-bold' : 'text-slate-500 font-medium'}`}>Bike</span>
                   </button>
                   <button 
                     type="button"
                     onClick={() => setVehicleType('car')}
                     className={`flex flex-col items-center justify-center gap-2 rounded-xl p-3 cursor-pointer transition-all ${
                       vehicleType === 'car' 
-                      ? 'bg-primary/20 border-2 border-primary shadow-sm' 
-                      : 'bg-[#192633] border border-[#324d67] opacity-70 hover:opacity-100'
+                      ? 'bg-primary/10 border-2 border-primary shadow-sm' 
+                      : 'bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <Car size={24} className={vehicleType === 'car' ? 'text-primary' : 'text-white'} />
-                    <span className={`text-sm ${vehicleType === 'car' ? 'text-white font-semibold' : 'text-[#92adc9] font-medium'}`}>Carro</span>
+                    <Car size={24} className={vehicleType === 'car' ? 'text-primary' : 'text-slate-500'} />
+                    <span className={`text-xs ${vehicleType === 'car' ? 'text-primary font-bold' : 'text-slate-500 font-medium'}`}>Carro</span>
                   </button>
                 </div>
               </div>
 
-              {/* Status Toggle */}
               <div className="px-4 py-2">
-                <div className="flex items-center justify-between p-4 rounded-lg bg-[#192633] border border-[#324d67]">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-slate-800">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center size-10 rounded-full bg-[#111a22] text-[#92adc9]">
+                    <div className="flex items-center justify-center size-10 rounded-full bg-white dark:bg-background-dark text-slate-500">
                       <ShieldCheck size={20} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-white font-medium text-base">Status do Entregador</span>
-                      <span className="text-[#92adc9] text-xs">Permitir acesso ao app</span>
+                      <span className="font-bold text-sm">Status Ativo</span>
+                      <span className="text-slate-500 text-xs">Permitir acesso ao app</span>
                     </div>
                   </div>
                   <Switch 
@@ -491,18 +480,16 @@ const GestaoEntregadores = () => {
             </form>
           </div>
 
-          {/* Footer Actions */}
-          <footer className="absolute bottom-0 left-0 right-0 bg-[#111a22] border-t border-[#324d67] p-4 flex flex-col gap-3 backdrop-blur-md bg-opacity-95">
-            <button 
+          <footer className="absolute bottom-0 left-0 right-0 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-slate-800 p-4 flex flex-col gap-3 backdrop-blur-md">
+            <Button 
               onClick={handleSubmit}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-white font-bold text-base hover:bg-blue-600 active:scale-[0.98] transition-all shadow-lg shadow-blue-500/20"
+              className="w-full h-12 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-primary/20"
             >
-              <Plus size={20} />
               {editingDriver ? "Salvar Alterações" : "Adicionar à Equipe"}
-            </button>
+            </Button>
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-transparent py-3 px-6 text-[#92adc9] font-semibold text-base hover:text-white hover:bg-white/5 transition-all"
+              className="w-full py-2 text-slate-500 dark:text-slate-400 font-semibold text-sm hover:text-slate-900 dark:hover:text-white transition-all"
             >
               Cancelar
             </button>
@@ -510,21 +497,17 @@ const GestaoEntregadores = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Assign Order Modal */}
+      {/* Modals */}
       <AtribuirPedidoModal 
         isOpen={isAssignModalOpen} 
         onClose={() => setIsAssignModalOpen(false)} 
         driver={selectedDriverForManage}
       />
-
-      {/* Unassign Order Modal */}
       <DesatribuirPedidoModal 
         isOpen={isUnassignModalOpen} 
         onClose={() => setIsUnassignModalOpen(false)} 
         driver={selectedDriverForManage}
       />
-
-      {/* History Modal */}
       <HistoricoEntregasModal 
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
