@@ -67,6 +67,7 @@ import CarteiraMotoboy from './pages/CarteiraMotoboy';
 import PainelRepasses from './pages/PainelRepasses';
 import GestaoEntregadores from './pages/GestaoEntregadores';
 import GestaoPromocoes from './pages/GestaoPromocoes';
+import GestaoMarketplaces from './pages/GestaoMarketplaces';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -138,6 +139,7 @@ function App() {
                                 <Route path="/painel-repasses" element={<PainelRepasses />} />
                                 <Route path="/gestao-entregadores" element={<GestaoEntregadores />} />
                                 <Route path="/gestao-promocoes" element={<GestaoPromocoes />} />
+                                <Route path="/gestao-marketplaces" element={<GestaoMarketplaces />} />
                                 <Route path="*" element={<NotFound />} />
                               </Routes>
                             </PromotionsProvider>

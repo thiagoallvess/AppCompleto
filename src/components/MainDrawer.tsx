@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, Ticket } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle as AlertTriangleIcon, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, Ticket, Storefront } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -19,11 +19,12 @@ const MainDrawer = () => {
     { icon: ChefHat, label: "Receitas", path: "/gestao-receitas" },
     { icon: Factory, label: "Produção", path: "/gestao-producao" },
     { icon: Package, label: "Estoque/Insumos", path: "/gestao-estoque" },
-    { icon: AlertTriangle, label: "Estoque Crítico", path: "/estoque-critico" },
+    { icon: AlertTriangleIcon, label: "Estoque Crítico", path: "/estoque-critico" },
     { icon: ShoppingCart, label: "Lista de Compras", path: "/lista-compras" },
     { icon: TrendingUp, label: "Giro de Estoque", path: "/giro-estoque" },
     { icon: FileText, label: "Relatórios Estoque", path: "/relatorios-estoque" },
     { icon: Ticket, label: "Promoções/Cupons", path: "/gestao-promocoes" },
+    { icon: Storefront, label: "Marketplaces", path: "/gestao-marketplaces" },
     { icon: DollarSign, label: "Despesas", path: "/gestao-despesas" },
     { icon: Factory, label: "Equipamentos", path: "/gestao-equipamentos" },
     { icon: Users, label: "Clientes", path: "/clientes" },
