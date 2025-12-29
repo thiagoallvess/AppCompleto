@@ -69,6 +69,7 @@ import PainelRepasses from './pages/PainelRepasses';
 import GestaoEntregadores from './pages/GestaoEntregadores';
 import GestaoPromocoes from './pages/GestaoPromocoes';
 import GestaoMarketplaces from './pages/GestaoMarketplaces';
+import VendaManual from './pages/VendaManual';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -142,6 +143,7 @@ function App() {
                                   <Route path="/gestao-entregadores" element={<GestaoEntregadores />} />
                                   <Route path="/gestao-promocoes" element={<GestaoPromocoes />} />
                                   <Route path="/gestao-marketplaces" element={<GestaoMarketplaces />} />
+                                  <Route path="/venda-manual" element={<VendaManual />} />
                                   <Route path="*" element={<NotFound />} />
                                 </Routes>
                               </MarketplacesProvider>
