@@ -1,5 +1,3 @@
-` that was accidentally left in the code.
-[REDACTED]</think><dyad-write path="src/components/MainDrawer.tsx" description="Fixing the malformed JSX tag and properly adding the promotions navigation link">
 import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, ConfirmationNumber } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
