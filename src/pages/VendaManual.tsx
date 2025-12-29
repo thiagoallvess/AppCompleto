@@ -9,6 +9,7 @@ import { useMarketplaces } from "@/contexts/MarketplacesContext";
 import { useOrders } from "@/contexts/OrdersContext";
 import { useStock } from "@/contexts/StockContext";
 import { showSuccess, showError } from "@/utils/toast";
+import { ArrowLeft, Plus, Minus, X, Search, ShoppingCart } from "lucide-react";
 
 interface SaleItem {
   productId: string;
@@ -291,7 +292,8 @@ const VendaManual = () => {
           <Button onClick={handleRegisterSale} disabled={saleItems.length === 0} className="w-full h-14 bg-primary hover:bg-blue-600 text-white font-bold text-lg rounded-2xl shadow-lg">
             Registrar Venda
           </Button>
-        </footer>
+        </div>
+      </footer>
     </div>
   );
 };
