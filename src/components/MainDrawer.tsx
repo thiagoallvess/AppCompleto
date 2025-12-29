@@ -1,32 +1,5 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, ConfirmationNumber } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-
-const MainDrawer = () => {
-  const clientMenuItems = [
-    { icon: Home, label: "Início", path: "/" },
-    { icon: ShoppingBag, label: "Meus Pedidos", path: "/meus-pedidos" },
-    { icon: User, label: "Perfil", path: "/perfil" },
-    { icon: Gift, label: "Indicação", path: "/indicacao" },
-    { icon: DollarSign, label: "Cashback", path: "/cashback" },
-  ];
-
-  const adminMenuItems = [
-    { icon: BarChart, label: "Visão Geral", path: "/visao-geral" },
-    { icon: Map, label: "Monitoramento", path: "/monitoramento" },
-    { icon: Receipt, label: "Pedidos", path: "/gestao-pedidos" },
-    { icon: Package, label: "Produtos", path: "/gestao-produtos" },
-    { icon: ChefHat, label: "Receitas", path: "/gestao-receitas" },
-    { icon: Factory, label: "Produção", path: "/gestao-producao" },
-    { icon: Package, label: "Estoque/Insumos", path: "/gestao-estoque" },
-    { icon: AlertTriangle, label: "Estoque Crítico", path: "/estoque-critico" },
-    { icon: ShoppingCart, label: "Lista de Compras", path: "/lista-compras" },
-    { icon: TrendingUp, label: "Giro de Estoque", path: "/giro-estoque" },
-    { icon: FileText, label: "Relatórios Estoque", path: "/relatorios-estoque" },
-    { icon: DollarSign, label: "Despesas", path: "/gestao-despesas" },
-    { icon: Factory, label: "Equipamentos", path: "/gestao-equipamentos" },
-    { icon: Users, label: "Clientes", path: "/clientes" },
-    {<dyad-write path="src/components/MainDrawer.tsx" description="Adding navigation link for promotions management in the admin section">
+` that was accidentally left in the code.
+[REDACTED]</think><dyad-write path="src/components/MainDrawer.tsx" description="Fixing the malformed JSX tag and properly adding the promotions navigation link">
 import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, ConfirmationNumber } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
