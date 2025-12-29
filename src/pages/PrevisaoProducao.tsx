@@ -167,163 +167,123 @@ const PrevisaoProducao = () => {
       {/* Summary Cards */}
       <div className="px-4 pb-6">
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm<dyad-write path="src/App.tsx">
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { CartProvider } from './contexts/CartContext';
-import { ProductsProvider } from './contexts/ProductsContext';
-import { RecipesProvider } from './contexts/RecipesContext';
-import { StockProvider } from './contexts/StockContext';
-import { OrdersProvider } from './contexts/OrdersContext';
-import { ClientsProvider } from './contexts/ClientsContext';
-import { DriversProvider } from './contexts/DriversContext';
-import { ExpensesProvider } from './contexts/ExpensesProvider';
-import { EquipmentProvider } from './contexts/EquipmentContext';
-import { StoreProvider } from './contexts/StoreContext';
-import { UserProvider } from './contexts/UserContext';
-import { PromotionsProvider } from './contexts/PromotionsContext';
+          <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-slate-100 dark:bg-neutral-700/50 rounded-md">
+                <Package size={18} />
+              </div>
+              <p className="text-slate-500 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider">Produção Sugerida</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{totalSuggestedProduction}</p>
+              <p className="text-primary text-[10px] font-medium mt-1">Unidades recomendadas</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-slate-100 dark:bg-neutral-700/50 rounded-md">
+                <AlertTriangle size={18} />
+              </div>
+              <p className="text-slate-500 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider">Alertas Estoque</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{totalAlerts}</p>
+              <p className="text-red-500 text-[10px] font-medium mt-1">Itens insuficientes</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-// Pages
-import Index from './pages/Index';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import OrderSuccess from './pages/OrderSuccess';
-import ProductDetails from './pages/ProductDetails';
-import Perfil from './pages/Perfil';
-import Enderecos from './pages/Enderecos';
-import AddEndereco from './pages/AddEndereco';
-import EditEndereco from './pages/EditEndereco';
-import MeusPedidos from './pages/MeusPedidos';
-import DetalhesPedidoCliente from './pages/DetalhesPedidoCliente';
-import Cashback from './pages/Cashback';
-import Indicacao from './pages/Indicacao';
-import VisaoGeral from './pages/VisaoGeral';
-import GestaoPedidos from './pages/GestaoPedidos';
-import DetalhesPedido from './pages/DetalhesPedido';
-import GestaoProdutos from './pages/GestaoProdutos';
-import AddProduto from './pages/AddProduto';
-import GestaoReceitas from './pages/GestaoReceitas';
-import AddReceita from './pages/AddReceita';
-import EditReceita from './pages/EditReceita';
-import DetalhesReceita from './pages/DetalhesReceita';
-import GestaoProducao from './pages/GestaoProducao';
-import AddProducao from './pages/AddProducao';
-import DetalhesLote from './pages/DetalhesLote';
-import GestaoEstoque from './pages/GestaoEstoque';
-import AddInsumo from './pages/AddInsumo';
-import EditInsumo from './pages/EditInsumo';
-import DetalhesInsumo from './pages/DetalhesInsumo';
-import EstoqueCritico from './pages/EstoqueCritico';
-import ListaCompras from './pages/ListaCompras';
-import GiroEstoque from './pages/GiroEstoque';
-import RelatoriosEstoque from './pages/RelatoriosEstoque';
-import GestaoDespesas from './pages/GestaoDespesas';
-import AddDespesa from './pages/AddDespesa';
-import GestaoEquipamentos from './pages/GestaoEquipamentos';
-import GestaoClientes from './pages/Clientes';
-import DetalhesCliente from './pages/DetalhesCliente';
-import Relatorios from './pages/Relatorios';
-import DRECompleta from './pages/DRECompleta';
-import RelatoriosEntregadores from './pages/RelatoriosEntregadores';
-import ConfiguracoesEntrega from './pages/ConfiguracoesEntrega';
-import ConfiguracoesAdmin from './pages/ConfiguracoesAdmin';
-import PedidosEntrega from './pages/PedidosEntrega';
-import HistoricoEntregas from './pages/HistoricoEntregas';
-import PrevisaoProducao from './pages/PrevisaoProducao';
-import Vinculos from './pages/Vinculos';
-import Monitoramento from './pages/Monitoramento';
-import PerfilMotoboy from './pages/PerfilMotoboy';
-import CarteiraMotoboy from './pages/CarteiraMotoboy';
-import PainelRepasses from './pages/PainelRepasses';
-import GestaoEntregadores from './pages/GestaoEntregadores';
-import GestaoPromocoes from './pages/GestaoPromocoes';
-import NotFound from './pages/NotFound';
+      {/* Production Suggestions */}
+      <div className="px-4 pb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-slate-900 dark:text-white text-lg font-bold">Sugestões de Produção</h3>
+          <Button onClick={handleRecalculate} variant="outline" size="sm" className="flex items-center gap-2">
+            <RefreshCw size={16} />
+            Recalcular
+          </Button>
+        </div>
 
-function App() {
-  return (
-    <Router>
-      <StoreProvider>
-        <UserProvider>
-          <CartProvider>
-            <ProductsProvider>
-              <RecipesProvider>
-                <StockProvider>
-                  <OrdersProvider>
-                    <ClientsProvider>
-                      <DriversProvider>
-                        <ExpensesProvider>
-                          <EquipmentProvider>
-                            <PromotionsProvider>
-                              <Routes>
-                                <Route path="/" element={<Index />} />
-                                <Route path="/cart" element={<Cart />} />
-                                <Route path="/checkout" element={<Checkout />} />
-                                <Route path="/order-success" element={<OrderSuccess />} />
-                                <Route path="/product-details" element={<ProductDetails />} />
-                                <Route path="/perfil" element={<Perfil />} />
-                                <Route path="/enderecos" element={<Enderecos />} />
-                                <Route path="/add-endereco" element={<AddEndereco />} />
-                                <Route path="/edit-endereco" element={<EditEndereco />} />
-                                <Route path="/meus-pedidos" element={<MeusPedidos />} />
-                                <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
-                                <Route path="/cashback" element={<Cashback />} />
-                                <Route path="/indicacao" element={<Indicacao />} />
-                                <Route path="/visao-geral" element={<VisaoGeral />} />
-                                <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
-                                <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
-                                <Route path="/gestao-produtos" element={<GestaoProdutos />} />
-                                <Route path="/add-produto" element={<AddProduto />} />
-                                <Route path="/gestao-receitas" element={<GestaoReceitas />} />
-                                <Route path="/add-receita" element={<AddReceita />} />
-                                <Route path="/edit-receita" element={<EditReceita />} />
-                                <Route path="/detalhes-receita" element={<DetalhesReceita />} />
-                                <Route path="/gestao-producao" element={<GestaoProducao />} />
-                                <Route path="/add-producao" element={<AddProducao />} />
-                                <Route path="/detalhes-lote" element={<DetalhesLote />} />
-                                <Route path="/gestao-estoque" element={<GestaoEstoque />} />
-                                <Route path="/add-insumo" element={<AddInsumo />} />
-                                <Route path="/edit-insumo" element={<EditInsumo />} />
-                                <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
-                                <Route path="/estoque-critico" element={<EstoqueCritico />} />
-                                <Route path="/lista-compras" element={<ListaCompras />} />
-                                <Route path="/giro-estoque" element={<GiroEstoque />} />
-                                <Route path="/relatorios-estoque" element={<RelatoriosEstoque />} />
-                                <Route path="/gestao-despesas" element={<GestaoDespesas />} />
-                                <Route path="/add-despesa" element={<AddDespesa />} />
-                                <Route path="/gestao-equipamentos" element={<GestaoEquipamentos />} />
-                                <Route path="/clientes" element={<GestaoClientes />} />
-                                <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
-                                <Route path="/relatorios" element={<Relatorios />} />
-                                <Route path="/dre-completa" element={<DRECompleta />} />
-                                <Route path="/relatorios-entregadores" element={<RelatoriosEntregadores />} />
-                                <Route path="/configuracoes-entrega" element={<ConfiguracoesEntrega />} />
-                                <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
-                                <Route path="/pedidos-entrega" element={<PedidosEntrega />} />
-                                <Route path="/historico-entregas" element={<HistoricoEntregas />} />
-                                <Route path="/previsao-producao" element={<PrevisaoProducao />} />
-                                <Route path="/vinculos" element={<Vinculos />} />
-                                <Route path="/monitoramento" element={<Monitoramento />} />
-                                <Route path="/perfil-motoboy" element={<PerfilMotoboy />} />
-                                <Route path="/carteira-motoboy" element={<CarteiraMotoboy />} />
-                                <Route path="/painel-repasses" element={<PainelRepasses />} />
-                                <Route path="/gestao-entregadores" element={<GestaoEntregadores />} />
-                                <Route path="/gestao-promocoes" element={<GestaoPromocoes />} />
-                                <Route path="*" element={<NotFound />} />
-                              </Routes>
-                            </PromotionsProvider>
-                          </EquipmentProvider>
-                        </ExpensesProvider>
-                      </DriversProvider>
-                    </ClientsProvider>
-                  </OrdersProvider>
-                </StockProvider>
-              </RecipesProvider>
-            </ProductsProvider>
-          </CartProvider>
-        </UserProvider>
-      </StoreProvider>
-    </Router>
+        <div className="space-y-4">
+          {productionSuggestions.map((suggestion, index) => (
+            <div key={suggestion.recipeId} className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0">
+                  <img src={suggestion.recipeImage} alt={suggestion.recipeName} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-slate-900 dark:text-white font-bold text-base mb-1">{suggestion.recipeName}</h4>
+                  <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                    <span>Vendidos: {suggestion.totalSold} un</span>
+                    <span>Média diária: {suggestion.avgDaily.toFixed(1)} un</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Produção Sugerida</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">{suggestion.suggestedProduction} un</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">{suggestion.batchesNeeded} lote(s)</p>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Custo Estimado</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">R$ {suggestion.totalCost.toFixed(2)}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">R$ {suggestion.unitCost.toFixed(2)}/un</p>
+                </div>
+              </div>
+
+              {/* Stock Alerts */}
+              {stockAlerts.filter(alert => alert.recipe === suggestion.recipeName).length > 0 && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="text-red-500" size={16} />
+                    <p className="text-red-700 dark:text-red-400 text-sm font-medium">Estoque Insuficiente</p>
+                  </div>
+                  <div className="space-y-1">
+                    {stockAlerts.filter(alert => alert.recipe === suggestion.recipeName).map((alert, idx) => (
+                      <p key={idx} className="text-red-600 dark:text-red-300 text-xs">
+                        {alert.name}: {alert.available.toFixed(1)} {alert.type === 'ingredient' ? 'disponível' : 'disponíveis'} • 
+                        Necessário: {alert.required.toFixed(1)} • Deficit: {alert.deficit.toFixed(1)}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {productionSuggestions.length === 0 && (
+            <div className="text-center py-12 opacity-50">
+              <BarChart3 size={48} className="mx-auto mb-3 text-slate-300" />
+              <p className="text-slate-500 dark:text-slate-400">Nenhuma sugestão de produção disponível.</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Verifique se há vendas registradas no período selecionado.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-20 pb-4 items-center justify-around bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 backdrop-blur-lg bg-opacity-95">
+        <Link to="/visao-geral" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">dashboard</span>
+          <span className="text-[10px] font-medium">Início</span>
+        </Link>
+        <Link to="/gestao-producao" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">conveyor_belt</span>
+          <span className="text-[10px] font-medium">Produção</span>
+        </Link>
+        <Link to="/gestao-estoque" className="flex flex-col items-center gap-1 p-2 w-16 text-slate-400 hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">inventory</span>
+          <span className="text-[10px] font-medium">Estoque</span>
+        </Link>
+        <button className="flex flex-col items-center gap-1 p-2 w-16 text-primary">
+          <span className="material-symbols-outlined fill-current">analytics</span>
+          <span className="text-[10px] font-medium">Análise</span>
+        </button>
+      </nav>
+    </div>
   );
-}
+};
 
-export default App;
+export default PrevisaoProducao;
