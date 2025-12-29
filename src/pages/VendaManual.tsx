@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ArrowLeft, Plus, Minus, Search, ShoppingCart, Calendar, CreditCard, Banknote, QrCode, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useMarketplaces } from "@/contexts/MarketplacesContext";
 import { useOrders } from "@/contexts/OrdersContext";
+import { useStock } from "@/contexts/StockContext";
 import { showSuccess, showError } from "@/utils/toast";
 
 interface SaleItem {
@@ -23,11 +23,13 @@ const VendaManual = () => {
   const { products } = useProducts();
   const { marketplaces } = useMarketplaces();
   const { addOrder } = useOrders();
+  const { updateStock } = useStock();
 
   const [selectedOrigin, setSelectedOrigin] = useState("Venda Direta");
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState("pix");
-  const [saleDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [saleDate, setSaleDate] = useState(new Date().toISOString().split('T')[0]);
+  const [adjustedTotal, setAdjustedTotal] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -36,6 +38,12 @@ const VendaManual = () => {
   const filteredProducts = products.filter(p => 
     p.isActive && p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Calcular total automático baseado nos itens
+  const calculatedTotal = saleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+  // Usar total ajustado se fornecido, senão o calculado
+  const finalTotal = adjustedTotal ? parseFloat(adjustedTotal) || calculatedTotal : calculatedTotal;
 
   const addItem = (product: any) => {
     setSaleItems(prev => {
@@ -67,8 +75,6 @@ const VendaManual = () => {
     }).filter(item => item.quantity > 0));
   };
 
-  const total = saleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
   const handleRegisterSale = () => {
     if (saleItems.length === 0) {
       showError("Adicione pelo menos um item à venda.");
@@ -85,7 +91,7 @@ const VendaManual = () => {
       statusColor: "green",
       statusIcon: "check_circle",
       time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      total: total,
+      total: finalTotal,
       items: saleItems.map(item => ({
         quantity: item.quantity,
         name: item.name,
@@ -95,12 +101,19 @@ const VendaManual = () => {
       isNew: false,
       section: 'finished' as const,
       date: new Date(saleDate).toLocaleDateString('pt-BR'),
+      discount: adjustedTotal ? calculatedTotal - finalTotal : 0, // Desconto aplicado
+      couponCode: adjustedTotal ? "Ajuste Manual" : null,
       history: [{ 
         status: "Venda Registrada Manualmente", 
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), 
         date: new Date(saleDate).toLocaleDateString('pt-BR') 
       }]
     };
+
+    // Atualizar estoque automaticamente
+    saleItems.forEach(item => {
+      updateStock(item.productId, -item.quantity);
+    });
 
     addOrder(newOrder);
     showSuccess("Venda registrada com sucesso!");
@@ -111,14 +124,15 @@ const VendaManual = () => {
     setSaleItems([]);
     setSelectedOrigin("Venda Direta");
     setPaymentMethod("pix");
+    setAdjustedTotal("");
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white min-h-screen flex flex-col">
+    <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen flex flex-col">
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-3">
         <div className="flex items-center justify-between max-w-4xl mx-auto w-full">
-          <Link to="/visao-geral" className="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-surface-dark transition-colors">
-            <X size={24} />
+          <Link to="/visao-geral" className="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+            <ArrowLeft size={24} />
           </Link>
           <h2 className="text-lg font-bold">Nova Venda</h2>
           <button onClick={handleClear} className="text-primary text-sm font-bold hover:opacity-80">
@@ -135,13 +149,13 @@ const VendaManual = () => {
               <button
                 key={origin}
                 onClick={() => setSelectedOrigin(origin)}
-                className={`flex h-9 shrink-0 items-center justify-center px-4 rounded-full text-sm font-bold transition-all ${
+                className={`flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full px-4 transition active:scale-95 ${
                   selectedOrigin === origin
                     ? "bg-primary text-white shadow-lg shadow-primary/20"
-                    : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300"
+                    : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 }`}
               >
-                {origin}
+                <span className="text-xs font-medium whitespace-nowrap">{origin}</span>
               </button>
             ))}
           </div>
@@ -161,11 +175,15 @@ const VendaManual = () => {
             {saleItems.map((item) => (
               <div key={item.productId} className="flex items-center gap-4 bg-white dark:bg-surface-dark p-3 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
                 <img src={item.image} alt={item.name} className="size-14 rounded-lg object-cover" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm truncate">{item.name}</p>
-                  <p className="text-xs text-slate-500">R$ {item.price.toFixed(2)}</p>
+                <div className="flex flex-1 flex-col justify-center py-0.5">
+                  <p className="text-sm font-bold line-clamp-1">{item.name}</p>
+                  <p className="text-slate-500 dark:text-gray-400 text-xs">Gourmet • Cremoso</p>
                 </div>
-                <div className="flex flex-col items-end gap-2">
+                <div className="flex flex-col items-end justify-center gap-1">
+                  <span className="text-sm font-bold">R$ {(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="text-slate-500 dark:text-gray-400 text-xs">{item.quantity}x R$ {item.price.toFixed(2)}</span>
+                </div>
+                <div className="flex flex-col items-end justify-center gap-2">
                   <div className="flex items-center gap-3 bg-slate-100 dark:bg-background-dark rounded-full p-1">
                     <button onClick={() => updateQuantity(item.productId, -1)} className="size-7 flex items-center justify-center rounded-full hover:bg-white dark:hover:bg-slate-800 transition-colors">
                       <Minus size={14} />
@@ -224,7 +242,43 @@ const VendaManual = () => {
               </button>
             ))}
           </div>
-          <Input type="date" className="h-12" value={saleDate} onChange={(e) => setStartDate(e.target.value)} />
+          <Input type="date" className="h-12" value={saleDate} onChange={(e) => setSaleDate(e.target.value)} />
+        </section>
+
+        <div className="h-px bg-slate-200 dark:bg-slate-800 mx-4"></div>
+
+        <section className="p-4">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Total da Venda</h3>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Total Calculado</span>
+              <span className="text-lg font-bold text-slate-900 dark:text-white">R$ {calculatedTotal.toFixed(2)}</span>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Total Ajustado (Opcional)</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 font-medium">R$</span>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="Digite se houver desconto..."
+                  className="pl-10 h-12"
+                  value={adjustedTotal}
+                  onChange={(e) => setAdjustedTotal(e.target.value)}
+                />
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Use este campo para descontos não registrados ou ajustes manuais
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-primary/10 rounded-lg border border-primary/20">
+              <span className="text-sm font-bold text-primary">Total Final</span>
+              <span className="text-xl font-black text-primary">R$ {finalTotal.toFixed(2)}</span>
+            </div>
+          </div>
         </section>
       </main>
 
@@ -232,13 +286,12 @@ const VendaManual = () => {
         <div className="max-w-4xl mx-auto w-full flex flex-col gap-4">
           <div className="flex items-center justify-between px-1">
             <p className="text-slate-500 text-sm font-medium">Total da Venda</p>
-            <p className="text-2xl font-black">R$ {total.toFixed(2)}</p>
+            <p className="text-2xl font-black">R$ {finalTotal.toFixed(2)}</p>
           </div>
           <Button onClick={handleRegisterSale} disabled={saleItems.length === 0} className="w-full h-14 bg-primary hover:bg-blue-600 text-white font-bold text-lg rounded-2xl shadow-lg">
             Registrar Venda
           </Button>
-        </div>
-      </footer>
+        </footer>
     </div>
   );
 };
