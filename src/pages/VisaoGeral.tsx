@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, ShoppingBag, DollarSign, AlertTriangle, TrendingUp, Package, Plus, BarChart, Settings, User, Grid3X3, Receipt, FileText } from "lucide-react";
+import { Bell, ShoppingBag, DollarSign, AlertTriangle, TrendingUp, Package, Plus, BarChart, Settings, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle as AlertTriangleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useOrders } from "@/contexts/OrdersContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useStock } from "@/contexts/StockContext";
 import { useClients } from "@/contexts/ClientsContext";
+import MainDrawer from "../components/MainDrawer";
 
 const VisaoGeral = () => {
   const { orders } = useOrders();
@@ -35,25 +36,25 @@ const VisaoGeral = () => {
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased">
       {/* Header */}
-      <header className="sticky top-0 z-10 flex items-center bg-background-light dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 justify-between border-b border-gray-200 dark:border-gray-800 max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 overflow-hidden">
-            <User className="text-primary" size={20} />
+      <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
+        <div className="flex items-center p-4 pb-2 justify-between max-w-md mx-auto lg:max-w-7xl lg:px-6 w-full">
+          <div className="flex items-center gap-3">
+            <MainDrawer />
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">G</span>
+            </div>
+            <h1 className="text-xl font-bold leading-tight tracking-tight">Painel de Administração</h1>
           </div>
-          <div>
-            <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 leading-tight">Painel de</h2>
-            <p className="text-base font-bold text-gray-900 dark:text-white leading-tight">Administração</p>
+          <div className="flex items-center justify-end gap-2">
+            <button className="flex size-10 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+              <Bell className="text-slate-900 dark:text-white" size={24} />
+            </button>
           </div>
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          <button className="flex size-10 items-center justify-center rounded-full bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
-            <Bell className="text-gray-600 dark:text-gray-300" size={24} />
-          </button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 pb-12">
+      {/* Main Content Area */}
+      <div className="relative flex-1 flex flex-col overflow-hidden w-full">
         {/* Overview Section */}
         <section className="mt-4">
           <div className="flex items-center justify-between pb-3">
@@ -63,10 +64,10 @@ const VisaoGeral = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <Link
               to="/gestao-pedidos"
-              className="group flex flex-col gap-3 rounded-xl p-4 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+              className="group flex flex-col gap-3 rounded-xl p-4 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center size-7 rounded-full bg-primary/20 text-primary">
+                <span className="flex items-center justify-center size-7 rounded-full bg-primary/10 text-primary">
                   <ShoppingBag size={16} />
                 </span>
                 <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider">Pendentes</p>
@@ -78,10 +79,10 @@ const VisaoGeral = () => {
             </Link>
             <Link
               to="/relatorios"
-              className="group flex flex-col gap-3 rounded-xl p-4 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+              className="group flex flex-col gap-3 rounded-xl p-4 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center size-7 rounded-full bg-green-500/20 text-green-500">
+                <span className="flex items-center justify-center size-7 rounded-full bg-green-500/10 text-green-500">
                   <DollarSign size={16} />
                 </span>
                 <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider">Vendas Hoje</p>
@@ -93,10 +94,10 @@ const VisaoGeral = () => {
             </Link>
             <Link
               to="/gestao-produtos"
-              className="group flex flex-col gap-3 rounded-xl p-4 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+              className="group flex flex-col gap-3 rounded-xl p-4 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center size-7 rounded-full bg-blue-500/20 text-blue-500">
+                <span className="flex items-center justify-center size-7 rounded-full bg-blue-500/10 text-blue-500">
                   <Package size={16} />
                 </span>
                 <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider">Produtos</p>
@@ -108,10 +109,10 @@ const VisaoGeral = () => {
             </Link>
             <Link
               to="/clientes"
-              className="group flex flex-col gap-3 rounded-xl p-4 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+              className="group flex flex-col gap-3 rounded-xl p-4 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/50 transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center size-7 rounded-full bg-purple-500/20 text-purple-500">
+                <span className="flex items-center justify-center size-7 rounded-full bg-purple-500/10 text-purple-500">
                   <User size={16} />
                 </span>
                 <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider">Clientes</p>
@@ -133,7 +134,7 @@ const VisaoGeral = () => {
               <div className="flex justify-between items-end mb-4">
                 <div className="flex flex-col">
                   <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Faturamento Acumulado</span>
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">R$ {totalRevenue.toFixed(2)}</span>
+                  <span className="text-2xl font-bold mt-1">R$ {totalRevenue.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center gap-1 bg-green-500/10 px-2 py-1 rounded">
                   <TrendingUp className="text-green-500" size={16} />
@@ -141,15 +142,15 @@ const VisaoGeral = () => {
                 </div>
               </div>
               <div className="relative h-40 w-full">
-                <svg className="h-full w-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
+                <svg className="h-full w-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 478 150">
                   <defs>
-                    <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor="#1d73c9" stopOpacity="0.3"></stop>
-                      <stop offset="100%" stopColor="#1d73c9" stopOpacity="0"></stop>
+                    <linearGradient id="chart_grad" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#137fec" stopOpacity="0.2" />
+                      <stop offset="100%" stopColor="#137fec" stopOpacity="0" />
                     </linearGradient>
                   </defs>
-                  <path d="M0 100 L0 70 L16.6 60 L33.2 80 L50 40 L66.6 50 L83.2 30 L100 45 L100 100 Z" fill="url(#chartGradient)"></path>
-                  <path d="M0 70 L16.6 60 L33.2 80 L50 40 L66.6 50 L83.2 30 L100 45" fill="none" stroke="#1d73c9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                  <path d="M0 109 C50 109 50 40 100 40 C150 40 150 90 200 90 C250 90 250 30 300 30 C350 30 350 70 400 70 C440 70 440 20 478 20 V150 H0 V109 Z" fill="url(#chart_grad)" />
+                  <path d="M0 109 C50 109 50 40 100 40 C150 40 150 90 200 90 C250 90 250 30 300 30 C350 30 350 70 400 70 C440 70 440 20 478 20" fill="none" stroke="#137fec" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
                 </svg>
               </div>
               <div className="flex justify-between mt-2 px-1">
@@ -163,7 +164,7 @@ const VisaoGeral = () => {
           {/* Alerts Section */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="text-orange-500" size={20} />
+              <AlertTriangleIcon className="text-orange-500" size={20} />
               <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Atenção Necessária</h3>
             </div>
             <div className="space-y-3">
@@ -173,8 +174,8 @@ const VisaoGeral = () => {
                     <span className="text-sm font-semibold text-gray-900 dark:text-white">Estoque Baixo</span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">{lowStockItem.name}: {lowStockItem.quantity.toFixed(1)} {lowStockItem.unit}</span>
                   </div>
-                  <Link to="/gestao-estoque" className="px-3 py-1.5 rounded bg-primary text-white text-[10px] font-bold uppercase hover:bg-primary/90 transition-colors">
-                    Repor
+                  <Link to="/estoque-critico" className="px-3 py-1.5 rounded bg-primary text-white text-[10px] font-bold uppercase hover:bg-primary/90 transition-colors">
+                    Ver
                   </Link>
                 </div>
               ) : (
@@ -207,10 +208,10 @@ const VisaoGeral = () => {
           <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Acesso Rápido</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {[
-              { icon: Package, label: "Estoque", path: "/gestao-estoque" },
+              { icon: Package, label: "Estoque/Insumos", path: "/gestao-estoque" },
               { icon: Plus, label: "Novo Produto", path: "/add-produto" },
               { icon: BarChart, label: "Relatórios", path: "/relatorios" },
-              { icon: Settings, label: "Ajustes", path: "/configuracoes-admin" },
+              { icon: Settings, label: "Configurações", path: "/configuracoes-admin" },
               { icon: User, label: "Clientes", path: "/clientes" },
               { icon: FileText, label: "Produtos", path: "/gestao-produtos" },
             ].map((item, idx) => (
@@ -225,7 +226,7 @@ const VisaoGeral = () => {
             ))}
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 };
