@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ShoppingBag, DollarSign, AlertTriangle, TrendingUp, Package, Plus, BarChart, Settings, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle as AlertTriangleIcon } from "lucide-react";
+import { Bell, ShoppingBag, DollarSign, AlertTriangle, TrendingUp, Package, Plus, BarChart, Settings, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle as AlertTriangleIcon, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useOrders } from "@/contexts/OrdersContext";
 import { useProducts } from "@/contexts/ProductsContext";
