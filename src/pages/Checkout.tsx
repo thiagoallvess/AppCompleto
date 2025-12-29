@@ -2,22 +2,44 @@ import { ArrowLeft, CreditCard, MapPin, Edit, Clock, ChevronRight, Tag } from "l
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useOrders } from "../contexts/OrdersContext";
+import { usePromotions } from "../contexts/PromotionsContext";
 import { useState } from "react";
-import { showSuccess } from "../utils/toast";
+import { showSuccess, showError } from "../utils/toast";
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { validateCoupon, incrementUsage } = usePromotions();
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [scheduleDelivery, setScheduleDelivery] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [discount, setDiscount] = useState(0);
 
-  const appliedCoupon = "VERAO10"; 
-  
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const delivery = 5.00;
-  const discount = appliedCoupon ? subtotal * 0.1 : 0.00;
   const total = subtotal + delivery - discount;
+
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) return;
+    
+    const result = validateCoupon(couponCode, subtotal);
+    if (result.valid) {
+      setAppliedCoupon(couponCode);
+      setDiscount(result.discount);
+      showSuccess(`Cupom aplicado! Desconto: R$ ${result.discount.toFixed(2)}`);
+      setCouponCode("");
+    } else {
+      showError("Cupom inválido, expirado ou não aplicável a este pedido.");
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscount(0);
+    showSuccess("Cupom removido.");
+  };
 
   const handleSubmit = () => {
     if (items.length === 0) return;
@@ -41,6 +63,8 @@ const Checkout = () => {
       isNew: true,
       section: 'open' as const,
       date: new Date().toLocaleDateString('pt-BR'),
+      discount: discount,
+      couponCode: appliedCoupon,
       history: [{ 
         status: "Pedido Criado", 
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), 
@@ -49,6 +73,12 @@ const Checkout = () => {
     };
 
     addOrder(newOrder);
+    
+    // Incrementar uso do cupom se foi aplicado
+    if (appliedCoupon) {
+      incrementUsage(appliedCoupon);
+    }
+    
     showSuccess("Pedido realizado com sucesso!");
     clearCart();
     navigate(`/order-success?id=${orderId.replace('#', '')}`);
@@ -62,7 +92,7 @@ const Checkout = () => {
             to="/cart"
             className="flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
           >
-            <ArrowLeft className="text-slate-900 dark:text-white" size={24} />
+            <ArrowLeft className="text-slate-900 dark:text-text-primary" size={24} />
           </Link>
           <h2 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-12">Finalizar Compra</h2>
         </div>
@@ -129,7 +159,7 @@ const Checkout = () => {
                     src={item.image}
                   />
                 </div>
-                <div className="flex flex-1 flex-col justify-center">
+                <div className="flex flex-1 flex-col justify-center py-0.5">
                   <p className="text-sm font-bold line-clamp-1">{item.name}</p>
                   <p className="text-slate-500 dark:text-gray-400 text-xs">Gourmet • Cremoso</p>
                 </div>
@@ -140,6 +170,42 @@ const Checkout = () => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Coupon Section */}
+        <div className="px-4 mt-4 lg:px-6">
+          <h3 className="text-lg font-bold leading-tight tracking-tight pb-2">Cupom de Desconto</h3>
+          {!appliedCoupon ? (
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Digite seu cupom"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium"
+                />
+              </div>
+              <button
+                onClick={handleApplyCoupon}
+                disabled={!couponCode.trim()}
+                className="px-6 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                Aplicar
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20">
+              <div className="flex items-center gap-2 text-primary">
+                <span className="text-green-100">✓</span>
+                <span className="text-sm font-bold">Cupom {appliedCoupon} aplicado!</span>
+              </div>
+              <button onClick={handleRemoveCoupon} className="p-1 hover:bg-primary/10 rounded-full text-primary transition-colors">
+                <span className="text-lg">×</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Payment Method */}
