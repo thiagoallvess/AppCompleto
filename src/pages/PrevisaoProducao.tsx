@@ -167,148 +167,163 @@ const PrevisaoProducao = () => {
       {/* Summary Cards */}
       <div className="px-4 pb-6">
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-primary/10 rounded-md">
-                <Package className="text-primary" size={18} />
-              </div>
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Produção Sugerida</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{totalSuggestedProduction}</p>
-              <p className="text-primary text-xs font-medium mt-1">Unidades totais</p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-green-500/10 rounded-md">
-                <TrendingUp className="text-green-500" size={18} />
-              </div>
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Custo Estimado</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">R$ {totalEstimatedCost.toFixed(0)}</p>
-              <p className="text-green-500 text-xs font-medium mt-1">Investimento necessário</p>
-            </div>
-          </div>
-        </div>
+          <div className="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm<dyad-write path="src/App.tsx">
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { CartProvider } from './contexts/CartContext';
+import { ProductsProvider } from './contexts/ProductsContext';
+import { RecipesProvider } from './contexts/RecipesContext';
+import { StockProvider } from './contexts/StockContext';
+import { OrdersProvider } from './contexts/OrdersContext';
+import { ClientsProvider } from './contexts/ClientsContext';
+import { DriversProvider } from './contexts/DriversContext';
+import { ExpensesProvider } from './contexts/ExpensesProvider';
+import { EquipmentProvider } from './contexts/EquipmentContext';
+import { StoreProvider } from './contexts/StoreContext';
+import { UserProvider } from './contexts/UserContext';
+import { PromotionsProvider } from './contexts/PromotionsContext';
 
-        {/* Alerts Summary */}
-        {totalAlerts > 0 && (
-          <div className="mt-3 flex items-center gap-3 rounded-xl p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-            <AlertTriangle className="text-amber-500" size={24} />
-            <div className="flex-1">
-              <p className="text-sm font-bold text-amber-800 dark:text-amber-200">Atenção Necessária</p>
-              <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
-                {totalAlerts} item{totalAlerts !== 1 ? 's' : ''} em falta para cumprir as previsões
-              </p>
-            </div>
-            <Link to="/lista-compras" className="px-3 py-1.5 rounded bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors">
-              Ver Lista
-            </Link>
-          </div>
-        )}
-      </div>
+// Pages
+import Index from './pages/Index';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
+import ProductDetails from './pages/ProductDetails';
+import Perfil from './pages/Perfil';
+import Enderecos from './pages/Enderecos';
+import AddEndereco from './pages/AddEndereco';
+import EditEndereco from './pages/EditEndereco';
+import MeusPedidos from './pages/MeusPedidos';
+import DetalhesPedidoCliente from './pages/DetalhesPedidoCliente';
+import Cashback from './pages/Cashback';
+import Indicacao from './pages/Indicacao';
+import VisaoGeral from './pages/VisaoGeral';
+import GestaoPedidos from './pages/GestaoPedidos';
+import DetalhesPedido from './pages/DetalhesPedido';
+import GestaoProdutos from './pages/GestaoProdutos';
+import AddProduto from './pages/AddProduto';
+import GestaoReceitas from './pages/GestaoReceitas';
+import AddReceita from './pages/AddReceita';
+import EditReceita from './pages/EditReceita';
+import DetalhesReceita from './pages/DetalhesReceita';
+import GestaoProducao from './pages/GestaoProducao';
+import AddProducao from './pages/AddProducao';
+import DetalhesLote from './pages/DetalhesLote';
+import GestaoEstoque from './pages/GestaoEstoque';
+import AddInsumo from './pages/AddInsumo';
+import EditInsumo from './pages/EditInsumo';
+import DetalhesInsumo from './pages/DetalhesInsumo';
+import EstoqueCritico from './pages/EstoqueCritico';
+import ListaCompras from './pages/ListaCompras';
+import GiroEstoque from './pages/GiroEstoque';
+import RelatoriosEstoque from './pages/RelatoriosEstoque';
+import GestaoDespesas from './pages/GestaoDespesas';
+import AddDespesa from './pages/AddDespesa';
+import GestaoEquipamentos from './pages/GestaoEquipamentos';
+import GestaoClientes from './pages/Clientes';
+import DetalhesCliente from './pages/DetalhesCliente';
+import Relatorios from './pages/Relatorios';
+import DRECompleta from './pages/DRECompleta';
+import RelatoriosEntregadores from './pages/RelatoriosEntregadores';
+import ConfiguracoesEntrega from './pages/ConfiguracoesEntrega';
+import ConfiguracoesAdmin from './pages/ConfiguracoesAdmin';
+import PedidosEntrega from './pages/PedidosEntrega';
+import HistoricoEntregas from './pages/HistoricoEntregas';
+import PrevisaoProducao from './pages/PrevisaoProducao';
+import Vinculos from './pages/Vinculos';
+import Monitoramento from './pages/Monitoramento';
+import PerfilMotoboy from './pages/PerfilMotoboy';
+import CarteiraMotoboy from './pages/CarteiraMotoboy';
+import PainelRepasses from './pages/PainelRepasses';
+import GestaoEntregadores from './pages/GestaoEntregadores';
+import GestaoPromocoes from './pages/GestaoPromocoes';
+import NotFound from './pages/NotFound';
 
-      {/* Recalculate Action */}
-      <div className="px-4 pb-4">
-        <Button
-          onClick={handleRecalculate}
-          className="group relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-4 bg-primary text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]"
-        >
-          <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={20} />
-          <span className="truncate">Recalcular Previsões</span>
-        </Button>
-        <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-2">
-          Baseado em vendas dos últimos {selectedPeriod === "week" ? "7" : selectedPeriod === "month" ? "30" : "90"} dias
-        </p>
-      </div>
-
-      {/* Production Suggestions */}
-      <div className="px-4 pb-24 space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Sugestões de Produção</h3>
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{productionSuggestions.length} receita{productionSuggestions.length !== 1 ? 's' : ''}</span>
-        </div>
-
-        {productionSuggestions.length > 0 ? (
-          productionSuggestions.map((suggestion) => (
-            <div key={suggestion.recipeId} className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0">
-                  <img src={suggestion.recipeImage} alt={suggestion.recipeName} className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{suggestion.recipeName}</h4>
-                  <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 mb-2">
-                    <span className="flex items-center gap-1">
-                      <BarChart3 size={14} />
-                      {suggestion.totalSold} vendidos
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Target size={14} />
-                      {suggestion.avgDaily.toFixed(1)}/dia
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-primary">{suggestion.suggestedProduction} unidades</span>
-                    <span className="text-xs text-slate-400 dark:text-slate-500">({suggestion.batchesNeeded} lote{suggestion.batchesNeeded !== 1 ? 's' : ''})</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Required Materials */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
-                  <span>Insumos Necessários</span>
-                  <span>{suggestion.requiredIngredients.length + suggestion.requiredPackaging.length} itens</span>
-                </div>
-
-                <div className="grid grid-cols-1 gap-2">
-                  {suggestion.requiredIngredients.slice(0, 2).map((ing, idx) => (
-                    <div key={idx} className="flex items-center justify-between py-2 px-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{ing.name}</span>
-                      <span className="text-sm font-medium text-slate-900 dark:text-white">{ing.required} {ing.unit}</span>
-                    </div>
-                  ))}
-                  {suggestion.requiredPackaging.slice(0, 1).map((pack, idx) => (
-                    <div key={idx} className="flex items-center justify-between py-2 px-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{pack.name}</span>
-                      <span className="text-sm font-medium text-slate-900 dark:text-white">{pack.required} {pack.unit}</span>
-                    </div>
-                  ))}
-                  {(suggestion.requiredIngredients.length + suggestion.requiredPackaging.length) > 3 && (
-                    <div className="text-center py-1">
-                      <span className="text-xs text-slate-400 dark:text-slate-500">
-                        +{(suggestion.requiredIngredients.length + suggestion.requiredPackaging.length) - 3} itens
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Cost Summary */}
-              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <div>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">Custo Estimado</span>
-                  <div className="text-sm font-bold text-slate-900 dark:text-white">R$ {suggestion.totalCost.toFixed(2)}</div>
-                </div>
-                <Link to={`/add-producao?recipe=${suggestion.recipeId}`} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors">
-                  Produzir
-                </Link>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-12 opacity-50">
-            <BarChart3 size={48} className="mx-auto mb-3 text-slate-300" />
-            <p className="text-slate-500 dark:text-slate-400">Nenhuma sugestão disponível</p>
-            <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Verifique se há vendas registradas no período selecionado</p>
-          </div>
-        )}
-      </div>
-    </div>
+function App() {
+  return (
+    <Router>
+      <StoreProvider>
+        <UserProvider>
+          <CartProvider>
+            <ProductsProvider>
+              <RecipesProvider>
+                <StockProvider>
+                  <OrdersProvider>
+                    <ClientsProvider>
+                      <DriversProvider>
+                        <ExpensesProvider>
+                          <EquipmentProvider>
+                            <PromotionsProvider>
+                              <Routes>
+                                <Route path="/" element={<Index />} />
+                                <Route path="/cart" element={<Cart />} />
+                                <Route path="/checkout" element={<Checkout />} />
+                                <Route path="/order-success" element={<OrderSuccess />} />
+                                <Route path="/product-details" element={<ProductDetails />} />
+                                <Route path="/perfil" element={<Perfil />} />
+                                <Route path="/enderecos" element={<Enderecos />} />
+                                <Route path="/add-endereco" element={<AddEndereco />} />
+                                <Route path="/edit-endereco" element={<EditEndereco />} />
+                                <Route path="/meus-pedidos" element={<MeusPedidos />} />
+                                <Route path="/detalhes-pedido-cliente" element={<DetalhesPedidoCliente />} />
+                                <Route path="/cashback" element={<Cashback />} />
+                                <Route path="/indicacao" element={<Indicacao />} />
+                                <Route path="/visao-geral" element={<VisaoGeral />} />
+                                <Route path="/gestao-pedidos" element={<GestaoPedidos />} />
+                                <Route path="/detalhes-pedido" element={<DetalhesPedido />} />
+                                <Route path="/gestao-produtos" element={<GestaoProdutos />} />
+                                <Route path="/add-produto" element={<AddProduto />} />
+                                <Route path="/gestao-receitas" element={<GestaoReceitas />} />
+                                <Route path="/add-receita" element={<AddReceita />} />
+                                <Route path="/edit-receita" element={<EditReceita />} />
+                                <Route path="/detalhes-receita" element={<DetalhesReceita />} />
+                                <Route path="/gestao-producao" element={<GestaoProducao />} />
+                                <Route path="/add-producao" element={<AddProducao />} />
+                                <Route path="/detalhes-lote" element={<DetalhesLote />} />
+                                <Route path="/gestao-estoque" element={<GestaoEstoque />} />
+                                <Route path="/add-insumo" element={<AddInsumo />} />
+                                <Route path="/edit-insumo" element={<EditInsumo />} />
+                                <Route path="/detalhes-insumo" element={<DetalhesInsumo />} />
+                                <Route path="/estoque-critico" element={<EstoqueCritico />} />
+                                <Route path="/lista-compras" element={<ListaCompras />} />
+                                <Route path="/giro-estoque" element={<GiroEstoque />} />
+                                <Route path="/relatorios-estoque" element={<RelatoriosEstoque />} />
+                                <Route path="/gestao-despesas" element={<GestaoDespesas />} />
+                                <Route path="/add-despesa" element={<AddDespesa />} />
+                                <Route path="/gestao-equipamentos" element={<GestaoEquipamentos />} />
+                                <Route path="/clientes" element={<GestaoClientes />} />
+                                <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
+                                <Route path="/relatorios" element={<Relatorios />} />
+                                <Route path="/dre-completa" element={<DRECompleta />} />
+                                <Route path="/relatorios-entregadores" element={<RelatoriosEntregadores />} />
+                                <Route path="/configuracoes-entrega" element={<ConfiguracoesEntrega />} />
+                                <Route path="/configuracoes-admin" element={<ConfiguracoesAdmin />} />
+                                <Route path="/pedidos-entrega" element={<PedidosEntrega />} />
+                                <Route path="/historico-entregas" element={<HistoricoEntregas />} />
+                                <Route path="/previsao-producao" element={<PrevisaoProducao />} />
+                                <Route path="/vinculos" element={<Vinculos />} />
+                                <Route path="/monitoramento" element={<Monitoramento />} />
+                                <Route path="/perfil-motoboy" element={<PerfilMotoboy />} />
+                                <Route path="/carteira-motoboy" element={<CarteiraMotoboy />} />
+                                <Route path="/painel-repasses" element={<PainelRepasses />} />
+                                <Route path="/gestao-entregadores" element={<GestaoEntregadores />} />
+                                <Route path="/gestao-promocoes" element={<GestaoPromocoes />} />
+                                <Route path="*" element={<NotFound />} />
+                              </Routes>
+                            </PromotionsProvider>
+                          </EquipmentProvider>
+                        </ExpensesProvider>
+                      </DriversProvider>
+                    </ClientsProvider>
+                  </OrdersProvider>
+                </StockProvider>
+              </RecipesProvider>
+            </ProductsProvider>
+          </CartProvider>
+        </UserProvider>
+      </StoreProvider>
+    </Router>
   );
-};
+}
 
-export default PrevisaoProducao;
+export default App;

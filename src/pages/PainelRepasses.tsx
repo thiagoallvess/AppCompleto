@@ -50,7 +50,7 @@ const PainelRepasses = () => {
     {
       id: "4",
       driverName: "Roberto B.",
-      driverInitials: "Manual",
+      driverInitials: "RB",
       type: "Manual",
       date: "11 Out • 14:00 PM",
       grossAmount: 210.00,
@@ -125,20 +125,28 @@ const PainelRepasses = () => {
 
           {/* Summary Cards Grid */}
           <section className="px-4 py-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2 p-4 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                  <Group size={16} />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Entregadores</span>
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+              <div className="flex min-w-[140px] flex-1 flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-neutral-800/10 dark:border-neutral-800 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-slate-100 dark:bg-neutral-700/50 rounded-md">
+                    <Group size={18} />
+                  </div>
+                  <p className="text-slate-500 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider">Entregadores</p>
                 </div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalDrivers}</p>
+                <div>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalDrivers}</p>
+                </div>
               </div>
-              <div className="flex flex-col gap-2 p-4 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                  <Wallet size={16} />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Pendentes</span>
+              <div className="flex min-w-[140px] flex-1 flex-col gap-3 rounded-xl p-5 bg-white dark:bg-surface-dark border border-neutral-800/10 dark:border-neutral-800 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-slate-100 dark:bg-neutral-700/50 rounded-md">
+                    <Wallet size={18} />
+                  </div>
+                  <p className="text-slate-500 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider">Pendentes</p>
                 </div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">R$ {pendingPayouts.toFixed(2)}</p>
+                <div>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">R$ {pendingPayouts.toFixed(2)}</p>
+                </div>
               </div>
             </div>
           </section>
@@ -146,7 +154,7 @@ const PainelRepasses = () => {
           {/* History Section */}
           <section className="px-4 pb-6">
             <div className="flex items-center justify-between px-1 pb-4">
-              <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight">Histórico Consolidado</h3>
+              <h3 className="text-slate-900 dark:text-white text-lg font-bold">Histórico Consolidado</h3>
               <div className="flex items-center gap-1 text-xs font-medium text-slate-500">
                 <Filter size={14} />
                 Filtrar
@@ -159,13 +167,13 @@ const PainelRepasses = () => {
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`flex h-9 shrink-0 items-center justify-center px-5 rounded-full text-sm font-bold transition-all ${
+                  className={`flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full px-4 transition active:scale-95 ${
                     activeFilter === filter
                       ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md"
-                      : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50"
+                      : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                   }`}
                 >
-                  {filter}
+                  <span className="text-xs font-medium whitespace-nowrap">{filter}</span>
                 </button>
               ))}
             </div>
@@ -173,11 +181,11 @@ const PainelRepasses = () => {
             {/* List */}
             <div className="flex flex-col gap-3">
               {filteredPayouts.map((payout) => (
-                <div key={payout.id} className="flex flex-col gap-3 p-4 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-slate-800 shadow-sm">
+                <div key={payout.id} className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 font-bold text-sm`}>
-                        {payout.driverInitials === "Manual" ? <Settings size={18} /> : payout.driverInitials}
+                        {payout.driverInitials}
                       </div>
                       <div className="flex flex-col">
                         <span className="font-bold text-slate-900 dark:text-white text-sm">{payout.driverName}</span>
@@ -218,7 +226,9 @@ const PainelRepasses = () => {
               {filteredPayouts.length === 0 && (
                 <div className="text-center py-12 opacity-50">
                   <History size={48} className="mx-auto mb-3 text-slate-300" />
-                  <p className="text-sm">Nenhum repasse encontrado para este filtro.</p>
+                  <p className="text-slate-500 dark:text-slate-400">
+                    Nenhum repasse encontrado para este filtro.
+                  </p>
                 </div>
               )}
             </div>

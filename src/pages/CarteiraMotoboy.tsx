@@ -51,13 +51,12 @@ const CarteiraMotoboy = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark border-x dark:border-[#2a2a2a] overflow-x-hidden shadow-2xl lg:max-w-7xl lg:flex-row lg:min-h-screen">
-      {/* Desktop Sidebar (Omitida para brevidade, mantendo funcionalidade) */}
-      
+      {/* Main Content */}
       <div className="flex-1 flex flex-col pb-24 lg:pb-0">
         {/* Top App Bar */}
         <header className="flex items-center px-4 pt-6 pb-2 justify-between bg-background-light dark:bg-background-dark z-10 sticky top-0">
-          <Link to="/perfil-motoboy" className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-            <ArrowLeft className="text-slate-900 dark:text-white" size={24} />
+          <Link to="/perfil-motoboy" className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-slate-700 dark:text-white">
+            <ArrowLeft size={24} />
           </Link>
           <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Minha Carteira</h2>
         </header>
@@ -65,7 +64,7 @@ const CarteiraMotoboy = () => {
         <div className="flex-1 overflow-y-auto no-scrollbar">
           {/* Hero Balance Card */}
           <div className="px-4 py-4">
-            <div className="flex flex-col items-center justify-center rounded-2xl bg-white dark:bg-surface-dark shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
               <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Saldo Disponível</p>
               <h1 className="text-slate-900 dark:text-white text-4xl font-extrabold tracking-tight mb-4">R$ {availableBalance.toFixed(2)}</h1>
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800/50">
@@ -124,10 +123,9 @@ const CarteiraMotoboy = () => {
 
       {/* Modals */}
       <SolicitarSaqueModal isOpen={isSaqueModalOpen} onClose={() => setIsSaqueModalOpen(false)} availableBalance={availableBalance} />
-      <ProcessarRepasseModal isOpen={isRepasseModalOpen} onClose={() => setIsRepasseModalOpen(false)} driver={driver} />
+      <ProcessarRepasseModal isOpen={isRepasseModalOpen} onClose={() => setIsRepasseModalOpen(false)} driver={{ name: "João Carlos", balance: 450.00, bankAccount: "Nubank (Pix)" }} />
     </div>
   );
 };
 
-const driver = { name: "João Carlos", balance: 450.00, bankAccount: "Nubank (Pix)" };
 export default CarteiraMotoboy;

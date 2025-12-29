@@ -107,7 +107,7 @@ const DetalhesSaque = () => {
           <h3 className="text-slate-500 text-[10px] font-bold uppercase tracking-widest px-1">Conta de Destino</h3>
           <div className="bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-white/5 flex items-center gap-4">
             <div className="flex items-center justify-center rounded-xl bg-purple-600 size-12 text-white shadow-lg shadow-purple-900/20">
-              <Landmark size={24} />
+              <span className="material-symbols-outlined text-[24px]">account_balance</span>
             </div>
             <div className="flex flex-col flex-1">
               <p className="text-slate-900 dark:text-white font-bold">Nubank</p>
@@ -139,5 +139,4 @@ const DetalhesSaque = () => {
   );
 };
 
-import { Landmark } from "lucide-react";
 export default DetalhesSaque;

@@ -52,7 +52,6 @@ import AddDespesa from './pages/AddDespesa';
 import GestaoEquipamentos from './pages/GestaoEquipamentos';
 import GestaoClientes from './pages/Clientes';
 import DetalhesCliente from './pages/DetalhesCliente';
-import CurvaABC from './pages/CurvaABC';
 import Relatorios from './pages/Relatorios';
 import DRECompleta from './pages/DRECompleta';
 import RelatoriosEntregadores from './pages/RelatoriosEntregadores';
@@ -124,7 +123,6 @@ function App() {
                                 <Route path="/gestao-equipamentos" element={<GestaoEquipamentos />} />
                                 <Route path="/clientes" element={<GestaoClientes />} />
                                 <Route path="/detalhes-cliente" element={<DetalhesCliente />} />
-                                <Route path="/curva-abc" element={<CurvaABC />} />
                                 <Route path="/relatorios" element={<Relatorios />} />
                                 <Route path="/dre-completa" element={<DRECompleta />} />
                                 <Route path="/relatorios-entregadores" element={<RelatoriosEntregadores />} />
