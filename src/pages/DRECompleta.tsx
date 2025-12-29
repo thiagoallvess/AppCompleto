@@ -6,12 +6,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import DREFilterModal from "@/components/DREFilterModal";
 import { useOrders } from "@/contexts/OrdersContext";
+import { useExpenses } from "@/contexts/ExpensesProvider";
 
 const DRECompleta = () => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [currentPeriod, setCurrentPeriod] = useState("Mensal");
   const [currentDateRange, setCurrentDateRange] = useState("Out 2023");
   const { orders } = useOrders();
+  const { expenses } = useExpenses();
 
   const handleApplyFilters = (period: string, startDate?: string, endDate?: string) => {
     setCurrentPeriod(period);
@@ -26,25 +28,34 @@ const DRECompleta = () => {
     }
   };
 
-  // Calcular valores dinâmicos baseados nos pedidos
-  const totalRevenue = orders
+  // ========== RECEITAS ==========
+  // Calcular receita bruta (soma de todos os pedidos antes de descontos)
+  const grossRevenue = orders
     .filter(order => !order.cancelled)
-    .reduce((sum, order) => sum + order.total, 0);
+    .reduce((sum, order) => {
+      // Receita bruta = total do pedido + desconto aplicado
+      const orderGross = order.total + (order.discount || 0);
+      return sum + orderGross;
+    }, 0);
 
+  // Calcular descontos concedidos (soma real dos descontos aplicados via cupons)
   const totalDiscounts = orders
     .filter(order => !order.cancelled)
     .reduce((sum, order) => sum + (order.discount || 0), 0);
 
+  // Calcular cashback concedido (3% sobre o total de cada pedido)
   const totalCashback = orders
     .filter(order => !order.cancelled)
-    .reduce((sum, order) => sum + (order.total * 0.03), 0); // 3% cashback
+    .reduce((sum, order) => sum + (order.total * 0.03), 0);
 
-  const totalReturns = 0; // Mockado - em produção, seria calculado baseado em devoluções
+  // Devoluções (mockado - em produção seria calculado)
+  const totalReturns = 0;
 
-  const grossRevenue = totalRevenue + totalDiscounts; // Receita bruta = receita líquida + descontos
+  // Receita Líquida = Receita Bruta - Deduções
   const netRevenue = grossRevenue - totalDiscounts - totalCashback - totalReturns;
 
-  // Custos (simplificado - em produção seria mais detalhado)
+  // ========== CUSTOS (CMV) ==========
+  // Custos estimados baseados na receita líquida
   const ingredientsCost = netRevenue * 0.35; // 35% do custo
   const laborCost = netRevenue * 0.25; // 25% do custo
   const equipmentCost = netRevenue * 0.05; // 5% do custo
@@ -52,21 +63,24 @@ const DRECompleta = () => {
   const totalCMV = ingredientsCost + laborCost + equipmentCost;
   const grossProfit = netRevenue - totalCMV;
 
-  // Despesas operacionais
-  const deliveryFees = orders.filter(o => !o.cancelled).length * 5; // R$ 5 por entrega
-  const marketingCost = netRevenue * 0.08; // 8% marketing
-  const adminCost = netRevenue * 0.12; // 12% administrativo
-  const utilitiesCost = netRevenue * 0.03; // 3% energia/gás
+  // ========== DESPESAS OPERACIONAIS ==========
+  // Calcular despesas reais do ExpensesContext
+  const operationalExpenses = expenses
+    .filter(expense => expense.status === 'Pago')
+    .reduce((sum, expense) => sum + expense.amount, 0);
 
-  const totalOperationalExpenses = deliveryFees + marketingCost + adminCost + utilitiesCost;
+  // Adicionar custos de entrega (R$ 5 por pedido entregue)
+  const deliveryFees = orders.filter(o => !o.cancelled && o.status === "Entregue").length * 5;
+
+  const totalOperationalExpenses = operationalExpenses + deliveryFees;
   const ebit = grossProfit - totalOperationalExpenses;
 
-  // Resultado financeiro
+  // ========== RESULTADO FINANCEIRO ==========
   const financialResult = ebit * 0.02; // 2% juros recebidos - despesas bancárias
   const lair = ebit + financialResult;
 
-  // Impostos (simplificado)
-  const taxes = lair * 0.25; // 25% IR/CSLL
+  // ========== IMPOSTOS ==========
+  const taxes = lair > 0 ? lair * 0.25 : 0; // 25% IR/CSLL apenas se houver lucro
   const netIncome = lair - taxes;
 
   return (
@@ -114,7 +128,7 @@ const DRECompleta = () => {
                 <span className="text-white text-3xl font-extrabold tracking-tight tabular-nums">R$ {netIncome.toFixed(2)}</span>
                 <div className={`flex items-center ${netIncome >= 0 ? 'text-emerald-500' : 'text-red-500'} text-sm font-bold bg-opacity-10 px-1.5 py-0.5 rounded`}>
                   <TrendingUp size={14} className="mr-0.5" />
-                  {netIncome >= 0 ? '+' : ''}{(netIncome / grossRevenue * 100).toFixed(1)}%
+                  {netIncome >= 0 ? '+' : ''}{grossRevenue > 0 ? (netIncome / grossRevenue * 100).toFixed(1) : '0.0'}%
                 </div>
               </div>
             </div>
@@ -125,7 +139,7 @@ const DRECompleta = () => {
           <div className="mt-4 pt-4 border-t border-gray-700/50 dark:border-white/10 flex items-center justify-between z-10">
             <div className="flex flex-col">
               <span className="text-xs text-gray-500 dark:text-text-secondary">Margem Líquida</span>
-              <span className="text-sm font-bold text-white tabular-nums">{(netIncome / grossRevenue * 100).toFixed(1)}%</span>
+              <span className="text-sm font-bold text-white tabular-nums">{grossRevenue > 0 ? (netIncome / grossRevenue * 100).toFixed(1) : '0.0'}%</span>
             </div>
             <div className="h-8 w-px bg-gray-700/50 dark:bg-white/10 mx-4"></div>
             <div className="flex flex-col">
@@ -156,6 +170,10 @@ const DRECompleta = () => {
                 <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Vendas de Produtos</span>
                 <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ {grossRevenue.toFixed(2)}</span>
               </div>
+              <div className="flex justify-between items-center py-2 text-xs text-gray-500 dark:text-gray-400 pl-11">
+                <span>Total de pedidos processados</span>
+                <span className="font-medium">{orders.filter(o => !o.cancelled).length} pedidos</span>
+              </div>
             </div>
           </details>
 
@@ -175,11 +193,15 @@ const DRECompleta = () => {
             </summary>
             <div className="px-4 pb-4 pt-0 bg-gray-50/50 dark:bg-black/20 border-t border-gray-100 dark:border-white/5">
               <div className="flex justify-between items-center py-2 border-b border-dashed border-gray-200 dark:border-white/10">
-                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Descontos Concedidos</span>
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ {totalDiscounts.toFixed(2)}</span>
+                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Descontos Concedidos (Cupons)</span>
+                <span className="text-xs font-medium text-orange-600 dark:text-orange-400 tabular-nums">R$ {totalDiscounts.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 text-[10px] text-gray-500 dark:text-gray-400 pl-11">
+                <span>Cupons aplicados</span>
+                <span className="font-medium">{orders.filter(o => o.couponCode && !o.cancelled).length} usos</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-dashed border-gray-200 dark:border-white/10">
-                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Cashback Utilizado</span>
+                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Cashback Concedido</span>
                 <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ {totalCashback.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center py-2 last:border-0">
@@ -233,7 +255,7 @@ const DRECompleta = () => {
             </div>
             <div className="flex justify-between items-center mt-1">
               <span className="text-xs text-gray-500 dark:text-text-secondary">Margem Bruta</span>
-              <span className="text-xs font-bold text-primary tabular-nums">{(grossProfit / netRevenue * 100).toFixed(1)}%</span>
+              <span className="text-xs font-bold text-primary tabular-nums">{netRevenue > 0 ? (grossProfit / netRevenue * 100).toFixed(1) : '0.0'}%</span>
             </div>
           </div>
 
@@ -257,20 +279,12 @@ const DRECompleta = () => {
                 <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ {deliveryFees.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-dashed border-gray-200 dark:border-white/10">
-                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Marketing e Vendas</span>
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ {marketingCost.toFixed(2)}</span>
+                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Despesas Registradas</span>
+                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ {operationalExpenses.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between items-center py-2 border-b border-dashed border-gray-200 dark:border-white/10">
-                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Administrativas</span>
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ {adminCost.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-dashed border-gray-200 dark:border-white/10">
-                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Energia Elétrica</span>
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ {utilitiesCost.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between items-center py-2 last:border-0">
-                <span className="text-xs text-gray-600 dark:text-text-secondary pl-11">Gás</span>
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 tabular-nums">R$ 0,00</span>
+              <div className="flex justify-between items-center py-2 text-[10px] text-gray-500 dark:text-gray-400 pl-11">
+                <span>Total de despesas pagas</span>
+                <span className="font-medium">{expenses.filter(e => e.status === 'Pago').length} lançamentos</span>
               </div>
             </div>
           </details>
@@ -338,7 +352,9 @@ const DRECompleta = () => {
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
             <div className="flex justify-between items-center z-10">
               <span className="text-sm font-bold uppercase tracking-wide opacity-90">Resultado do Exercício</span>
-              <div className="px-2 py-1 rounded bg-white/20 text-xs font-bold backdrop-blur-sm">Lucro</div>
+              <div className="px-2 py-1 rounded bg-white/20 text-xs font-bold backdrop-blur-sm">
+                {netIncome >= 0 ? 'Lucro' : 'Prejuízo'}
+              </div>
             </div>
             <div className="flex justify-between items-end mt-2 z-10">
               <h2 className="text-3xl font-extrabold tracking-tight tabular-nums">R$ {netIncome.toFixed(2)}</h2>
@@ -346,12 +362,12 @@ const DRECompleta = () => {
             <div className="mt-4 pt-3 border-t border-white/20 flex items-center gap-4 z-10">
               <div className="flex flex-col">
                 <span className="text-[10px] uppercase opacity-80">Margem Líquida</span>
-                <span className="text-sm font-bold">{(netIncome / grossRevenue * 100).toFixed(1)}%</span>
+                <span className="text-sm font-bold">{grossRevenue > 0 ? (netIncome / grossRevenue * 100).toFixed(1) : '0.0'}%</span>
               </div>
               <div className="h-6 w-px bg-white/20"></div>
               <div className="flex flex-col">
                 <span className="text-[10px] uppercase opacity-80">Rentabilidade</span>
-                <span className="text-sm font-bold">{netIncome >= 0 ? 'Alta' : 'Baixa'}</span>
+                <span className="text-sm font-bold">{netIncome >= 0 ? 'Positiva' : 'Negativa'}</span>
               </div>
             </div>
           </div>
