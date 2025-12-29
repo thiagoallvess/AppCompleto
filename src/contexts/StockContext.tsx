@@ -207,6 +207,8 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
             const newUnitCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
             let newStatus = "Em dia";
             if (item.minQuantity && newQuantity <= item.minQuantity) newStatus = "Baixo";
+            if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) newStatus = "Crítico";
+
             return { ...item, quantity: newQuantity, unitCost: newUnitCost, status: newStatus };
           }
           return item;
@@ -222,6 +224,8 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
             const newUnitCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
             let newStatus = "Em dia";
             if (item.minQuantity && newQuantity <= item.minQuantity) newStatus = "Baixo";
+            if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) newStatus = "Crítico";
+
             return { ...item, quantity: newQuantity, unitCost: newUnitCost, status: newStatus };
           }
           return item;
