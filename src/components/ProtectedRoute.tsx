@@ -10,16 +10,23 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { user, profile, loading } = useAuth();
   const location = useLocation();
 
+  // Se ainda estiver carregando a sessão inicial, mostramos o loading
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+        <p className="text-slate-500 animate-pulse">Verificando acesso...</p>
+      </div>
+    );
   }
 
+  // Se não houver usuário autenticado, redireciona para o login
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Se houver restrição de roles e o perfil já carregou, verifica a permissão
   if (allowedRoles && profile && !allowedRoles.includes(profile.role)) {
-    // Redireciona para a home se o usuário não tiver permissão
     return <Navigate to="/" replace />;
   }
 
