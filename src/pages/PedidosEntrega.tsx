@@ -5,30 +5,40 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useOrders } from "@/contexts/OrdersContext";
 import { useDrivers } from "@/contexts/DriversContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { showSuccess, showError } from "@/utils/toast";
 
 const PedidosEntrega = () => {
   const { orders, updateOrder } = useOrders();
   const { drivers } = useDrivers();
+  const { profile } = useAuth();
   const [isOnline, setIsOnline] = useState(true);
 
-  // Filtrar pedidos disponíveis para entrega (status "Rota" sem driver atribuído)
+  // Filtra pedidos disponíveis: status "Preparo" (pronto) ou "Rota" (despachado) 
+  // que ainda não possuem um entregador atribuído
   const availableDeliveries = orders.filter(order => 
-    order.status === "Rota" && !order.driverId && !order.cancelled
+    (order.status === "Preparo" || order.status === "Rota") && 
+    !order.driverId && 
+    !order.cancelled
   );
 
   const handleAcceptOrder = (orderId: string, value: number) => {
-    // Simular busca do driver atual (em produção, viria do contexto de autenticação)
-    const currentDriver = drivers.find(d => d.status === 'online') || drivers[0];
+    if (!isOnline) {
+      showError("Você precisa estar online para aceitar entregas.");
+      return;
+    }
+
+    // Busca o perfil do entregador logado ou fallback para o primeiro da lista (simulação)
+    const currentDriver = drivers.find(d => d.id === profile?.id) || drivers.find(d => d.status === 'online') || drivers[0];
     
     if (!currentDriver) {
-      showError("Nenhum entregador disponível");
+      showError("Erro ao identificar seu perfil de entregador.");
       return;
     }
 
     updateOrder(orderId, {
       driverId: currentDriver.id,
-      driverName: currentDriver.name,
+      driverName: `${profile?.first_name || currentDriver.name}`,
       status: "Rota",
       statusColor: "blue",
       statusIcon: "sports_motorsports",
@@ -39,7 +49,7 @@ const PedidosEntrega = () => {
   };
 
   const handleRejectOrder = (orderId: string) => {
-    showError("Pedido rejeitado");
+    showSuccess("Pedido ignorado.");
   };
 
   const toggleOnlineStatus = () => {
@@ -57,14 +67,14 @@ const PedidosEntrega = () => {
             <div 
               className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border-2 border-gray-100 dark:border-[#2a2a2a]" 
               style={{
-                backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuALEIh8HjLL7FQ3X77XjOWAZ3UT1OyyZtxxP4UUAOZ59uyQA_EBUxzNVtIsogRITvQzwMh1etYm4BwvDAwXMmivqRAcZ2koimAHtS_K3nrY1dvw0662qwSSXi39yClK6GKPg_XGlqjzscnAAcnHCY_xVpRmoryZyQx7UWOmrNx_m53Nm0BqOJqs3mhVQgjOwi6pIpGDIR1N-ycjt3AHpAQtJtcCjc4PBHeIOaY1xV2zTF8b6AoGQXbPDe6MWDPeyz_4acsVXcy-qA")`
+                backgroundImage: `url("${profile?.avatar_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuALEIh8HjLL7FQ3X77XjOWAZ3UT1OyyZtxxP4UUAOZ59uyQA_EBUxzNVtIsogRITvQzwMh1etYm4BwvDAwXMmivqRAcZ2koimAHtS_K3nrY1dvw0662qwSSXi39yClK6GKPg_XGlqjzscnAAcnHCY_xVpRmoryZyQx7UWOmrNx_m53Nm0BqOJqs3mhVQgjOwi6pIpGDIR1N-ycjt3AHpAQtJtcCjc4PBHeIOaY1xV2zTF8b6AoGQXbPDe6MWDPeyz_4acsVXcy-qA"}")`
               }}
             ></div>
-            <div className="absolute bottom-0 right-0 size-3 bg-primary rounded-full border-2 border-background-light dark:border-background-dark"></div>
+            <div className={`absolute bottom-0 right-0 size-3 rounded-full border-2 border-background-light dark:border-background-dark ${isOnline ? 'bg-primary' : 'bg-gray-400'}`}></div>
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Bom trabalho,</span>
-            <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">João Carlos</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">{profile?.first_name || 'Entregador'}</span>
           </div>
         </div>
 
@@ -122,14 +132,14 @@ const PedidosEntrega = () => {
               <div 
                 className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-gray-100 dark:border-[#2a2a2a]" 
                 style={{
-                  backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuALEIh8HjLL7FQ3X77XjOWAZ3UT1OyyZtxxP4UUAOZ59uyQA_EBUxzNVtIsogRITvQzwMh1etYm4BwvDAwXMmivqRAcZ2koimAHtS_K3nrY1dvw0662qwSSXi39yClK6GKPg_XGlqjzscnAAcnHCY_xVpRmoryZyQx7UWOmrNx_m53Nm0BqOJqs3mhVQgjOwi6pIpGDIR1N-ycjt3AHpAQtJtcCjc4PBHeIOaY1xV2zTF8b6AoGQXbPDe6MWDPeyz_4acsVXcy-qA")`
+                  backgroundImage: `url("${profile?.avatar_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuALEIh8HjLL7FQ3X77XjOWAZ3UT1OyyZtxxP4UUAOZ59uyQA_EBUxzNVtIsogRITvQzwMh1etYm4BwvDAwXMmivqRAcZ2koimAHtS_K3nrY1dvw0662qwSSXi39yClK6GKPg_XGlqjzscnAAcnHCY_xVpRmoryZyQx7UWOmrNx_m53Nm0BqOJqs3mhVQgjOwi6pIpGDIR1N-ycjt3AHpAQtJtcCjc4PBHeIOaY1xV2zTF8b6AoGQXbPDe6MWDPeyz_4acsVXcy-qA"}")`
                 }}
               ></div>
-              <div className="absolute bottom-0 right-0 size-3 bg-primary rounded-full border-2 border-background-light dark:border-background-dark"></div>
+              <div className={`absolute bottom-0 right-0 size-3 rounded-full border-2 border-background-light dark:border-background-dark ${isOnline ? 'bg-primary' : 'bg-gray-400'}`}></div>
             </div>
             <div className="flex flex-col">
               <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Bom trabalho,</span>
-              <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">João Carlos</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">{profile?.first_name || 'Entregador'}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -169,14 +179,12 @@ const PedidosEntrega = () => {
             {availableDeliveries.map((delivery, index) => (
               <div 
                 key={delivery.id} 
-                className={`group relative overflow-hidden rounded-xl bg-white dark:bg-[#1e1e1e] shadow-sm border border-gray-100 dark:border-[#2a2a2a] ${
-                  index === 2 ? 'opacity-90' : ''
-                } hover:shadow-lg transition-all duration-200`}
+                className="group relative overflow-hidden rounded-xl bg-white dark:bg-[#1e1e1e] shadow-sm border border-gray-100 dark:border-[#2a2a2a] hover:shadow-lg transition-all duration-200"
               >
                 <div 
                   className="h-32 lg:h-40 w-full bg-cover bg-center relative" 
                   style={{
-                    backgroundImage: `linear-gradient(to bottom, rgba(30,30,30,0.2), #1e1e1e), url("${delivery.mapImage || "https://placeholder.pics/svg/300"}")`
+                    backgroundImage: `linear-gradient(to bottom, rgba(30,30,30,0.2), #1e1e1e), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCfpeFOIVNieu1xqOrBMBYWRByOLLzeKeYmE8slSkDyJytYCC5Vesyjzo_g0phgQa3eoDugYdBoQ636sHs25VyHueUcBnd4j2l_UyWVUPIihqam2dD4GAWjG-tRhoWXl3Z_vZxH7ep85WspZ5LsNxlGqrcojL7_4SB3TplxWRzMkiQQUUt4IwRXOkNfWsTabxEEIiZCtJqXHOgJftaBm1_E2GGciY3SZDcM94je8Pz82lq8V8yjqCwvxy24elBL3MXZ2GTLyyOGzg")`
                   }}
                 >
                   <div className="absolute top-3 left-3 bg-[#121212]/80 backdrop-blur px-2 py-1 rounded-md border border-[#2a2a2a] flex items-center gap-1">
@@ -192,15 +200,15 @@ const PedidosEntrega = () => {
                 <div className="p-4 pt-3">
                   <div className="flex justify-between items-end mb-4">
                     <div className="flex flex-col">
-                      <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">Restaurante</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">Pedido {delivery.id}</span>
                       <h4 className="text-base font-semibold text-slate-900 dark:text-white leading-tight">
-                        Geladinho Gourmet HQ
+                        {delivery.customer}
                       </h4>
                     </div>
                     <div className="flex flex-col items-end">
-                      <span className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Valor total</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Taxa de entrega</span>
                       <span className="text-2xl font-extrabold text-primary tracking-tight">
-                        R$ {delivery.total.toFixed(2)}
+                        R$ 5,00
                       </span>
                     </div>
                   </div>
@@ -211,10 +219,10 @@ const PedidosEntrega = () => {
                     </div>
                     <div className="flex flex-col justify-center gap-0.5">
                       <p className="text-sm font-semibold text-slate-900 dark:text-white leading-snug">
-                        Rua das Flores, 123
+                        Endereço de Entrega
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Centro - Bloco B
+                        Centro - São Paulo, SP
                       </p>
                     </div>
                   </div>
@@ -224,11 +232,11 @@ const PedidosEntrega = () => {
                       onClick={() => handleRejectOrder(delivery.id)}
                       className="flex items-center justify-center h-12 rounded-xl border border-gray-300 dark:border-[#333] text-gray-600 dark:text-gray-300 text-sm font-bold hover:bg-gray-50 dark:hover:bg-[#2a2a2a] transition-colors"
                     >
-                      Rejeitar
+                      Ignorar
                     </button>
                     <button 
-                      onClick={() => handleAcceptOrder(delivery.id, delivery.total)}
-                      className="flex items-center justify-center h-12 rounded-xl bg-primary text-[#102216] text-sm font-bold hover:brightness-110 transition-all shadow-lg shadow-primary/20"
+                      onClick={() => handleAcceptOrder(delivery.id, 5.00)}
+                      className="flex items-center justify-center h-12 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 transition-all shadow-lg shadow-primary/20"
                     >
                       ACEITAR CORRIDA
                     </button>
