@@ -10,7 +10,12 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { user, profile, loading } = useAuth();
   const location = useLocation();
 
-  // Se ainda estiver carregando a sessão inicial e não tivermos um usuário, mostramos o loading
+  // Se não houver usuário e não estiver mais carregando, vai para login
+  if (!loading && !user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Se estiver carregando e ainda não temos o usuário, mostra o loading
   if (loading && !user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark">
@@ -20,25 +25,19 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     );
   }
 
-  // Se não houver usuário autenticado, redireciona para o login
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  // Se o usuário existe mas o perfil ainda está carregando (e temos restrição de role)
+  if (user && !profile && loading && allowedRoles) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+        <p className="text-slate-500">Sincronizando perfil...</p>
+      </div>
+    );
   }
 
-  // Se houver restrição de roles
-  if (allowedRoles) {
-    // Se o perfil ainda não carregou mas o usuário existe, mostramos um loading breve
-    if (!profile && loading) {
-      return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-          <p className="text-slate-500">Sincronizando perfil...</p>
-        </div>
-      );
-    }
-
-    // Se carregou e não tem perfil ou a role não é permitida
-    const userRole = profile?.role || 'cliente';
+  // Se houver restrição de roles e o perfil já carregou
+  if (allowedRoles && profile) {
+    const userRole = profile.role || 'cliente';
     if (!allowedRoles.includes(userRole)) {
       return <Navigate to="/" replace />;
     }

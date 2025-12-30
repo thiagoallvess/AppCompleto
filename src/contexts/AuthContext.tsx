@@ -34,7 +34,6 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(() => {
-    // Tenta recuperar o perfil salvo para evitar que a role "suma" ao navegar
     const savedProfile = localStorage.getItem('supabase_profile');
     return savedProfile ? JSON.parse(savedProfile) : null;
   });
@@ -48,18 +47,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .eq('id', userId)
         .maybeSingle();
       
-      if (!error && data) {
+      if (error) throw error;
+
+      if (data) {
         const profileData = data as Profile;
         setProfile(profileData);
         localStorage.setItem('supabase_profile', JSON.stringify(profileData));
+      } else {
+        // Se o usuário existe mas o perfil não foi criado no banco ainda (ex: delay no trigger)
+        // Criamos um perfil temporário para não travar a UI
+        const tempProfile: Profile = {
+          id: userId,
+          first_name: user?.user_metadata?.first_name || 'Usuário',
+          last_name: user?.user_metadata?.last_name || '',
+          role: (user?.user_metadata?.role as UserRole) || 'cliente',
+          avatar_url: null
+        };
+        setProfile(tempProfile);
       }
     } catch (err) {
       console.error('Erro ao buscar perfil:', err);
+      // Fallback em caso de erro de rede ou banco
+      if (user) {
+        setProfile({
+          id: userId,
+          first_name: 'Usuário',
+          last_name: '',
+          role: 'cliente',
+          avatar_url: null
+        });
+      }
     }
   };
 
   useEffect(() => {
-    // Verificar sessão inicial
     const initAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -81,14 +102,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     initAuth();
 
-    // Ouvir mudanças na autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
-          if (currentUser) await fetchProfile(currentUser.id);
+          if (currentUser) {
+            await fetchProfile(currentUser.id);
+          }
         }
         
         if (event === 'SIGNED_OUT') {
