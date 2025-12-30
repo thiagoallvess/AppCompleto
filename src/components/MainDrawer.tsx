@@ -1,8 +1,12 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Grid3X3, Receipt, ChefHat, Factory, HelpCircle, Link as LinkIcon, Wallet, AlertTriangle as AlertTriangleIcon, ShoppingCart, Calendar, RefreshCw, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, Ticket, Store, PlusCircle } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Receipt, ChefHat, Factory, AlertTriangle as AlertTriangleIcon, ShoppingCart, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, Ticket, Store, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MainDrawer = () => {
+  const { profile, signOut } = useAuth();
+  const userRole = profile?.role || 'cliente';
+
   const clientMenuItems = [
     { icon: Home, label: "Início", path: "/" },
     { icon: ShoppingBag, label: "Meus Pedidos", path: "/meus-pedidos" },
@@ -36,7 +40,6 @@ const MainDrawer = () => {
     { icon: Truck, label: "Relatórios Entregadores", path: "/relatorios-entregadores" },
     { icon: Map, label: "Configurações Entrega", path: "/configuracoes-entrega" },
     { icon: Settings, label: "Configurações", path: "/configuracoes-admin" },
-    { icon: LinkIcon, label: "Vínculos", path: "/vinculos" },
     { icon: Wallet, label: "Painel Repasses", path: "/painel-repasses" },
   ];
 
@@ -63,81 +66,91 @@ const MainDrawer = () => {
               </div>
               <div>
                 <p className="text-base font-bold text-gray-900 dark:text-white">Menu</p>
+                <p className="text-[10px] font-bold uppercase text-primary">{userRole}</p>
               </div>
             </div>
           </SheetTitle>
         </SheetHeader>
         
         <div className="overflow-y-auto h-[calc(100vh-140px)]">
-          {/* Cliente Section */}
-          <div className="px-4 pt-4 pb-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Cliente</p>
-            <nav className="flex flex-col gap-1">
-              {clientMenuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-                  >
-                    <Icon className="text-gray-600 dark:text-gray-400 group-hover:text-primary" size={20} />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary">
-                      {item.label}
-                    </span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+          {/* Cliente Section - Visible to Clients and Admins */}
+          {(userRole === 'cliente' || userRole === 'admin') && (
+            <div className="px-4 pt-4 pb-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Cliente</p>
+              <nav className="flex flex-col gap-1">
+                {clientMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                    >
+                      <Icon className="text-gray-600 dark:text-gray-400 group-hover:text-primary" size={20} />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary">
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
 
-          {/* Admin Section */}
-          <div className="px-4 pt-4 pb-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Admin</p>
-            <nav className="flex flex-col gap-1">
-              {adminMenuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-                  >
-                    <Icon className="text-gray-600 dark:text-gray-400 group-hover:text-primary" size={20} />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary">
-                      {item.label}
-                    </span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+          {/* Admin Section - Only visible to Admins */}
+          {userRole === 'admin' && (
+            <div className="px-4 pt-4 pb-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Administração</p>
+              <nav className="flex flex-col gap-1">
+                {adminMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                    >
+                      <Icon className="text-gray-600 dark:text-gray-400 group-hover:text-primary" size={20} />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary">
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
 
-          {/* Delivery Section */}
-          <div className="px-4 pt-4 pb-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Entregador</p>
-            <nav className="flex flex-col gap-1">
-              {deliveryMenuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-                  >
-                    <Icon className="text-gray-600 dark:text-gray-400 group-hover:text-primary" size={20} />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary">
-                      {item.label}
-                    </span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+          {/* Delivery Section - Visible to Motoboys and Admins */}
+          {(userRole === 'motoboy' || userRole === 'admin') && (
+            <div className="px-4 pt-4 pb-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Entregador</p>
+              <nav className="flex flex-col gap-1">
+                {deliveryMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                    >
+                      <Icon className="text-gray-600 dark:text-gray-400 group-hover:text-primary" size={20} />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary">
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 dark:border-gray-800 p-4 bg-white dark:bg-surface-dark">
-          <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group w-full">
+          <button 
+            onClick={() => signOut()}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group w-full"
+          >
             <LogOut className="text-gray-600 dark:text-gray-400 group-hover:text-red-500" size={20} />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-red-500">
               Sair
@@ -149,4 +162,5 @@ const MainDrawer = () => {
   );
 };
 
+import { Wallet } from "lucide-react";
 export default MainDrawer;
