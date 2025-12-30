@@ -1,11 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-// No Dyad, as variáveis de ambiente são injetadas via import.meta.env
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+// Credenciais do projeto injetadas diretamente para garantir funcionamento imediato
+const supabaseUrl = "https://arjktxxzuihsneovqjaq.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyamt0eHh6dWloc25lb3ZxamFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxMDQ2NjUsImV4cCI6MjA4MjY4MDY2NX0.s3kPScnjaMoKjDMLqHm6GxZGnzecImHSDVzW6ZTYgaw";
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("Aviso: Variáveis de ambiente do Supabase não encontradas. Verifique sua configuração.");
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
