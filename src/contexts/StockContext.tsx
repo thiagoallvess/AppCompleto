@@ -66,32 +66,21 @@ export const useStock = () => {
   return context;
 };
 
-interface StockProviderProps {
-  children: ReactNode;
-}
+export const StockProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [ingredients, setIngredients] = useState<Ingredient[]>(() => {
+    const saved = localStorage.getItem('ingredients');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [packagingItems, setPackagingItems] = useState<PackagingItem[]>([]);
-  const [stockMovements, setStockMovements] = useState<StockMovement[]>([]);
+  const [packagingItems, setPackagingItems] = useState<PackagingItem[]>(() => {
+    const saved = localStorage.getItem('packagingItems');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  useEffect(() => {
-    const loadStockData = () => {
-      try {
-        const storedIngredients = localStorage.getItem('ingredients');
-        const storedPackagingItems = localStorage.getItem('packagingItems');
-        const storedMovements = localStorage.getItem('stockMovements');
-
-        if (storedIngredients) setIngredients(JSON.parse(storedIngredients));
-        if (storedPackagingItems) setPackagingItems(JSON.parse(storedPackagingItems));
-        if (storedMovements) setStockMovements(JSON.parse(storedMovements));
-      } catch (error) {
-        console.error('Error loading stock data:', error);
-      }
-    };
-
-    loadStockData();
-  }, []);
+  const [stockMovements, setStockMovements] = useState<StockMovement[]>(() => {
+    const saved = localStorage.getItem('stockMovements');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     localStorage.setItem('ingredients', JSON.stringify(ingredients));

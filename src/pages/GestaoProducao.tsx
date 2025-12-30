@@ -16,31 +16,27 @@ import ProductionFilterModal from "@/components/ProductionFilterModal";
 const GestaoProducao = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const [productionLots, setProductionLots] = useState<any[]>([]);
+  const [productionLots, setProductionLots] = useState<any[]>(() => {
+    const saved = localStorage.getItem('productionLots');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
+  // Sincronizar com localStorage sempre que houver mudança local
   useEffect(() => {
-    const loadLots = () => {
-      const storedLots = localStorage.getItem('productionLots');
-      if (storedLots) {
-        setProductionLots(JSON.parse(storedLots));
-      }
-    };
-    loadLots();
-  }, []);
+    localStorage.setItem('productionLots', JSON.stringify(productionLots));
+  }, [productionLots]);
 
   const handleDelete = (id: string, name: string) => {
     if (confirm(`Deseja realmente excluir o lote de "${name}"?`)) {
       const updatedLots = productionLots.filter(lot => lot.id !== id);
       setProductionLots(updatedLots);
-      localStorage.setItem('productionLots', JSON.stringify(updatedLots));
       showSuccess(`Lote #${id} excluído com sucesso.`);
     }
   };
 
   const handleApplyFilters = (filters: any) => {
     setActiveFilter(filters.status);
-    // In a real app, we would also filter by period
   };
 
   const filteredLots = productionLots.filter(lot => {
@@ -183,7 +179,7 @@ const GestaoProducao = () => {
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
                     <div className="flex justify-between items-start">
-                      <h3 className={`text-base font-semibold text-slate-800 dark:text-white truncate pr-8`}>
+                      <h3 className={`text-base font-semibold truncate pr-2 text-slate-800 dark:text-white`}>
                         {lot.name}
                       </h3>
                     </div>

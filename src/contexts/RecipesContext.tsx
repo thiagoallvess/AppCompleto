@@ -9,6 +9,11 @@ export interface Recipe {
   cost: number;
   isTop?: boolean;
   isDraft?: boolean;
+  ingredientsList?: any[];
+  packagingList?: any[];
+  equipmentList?: any[];
+  sellingPrice?: number;
+  linkedProductId?: string;
 }
 
 interface RecipesContextType {
@@ -29,34 +34,12 @@ export const useRecipes = () => {
   return context;
 };
 
-interface RecipesProviderProps {
-  children: ReactNode;
-}
+export const RecipesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [recipes, setRecipes] = useState<Recipe[]>(() => {
+    const saved = localStorage.getItem('recipes');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-
-  // Load recipes from localStorage on mount
-  useEffect(() => {
-    const loadRecipes = () => {
-      try {
-        const storedRecipes = localStorage.getItem('recipes');
-        if (storedRecipes) {
-          setRecipes(JSON.parse(storedRecipes));
-        } else {
-          // Inicia vazio para produção
-          setRecipes([]);
-        }
-      } catch (error) {
-        console.error('Error loading recipes:', error);
-        setRecipes([]);
-      }
-    };
-
-    loadRecipes();
-  }, []);
-
-  // Save to localStorage whenever recipes change
   useEffect(() => {
     localStorage.setItem('recipes', JSON.stringify(recipes));
   }, [recipes]);
