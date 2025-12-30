@@ -2,11 +2,22 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
+export type UserRole = 'admin' | 'motoboy' | 'cliente';
+
+interface Profile {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  role: UserRole;
+  avatar_url: string | null;
+}
+
 interface AuthContextType {
   user: User | null;
+  profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, metadata?: any) => Promise<void>;
+  signUp: (email: string, password: string, metadata: { first_name: string; last_name: string; role?: UserRole }) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -20,25 +31,38 @@ export const useAuth = () => {
   return context;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (!error && data) {
+      setProfile(data as Profile);
+    }
+  };
+
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) fetchProfile(session.user.id);
       setLoading(false);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
         setLoading(false);
       }
     );
@@ -47,20 +71,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string, metadata?: any) => {
+  const signUp = async (email: string, password: string, metadata: any) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: metadata,
-      },
+      options: { data: metadata },
     });
     if (error) throw error;
   };
@@ -71,13 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      signIn,
-      signUp,
-      signOut,
-    }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
