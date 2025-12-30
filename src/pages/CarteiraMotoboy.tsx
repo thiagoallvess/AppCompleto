@@ -1,53 +1,49 @@
 "use client";
 
-import { ArrowLeft, TrendingUp, Wallet, ChevronRight } from "lucide-react";
+import { ArrowLeft, TrendingUp, Wallet, ChevronRight, History } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useOrders } from "@/contexts/OrdersContext";
+import { useAuth } from "@/contexts/AuthContext";
 import SolicitarSaqueModal from "@/components/SolicitarSaqueModal";
 import ProcessarRepasseModal from "@/components/ProcessarRepasseModal";
 
 const CarteiraMotoboy = () => {
+  const { orders } = useOrders();
+  const { profile } = useAuth();
   const [isSaqueModalOpen, setIsSaqueModalOpen] = useState(false);
   const [isRepasseModalOpen, setIsRepasseModalOpen] = useState(false);
-  const availableBalance = 345.50;
-  const totalEarnings = 2450.00;
 
-  // Mock de transações incluindo saques e ganhos
-  const transactions = [
-    {
-      id: "948392",
-      description: "Saque Solicitado",
-      type: "withdrawal",
-      date: "20 Out, 14:30",
-      amount: 200.00,
-      status: "Pendente",
-      icon: "hourglass_top",
-      iconBg: "bg-orange-500/10",
-      iconColor: "text-orange-500"
-    },
-    {
-      id: "TRX-102",
-      description: "Entrega #1284",
+  // Filtra entregas concluídas pelo motoboy logado
+  const myFinishedDeliveries = useMemo(() => {
+    return orders.filter(order => 
+      order.driverId === profile?.id && 
+      order.status === "Entregue" && 
+      !order.cancelled
+    );
+  }, [orders, profile]);
+
+  // Calcula ganhos reais (exemplo: R$ 5,00 por entrega)
+  const availableBalance = useMemo(() => {
+    return myFinishedDeliveries.length * 5.00;
+  }, [myFinishedDeliveries]);
+
+  const totalEarnings = availableBalance; // Em um app real, somaria histórico total
+
+  // Transforma pedidos em formato de transação para a lista
+  const transactions = useMemo(() => {
+    return myFinishedDeliveries.map(order => ({
+      id: order.id,
+      description: `Entrega ${order.id}`,
       type: "income",
-      date: "20 Out, 12:15",
-      amount: 8.50,
+      date: order.date || "Hoje",
+      amount: 5.00,
       status: "Concluído",
       icon: "delivery_dining",
       iconBg: "bg-primary/10",
       iconColor: "text-primary"
-    },
-    {
-      id: "948391",
-      description: "Saque Processado",
-      type: "withdrawal",
-      date: "15 Out, 09:00",
-      amount: 150.00,
-      status: "Concluído",
-      icon: "check_circle",
-      iconBg: "bg-emerald-500/10",
-      iconColor: "text-emerald-500"
-    }
-  ];
+    })).sort((a, b) => b.id.localeCompare(a.id));
+  }, [myFinishedDeliveries]);
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark border-x dark:border-[#2a2a2a] overflow-x-hidden shadow-2xl lg:max-w-7xl lg:flex-row lg:min-h-screen">
@@ -78,52 +74,59 @@ const CarteiraMotoboy = () => {
           <div className="px-4 pb-6">
             <button 
               onClick={() => setIsSaqueModalOpen(true)}
-              className="w-full shadow-lg bg-primary hover:bg-blue-700 text-white rounded-2xl h-14 flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+              disabled={availableBalance < 20}
+              className="w-full shadow-lg bg-primary hover:bg-blue-700 text-white rounded-2xl h-14 flex items-center justify-center gap-3 transition-all active:scale-[0.98] disabled:opacity-50 disabled:grayscale"
             >
               <Wallet size={24} />
               <span className="font-bold">Solicitar Saque</span>
             </button>
+            {availableBalance < 20 && (
+              <p className="text-center text-[10px] text-slate-500 mt-2">Mínimo para saque: R$ 20,00</p>
+            )}
           </div>
 
           {/* Transactions List */}
           <div className="px-4 pb-2">
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold">Transações Recentes</h3>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold">Ganhos Recentes</h3>
           </div>
 
           <div className="flex flex-col px-4 gap-3 pb-10">
-            {transactions.map((trx) => (
-              <Link 
-                key={trx.id} 
-                to={trx.type === 'withdrawal' ? `/detalhes-saque?id=${trx.id}` : '#'}
-                className={`flex items-center gap-4 bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm active:scale-[0.99] transition-transform ${trx.type === 'withdrawal' ? 'cursor-pointer' : 'cursor-default'}`}
-              >
-                <div className={`flex items-center justify-center size-10 rounded-full ${trx.iconBg}`}>
-                  <span className={`material-symbols-outlined ${trx.iconColor}`}>{trx.icon}</span>
-                </div>
-                <div className="flex flex-col flex-1 min-w-0">
-                  <div className="flex justify-between items-start">
-                    <p className="text-slate-900 dark:text-white text-base font-bold truncate">{trx.description}</p>
-                    <p className={`font-bold ${trx.type === 'income' ? 'text-emerald-500' : 'text-slate-500'}`}>
-                      {trx.type === 'income' ? '+' : '-'} R$ {trx.amount.toFixed(2)}
-                    </p>
+            {transactions.length > 0 ? (
+              transactions.map((trx) => (
+                <div 
+                  key={trx.id} 
+                  className="flex items-center gap-4 bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm"
+                >
+                  <div className={`flex items-center justify-center size-10 rounded-full ${trx.iconBg}`}>
+                    <span className={`material-symbols-outlined ${trx.iconColor}`}>{trx.icon}</span>
                   </div>
-                  <div className="flex justify-between items-center mt-0.5">
-                    <p className="text-slate-500 dark:text-slate-400 text-xs">{trx.date}</p>
-                    <div className="flex items-center gap-1">
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <div className="flex justify-between items-start">
+                      <p className="text-slate-900 dark:text-white text-base font-bold truncate">{trx.description}</p>
+                      <p className="font-bold text-emerald-500">
+                        + R$ {trx.amount.toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center mt-0.5">
+                      <p className="text-slate-500 dark:text-slate-400 text-xs">{trx.date}</p>
                       <span className={`text-[10px] font-bold uppercase ${trx.iconColor}`}>{trx.status}</span>
-                      {trx.type === 'withdrawal' && <ChevronRight size={14} className="text-slate-400" />}
                     </div>
                   </div>
                 </div>
-              </Link>
-            ))}
+              ))
+            ) : (
+              <div className="text-center py-12 opacity-40">
+                <History size={48} className="mx-auto mb-2" />
+                <p className="text-sm font-medium">Nenhum ganho registrado ainda.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Modals */}
       <SolicitarSaqueModal isOpen={isSaqueModalOpen} onClose={() => setIsSaqueModalOpen(false)} availableBalance={availableBalance} />
-      <ProcessarRepasseModal isOpen={isRepasseModalOpen} onClose={() => setIsRepasseModalOpen(false)} driver={{ name: "João Carlos", balance: 450.00, bankAccount: "Nubank (Pix)" }} />
+      <ProcessarRepasseModal isOpen={isRepasseModalOpen} onClose={() => setIsRepasseModalOpen(false)} driver={{ name: profile?.first_name || "Entregador", balance: availableBalance, bankAccount: "Conta Padrão" }} />
     </div>
   );
 };
