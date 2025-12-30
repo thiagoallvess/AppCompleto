@@ -12,9 +12,13 @@ const PedidosEntrega = () => {
   const { drivers } = useDrivers();
   const [isOnline, setIsOnline] = useState(true);
 
-  // Filtrar pedidos disponíveis para entrega (status "Rota" sem driver atribuído)
+  // Filtrar pedidos disponíveis para entrega:
+  // Agora exibe pedidos em "Preparo" (quase prontos) ou "Rota" (prontos para sair)
+  // que ainda não possuem um driverId atribuído.
   const availableDeliveries = orders.filter(order => 
-    order.status === "Rota" && !order.driverId && !order.cancelled
+    (order.status === "Rota" || order.status === "Preparo") && 
+    !order.driverId && 
+    !order.cancelled
   );
 
   const handleAcceptOrder = (orderId: string, value: number) => {
@@ -29,7 +33,7 @@ const PedidosEntrega = () => {
     updateOrder(orderId, {
       driverId: currentDriver.id,
       driverName: currentDriver.name,
-      status: "Rota",
+      status: "Rota", // Ao aceitar, o status vai para Rota se já não estiver
       statusColor: "blue",
       statusIcon: "sports_motorsports",
       isNew: false
