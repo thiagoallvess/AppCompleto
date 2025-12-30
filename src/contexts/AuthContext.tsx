@@ -33,7 +33,11 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(() => {
+    // Tenta recuperar o perfil salvo para evitar que a role "suma" ao navegar
+    const savedProfile = localStorage.getItem('supabase_profile');
+    return savedProfile ? JSON.parse(savedProfile) : null;
+  });
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
@@ -45,7 +49,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .maybeSingle();
       
       if (!error && data) {
-        setProfile(data as Profile);
+        const profileData = data as Profile;
+        setProfile(profileData);
+        localStorage.setItem('supabase_profile', JSON.stringify(profileData));
       }
     } catch (err) {
       console.error('Erro ao buscar perfil:', err);
@@ -57,9 +63,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const initAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await fetchProfile(session.user.id);
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        
+        if (currentUser) {
+          await fetchProfile(currentUser.id);
+        } else {
+          setProfile(null);
+          localStorage.removeItem('supabase_profile');
         }
       } catch (error) {
         console.error("Erro na inicialização do Auth:", error);
@@ -76,10 +87,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         
-        if (currentUser) {
-          await fetchProfile(currentUser.id);
-        } else {
+        if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+          if (currentUser) await fetchProfile(currentUser.id);
+        }
+        
+        if (event === 'SIGNED_OUT') {
           setProfile(null);
+          localStorage.removeItem('supabase_profile');
         }
         
         setLoading(false);
@@ -107,6 +121,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signOut = async () => {
+    localStorage.removeItem('supabase_profile');
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
