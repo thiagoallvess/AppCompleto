@@ -25,9 +25,22 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Se houver restrição de roles e o perfil já carregou, verifica a permissão
-  if (allowedRoles && profile && !allowedRoles.includes(profile.role)) {
-    return <Navigate to="/" replace />;
+  // Se houver restrição de roles
+  if (allowedRoles) {
+    // Se o perfil ainda não carregou mas o usuário existe, esperamos um pouco mais (ou assumimos cliente se for rota de cliente)
+    if (!profile) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+          <p className="text-slate-500">Sincronizando perfil...</p>
+        </div>
+      );
+    }
+
+    // Verifica a permissão
+    if (!allowedRoles.includes(profile.role)) {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return <>{children}</>;
