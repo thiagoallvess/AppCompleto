@@ -26,7 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth must be used within a AuthProvider');
   }
   return context;
 };
@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, currentUser: User) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -54,29 +54,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setProfile(profileData);
         localStorage.setItem('supabase_profile', JSON.stringify(profileData));
       } else {
-        // Se o usuário existe mas o perfil não foi criado no banco ainda (ex: delay no trigger)
-        // Criamos um perfil temporário para não travar a UI
+        // Fallback imediato se o perfil não existir no banco
         const tempProfile: Profile = {
           id: userId,
-          first_name: user?.user_metadata?.first_name || 'Usuário',
-          last_name: user?.user_metadata?.last_name || '',
-          role: (user?.user_metadata?.role as UserRole) || 'cliente',
+          first_name: currentUser.user_metadata?.first_name || 'Usuário',
+          last_name: currentUser.user_metadata?.last_name || '',
+          role: (currentUser.user_metadata?.role as UserRole) || 'cliente',
           avatar_url: null
         };
         setProfile(tempProfile);
       }
     } catch (err) {
       console.error('Erro ao buscar perfil:', err);
-      // Fallback em caso de erro de rede ou banco
-      if (user) {
-        setProfile({
-          id: userId,
-          first_name: 'Usuário',
-          last_name: '',
-          role: 'cliente',
-          avatar_url: null
-        });
-      }
+      // Fallback em caso de erro de rede
+      setProfile({
+        id: userId,
+        first_name: currentUser.user_metadata?.first_name || 'Usuário',
+        last_name: currentUser.user_metadata?.last_name || '',
+        role: (currentUser.user_metadata?.role as UserRole) || 'cliente',
+        avatar_url: null
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,14 +87,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(currentUser);
         
         if (currentUser) {
-          await fetchProfile(currentUser.id);
+          await fetchProfile(currentUser.id, currentUser);
         } else {
           setProfile(null);
           localStorage.removeItem('supabase_profile');
+          setLoading(false);
         }
       } catch (error) {
         console.error("Erro na inicialização do Auth:", error);
-      } finally {
         setLoading(false);
       }
     };
@@ -109,16 +108,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
           if (currentUser) {
-            await fetchProfile(currentUser.id);
+            await fetchProfile(currentUser.id, currentUser);
+          } else {
+            setLoading(false);
           }
-        }
-        
-        if (event === 'SIGNED_OUT') {
+        } else if (event === 'SIGNED_OUT') {
           setProfile(null);
           localStorage.removeItem('supabase_profile');
+          setLoading(false);
+        } else {
+          setLoading(false);
         }
-        
-        setLoading(false);
       }
     );
 
@@ -126,11 +126,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if (error) {
+      setLoading(false);
+      throw error;
+    }
   };
 
   const signUp = async (email: string, password: string, metadata: any) => {
+    setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -139,12 +144,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         emailRedirectTo: window.location.origin 
       },
     });
-    if (error) throw error;
+    if (error) {
+      setLoading(false);
+      throw error;
+    }
   };
 
   const signOut = async () => {
+    setLoading(true);
     localStorage.removeItem('supabase_profile');
     const { error } = await supabase.auth.signOut();
+    setLoading(false);
     if (error) throw error;
   };
 
