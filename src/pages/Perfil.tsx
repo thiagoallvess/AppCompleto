@@ -8,9 +8,13 @@ const Perfil = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await signOut();
-    showSuccess("Sessão encerrada com sucesso.");
-    navigate("/login");
+    try {
+      await signOut();
+      showSuccess("Sessão encerrada com sucesso.");
+      navigate("/login");
+    } catch (error) {
+      console.error("Erro ao sair:", error);
+    }
   };
 
   return (
