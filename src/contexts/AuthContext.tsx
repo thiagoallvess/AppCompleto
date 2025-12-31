@@ -34,15 +34,18 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(() => {
-    const savedProfile = localStorage.getItem('supabase_profile');
-    return savedProfile ? JSON.parse(savedProfile) : null;
+    try {
+      const savedProfile = localStorage.getItem('supabase_profile');
+      return savedProfile ? JSON.parse(savedProfile) : null;
+    } catch {
+      return null;
+    }
   });
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string, currentUser: User) => {
-    console.log("[Auth] Iniciando busca de perfil para:", userId);
+    console.log("[Auth] Buscando perfil:", userId);
     
-    // Fallback imediato usando metadados para não travar a UI
     const fallbackProfile: Profile = {
       id: userId,
       first_name: currentUser.user_metadata?.first_name || 'Usuário',
@@ -52,28 +55,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     try {
-      // Timeout manual de 5 segundos para a query não travar o app
-      const profilePromise = supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
-      const { data, error } = await profilePromise;
-      
       if (error) {
-        console.error("[Auth] Erro na query de perfil:", error.message);
+        console.error("[Auth] Erro query:", error.message);
         setProfile(fallbackProfile);
       } else if (data) {
-        console.log("[Auth] Perfil carregado do banco.");
         setProfile(data as Profile);
         localStorage.setItem('supabase_profile', JSON.stringify(data));
       } else {
-        console.warn("[Auth] Perfil não existe no banco, usando metadados.");
         setProfile(fallbackProfile);
       }
     } catch (err) {
-      console.error('[Auth] Erro inesperado ao buscar perfil:', err);
       setProfile(fallbackProfile);
     } finally {
       setLoading(false);
@@ -83,7 +80,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("[Auth] Erro sessão:", error);
+          // Se houver erro de sessão, limpa tudo para forçar novo login
+          localStorage.removeItem('supabase_profile');
+          setLoading(false);
+          return;
+        }
+
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         
@@ -93,7 +99,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setLoading(false);
         }
       } catch (error) {
-        console.error("[Auth] Erro na inicialização:", error);
         setLoading(false);
       }
     };
@@ -102,6 +107,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log("[Auth] Evento:", event);
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         
