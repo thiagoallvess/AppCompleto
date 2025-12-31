@@ -61,9 +61,9 @@ const GestaoPedidos = () => {
       {/* Header */}
       <header className="sticky top-0 z-20 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 justify-between border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-3">
-          <button className="text-slate-900 dark:text-white flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
-            <Menu size={24} />
-          </button>
+          <Link to="/visao-geral" className="text-slate-900 dark:text-white flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+            <ArrowLeft size={24} />
+          </Link>
           <div>
             <h1 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Gestão de Pedidos</h1>
             <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">Gourmet Ice</p>
@@ -132,7 +132,7 @@ const GestaoPedidos = () => {
               className={`h-9 shrink-0 px-4 rounded-full ${
                 activeFilter === filter.label
                   ? "bg-primary text-white shadow-lg shadow-primary/20"
-                  : "bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
+                  : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
               } transition-transform active:scale-95`}
               onClick={() => setActiveFilter(filter.label)}
             >
@@ -270,52 +270,6 @@ const GestaoPedidos = () => {
       <button className="fixed bottom-6 right-6 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95">
         <Plus size={28} />
       </button>
-
-      {/* Bottom Navigation - Mobile */}
-      <nav className="fixed bottom-0 left-0 right-0 z-20 w-full max-w-md border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pb-safe md:hidden">
-        <div className="flex h-16 items-center justify-around px-2">
-          <Link to="/visao-geral" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">list_alt</span>
-            <span className="text-[10px] font-medium">Pedidos</span>
-          </Link>
-          <Link to="/gestao-insumos" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">inventory</span>
-            <span className="text-[10px] font-medium">Estoque</span>
-          </Link>
-          <button className="flex flex-col items-center justify-center gap-1 w-16 text-primary">
-            <span className="material-symbols-outlined fill">list_alt</span>
-            <span className="text-[10px] font-medium">Pedidos</span>
-          </button>
-          <Link to="/configuracoes-admin" className="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">settings</span>
-            <span className="text-[10px] font-medium">Ajustes</span>
-          </Link>
-        </div>
-      </nav>
-
-      {/* Desktop Navigation - Horizontal */}
-      <nav className="hidden md:flex fixed bottom-0 left-0 right-0 z-20 w-full border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md">
-        <div className="flex h-16 items-center justify-center w-full max-w-4xl mx-auto px-4">
-          <div className="flex items-center justify-around w-full max-w-md">
-            <Link to="/visao-geral" className="flex flex-col items-center justify-center gap-1 text-primary">
-              <span className="material-symbols-outlined fill">list_alt</span>
-              <span className="text-xs font-bold">Pedidos</span>
-            </Link>
-            <Link to="/gestao-insumos" className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <span className="material-symbols-outlined">inventory</span>
-              <span className="text-xs font-medium">Estoque</span>
-            </Link>
-            <button className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <span className="material-symbols-outlined">bar_chart</span>
-              <span className="text-xs font-medium">Vendas</span>
-            </button>
-            <Link to="/configuracoes-admin" className="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <span className="material-symbols-outlined">settings</span>
-              <span className="text-xs font-medium">Ajustes</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
     </div>
   );
 };
