@@ -28,17 +28,15 @@ const PedidosEntrega = () => {
       return;
     }
 
-    // Busca o perfil do entregador logado ou fallback para o primeiro da lista (simulação)
-    const currentDriver = drivers.find(d => d.id === profile?.id) || drivers.find(d => d.status === 'online') || drivers[0];
+    // Busca o perfil do entregador logado ou usa os dados do perfil do Auth
+    const currentDriver = drivers.find(d => d.id === profile?.id);
     
-    if (!currentDriver) {
-      showError("Erro ao identificar seu perfil de entregador.");
-      return;
-    }
+    const driverId = profile?.id || "temp-id";
+    const driverName = profile?.first_name || "Entregador";
 
     updateOrder(orderId, {
-      driverId: currentDriver.id,
-      driverName: `${profile?.first_name || currentDriver.name}`,
+      driverId: driverId,
+      driverName: driverName,
       status: "Rota",
       statusColor: "blue",
       statusIcon: "sports_motorsports",
@@ -63,18 +61,20 @@ const PedidosEntrega = () => {
       <div className="hidden lg:flex lg:flex-col lg:w-80 lg:bg-background-light dark:lg:bg-background-dark lg:border-r lg:border-gray-200 dark:lg:border-[#2a2a2a]">
         {/* Desktop Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-[#2a2a2a]">
-          <div className="relative">
-            <div 
-              className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border-2 border-gray-100 dark:border-[#2a2a2a]" 
-              style={{
-                backgroundImage: `url("${profile?.avatar_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuALEIh8HjLL7FQ3X77XjOWAZ3UT1OyyZtxxP4UUAOZ59uyQA_EBUxzNVtIsogRITvQzwMh1etYm4BwvDAwXMmivqRAcZ2koimAHtS_K3nrY1dvw0662qwSSXi39yClK6GKPg_XGlqjzscnAAcnHCY_xVpRmoryZyQx7UWOmrNx_m53Nm0BqOJqs3mhVQgjOwi6pIpGDIR1N-ycjt3AHpAQtJtcCjc4PBHeIOaY1xV2zTF8b6AoGQXbPDe6MWDPeyz_4acsVXcy-qA"}")`
-              }}
-            ></div>
-            <div className={`absolute bottom-0 right-0 size-3 rounded-full border-2 border-background-light dark:border-background-dark ${isOnline ? 'bg-primary' : 'bg-gray-400'}`}></div>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Bom trabalho,</span>
-            <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">{profile?.first_name || 'Entregador'}</span>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div 
+                className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border-2 border-gray-100 dark:border-[#2a2a2a]" 
+                style={{
+                  backgroundImage: `url("${profile?.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"}")`
+                }}
+              ></div>
+              <div className={`absolute bottom-0 right-0 size-3 rounded-full border-2 border-background-light dark:border-background-dark ${isOnline ? 'bg-primary' : 'bg-gray-400'}`}></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Bom trabalho,</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">{profile?.first_name || 'Entregador'}</span>
+            </div>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ const PedidosEntrega = () => {
                 <DollarSign size={20} />
                 <span className="text-xs font-semibold uppercase tracking-wider">Ganhos Hoje</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">R$ 85,00</p>
+              <p className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">R$ 0,00</p>
             </div>
             <div className="flex flex-col p-4 rounded-xl bg-gray-50 dark:bg-[#1e1e1e] border border-gray-100 dark:border-[#2a2a2a]">
               <div className="flex items-center gap-2 mb-2 text-gray-500 dark:text-gray-400">
@@ -94,7 +94,7 @@ const PedidosEntrega = () => {
                 <span className="text-xs font-semibold uppercase tracking-wider">Entregas</span>
               </div>
               <p className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                12 <span className="text-sm font-medium text-gray-500 dark:text-gray-500">feitas</span>
+                0 <span className="text-sm font-medium text-gray-500 dark:text-gray-500">feitas</span>
               </p>
             </div>
           </div>
@@ -132,7 +132,7 @@ const PedidosEntrega = () => {
               <div 
                 className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-gray-100 dark:border-[#2a2a2a]" 
                 style={{
-                  backgroundImage: `url("${profile?.avatar_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuALEIh8HjLL7FQ3X77XjOWAZ3UT1OyyZtxxP4UUAOZ59uyQA_EBUxzNVtIsogRITvQzwMh1etYm4BwvDAwXMmivqRAcZ2koimAHtS_K3nrY1dvw0662qwSSXi39yClK6GKPg_XGlqjzscnAAcnHCY_xVpRmoryZyQx7UWOmrNx_m53Nm0BqOJqs3mhVQgjOwi6pIpGDIR1N-ycjt3AHpAQtJtcCjc4PBHeIOaY1xV2zTF8b6AoGQXbPDe6MWDPeyz_4acsVXcy-qA"}")`
+                  backgroundImage: `url("${profile?.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"}")`
                 }}
               ></div>
               <div className={`absolute bottom-0 right-0 size-3 rounded-full border-2 border-background-light dark:border-background-dark ${isOnline ? 'bg-primary' : 'bg-gray-400'}`}></div>
