@@ -44,8 +44,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string, currentUser: User) => {
-    console.log("[Auth] Buscando perfil:", userId);
-    
     const fallbackProfile: Profile = {
       id: userId,
       first_name: currentUser.user_metadata?.first_name || 'Usuário',
@@ -62,12 +60,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .maybeSingle();
 
       if (error) {
-        console.error("[Auth] Erro query:", error.message);
+        console.error("[Auth] Erro ao buscar perfil:", error.message);
         setProfile(fallbackProfile);
       } else if (data) {
         setProfile(data as Profile);
         localStorage.setItem('supabase_profile', JSON.stringify(data));
       } else {
+        // Se não existe na tabela profiles, usa o metadata do Auth
         setProfile(fallbackProfile);
       }
     } catch (err) {
@@ -83,8 +82,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error("[Auth] Erro sessão:", error);
-          // Se houver erro de sessão, limpa tudo para forçar novo login
           localStorage.removeItem('supabase_profile');
           setLoading(false);
           return;
@@ -107,16 +104,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("[Auth] Evento:", event);
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
           if (currentUser) {
+            setLoading(true);
             await fetchProfile(currentUser.id, currentUser);
           }
         } else if (event === 'SIGNED_OUT') {
           setProfile(null);
+          setUser(null);
           localStorage.removeItem('supabase_profile');
           setLoading(false);
         }
@@ -127,34 +125,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setLoading(false);
-      throw error;
-    }
+    if (error) throw error;
   };
 
   const signUp = async (email: string, password: string, metadata: any) => {
-    setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: metadata },
     });
-    if (error) {
-      setLoading(false);
-      throw error;
-    }
+    if (error) throw error;
   };
 
   const signOut = async () => {
-    setLoading(true);
     localStorage.removeItem('supabase_profile');
     await supabase.auth.signOut();
     setProfile(null);
     setUser(null);
-    setLoading(false);
   };
 
   return (
