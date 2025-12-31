@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Receipt, ChefHat, Factory, AlertTriangle as AlertTriangleIcon, ShoppingCart, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, Ticket, Store, PlusCircle } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Receipt, ChefHat, Factory, AlertTriangle as AlertTriangleIcon, ShoppingCart, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, Ticket, Store, PlusCircle, Link as LinkIcon, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,6 +28,7 @@ const MainDrawer = () => {
     { icon: ShoppingCart, label: "Lista de Compras", path: "/lista-compras" },
     { icon: TrendingUp, label: "Giro de Estoque", path: "/giro-estoque" },
     { icon: FileText, label: "Relatórios Estoque", path: "/relatorios-estoque" },
+    { icon: LinkIcon, label: "Vínculos (Rec/Prod)", path: "/vinculos" },
     { icon: Ticket, label: "Promoções/Cupons", path: "/gestao-promocoes" },
     { icon: Store, label: "Marketplaces", path: "/gestao-marketplaces" },
     { icon: DollarSign, label: "Despesas", path: "/gestao-despesas" },
@@ -162,5 +163,4 @@ const MainDrawer = () => {
   );
 };
 
-import { Wallet } from "lucide-react";
 export default MainDrawer;
