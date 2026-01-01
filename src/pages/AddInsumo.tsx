@@ -18,7 +18,7 @@ const AddInsumo = () => {
     minQuantity: ""
   });
 
-  const { addIngredient, addPackagingItem } = useStock();
+  const { addIngredient, addPackagingItem, fetchProducts } = useStock();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -65,9 +65,11 @@ const AddInsumo = () => {
         unit: "",
         minQuantity: ""
       });
+      // await fetchProducts(); // Fetch products after adding
       navigate("/gestao-estoque");
     } catch (error: any) {
-      showError(error.message || "Erro ao adicionar insumo.");
+      console.error("Erro ao salvar produto:", error);
+      showError(error.message || "Erro ao salvar produto. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -79,7 +81,7 @@ const AddInsumo = () => {
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
             to="/gestao-estoque"
-            className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="flex items-center justify-center size-10 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft size={24} />
           </Link>
@@ -176,14 +178,23 @@ const AddInsumo = () => {
             />
           </div>
 
-          <div className="pt-6">
+          <div className="pt-4">
             <Button
               type="submit"
               disabled={isSubmitting}
               className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
-              Adicionar Insumo
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Plus size={20} />
+                  Adicionar Insumo
+                </>
+              )}
             </Button>
           </div>
         </form>
