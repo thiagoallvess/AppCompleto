@@ -1,13 +1,15 @@
-import { ArrowLeft, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, Plus, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { showSuccess } from "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast";
 import { useStock } from "@/contexts/StockContext";
 
 const AddInsumo = () => {
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -25,55 +27,48 @@ const AddInsumo = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate required fields
     if (!formData.name || !formData.category) {
-      alert("Por favor, preencha pelo menos o nome e a categoria do insumo.");
+      showError("Por favor, preencha o nome e a categoria do insumo.");
       return;
     }
 
-    // Create new item
-    const newItem = {
-      id: Date.now().toString(), // Ensure unique string ID
-      name: formData.name,
-      unit: formData.unit || "un",
-      quantity: parseFloat(formData.quantity || "0"),
-      unitCost: 0, // Will be updated when stock movements are added
-      minQuantity: formData.minQuantity ? parseFloat(formData.minQuantity) : undefined,
-      category: formData.category,
-      icon: formData.category === "Ingredientes" ? "Cookie" : "Package",
-      status: "Em dia"
-    };
+    setIsSubmitting(true);
+    try {
+      const newItem = {
+        name: formData.name,
+        unit: formData.unit || "un",
+        quantity: parseFloat(formData.quantity || "0"),
+        unitCost: 0,
+        minQuantity: formData.minQuantity ? parseFloat(formData.minQuantity) : undefined,
+        category: formData.category,
+        icon: formData.category === "Ingredientes" ? "Cookie" : "Package",
+        status: "Em dia"
+      };
 
-    // Add to the appropriate context
-    if (formData.category === "Ingredientes") {
-      addIngredient(newItem);
-    } else if (formData.category === "Embalagens") {
-      addPackagingItem(newItem);
+      if (formData.category === "Ingredientes") {
+        await addIngredient(newItem);
+      } else {
+        await addPackagingItem(newItem);
+      }
+
+      showSuccess(`"${formData.name}" foi adicionado ao estoque!`);
+      navigate("/gestao-estoque");
+    } catch (error: any) {
+      showError(error.message || "Erro ao adicionar insumo.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Show success message
-    showSuccess(`"${formData.name}" foi adicionado ao estoque!`);
-
-    // Reset form
-    setFormData({
-      name: "",
-      category: "",
-      quantity: "",
-      unit: "",
-      minQuantity: ""
-    });
   };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24 min-h-screen">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
-            to="/gestao-insumos"
+            to="/gestao-estoque"
             className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft size={24} />
@@ -85,10 +80,8 @@ const AddInsumo = () => {
         </div>
       </header>
 
-      {/* Form */}
       <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-32">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Nome do Insumo */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="name">
               Nome do Insumo
@@ -100,15 +93,15 @@ const AddInsumo = () => {
               onChange={(e) => handleInputChange("name", e.target.value)}
               className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
               required
+              disabled={isSubmitting}
             />
           </div>
 
-          {/* Categoria */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="category">
               Categoria
             </label>
-            <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
+            <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)} disabled={isSubmitting}>
               <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
@@ -119,11 +112,10 @@ const AddInsumo = () => {
             </Select>
           </div>
 
-          {/* Quantidade e Unidade */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="quantity">
-                Quantidade <span className="text-xs font-normal text-slate-400">(Opcional)</span>
+                Quantidade Inicial
               </label>
               <Input
                 id="quantity"
@@ -133,13 +125,14 @@ const AddInsumo = () => {
                 value={formData.quantity}
                 onChange={(e) => handleInputChange("quantity", e.target.value)}
                 className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+                disabled={isSubmitting}
               />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="unit">
-                Unidade <span className="text-xs font-normal text-slate-400">(Opcional)</span>
+                Unidade
               </label>
-              <Select value={formData.unit} onValueChange={(value) => handleInputChange("unit", value)}>
+              <Select value={formData.unit} onValueChange={(value) => handleInputChange("unit", value)} disabled={isSubmitting}>
                 <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
@@ -157,10 +150,9 @@ const AddInsumo = () => {
             </div>
           </div>
 
-          {/* Quantidade Mínima */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="minQuantity">
-              Quantidade Mínima <span className="text-xs font-normal text-slate-400">(Opcional)</span>
+              Quantidade Mínima
             </label>
             <Input
               id="minQuantity"
@@ -170,19 +162,17 @@ const AddInsumo = () => {
               value={formData.minQuantity}
               onChange={(e) => handleInputChange("minQuantity", e.target.value)}
               className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+              disabled={isSubmitting}
             />
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Quando o estoque atingir este valor, será marcado como "Baixo".
-            </p>
           </div>
 
-          {/* Submit Button */}
           <div className="pt-6">
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              <Plus size={20} />
+              {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
               Adicionar Insumo
             </Button>
           </div>

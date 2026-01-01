@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Ingredient {
   id: string;
@@ -44,15 +45,16 @@ interface StockContextType {
   ingredients: Ingredient[];
   packagingItems: PackagingItem[];
   stockMovements: StockMovement[];
-  addIngredient: (ingredient: Ingredient) => void;
-  addPackagingItem: (packagingItem: PackagingItem) => void;
-  updateIngredient: (id: string, updates: Partial<Ingredient>) => void;
-  updatePackagingItem: (id: string, updates: Partial<PackagingItem>) => void;
-  removeIngredient: (id: string) => void;
-  removePackagingItem: (id: string) => void;
-  addStockMovement: (movement: StockMovement) => void;
-  updateStockMovement: (id: string, updates: Partial<StockMovement>) => void;
-  deleteStockMovement: (id: string) => void;
+  loading: boolean;
+  addIngredient: (ingredient: Omit<Ingredient, 'id'>) => Promise<void>;
+  addPackagingItem: (packagingItem: Omit<PackagingItem, 'id'>) => Promise<void>;
+  updateIngredient: (id: string, updates: Partial<Ingredient>) => Promise<void>;
+  updatePackagingItem: (id: string, updates: Partial<PackagingItem>) => Promise<void>;
+  removeIngredient: (id: string) => Promise<void>;
+  removePackagingItem: (id: string) => Promise<void>;
+  addStockMovement: (movement: Omit<StockMovement, 'id'>) => Promise<void>;
+  updateStockMovement: (id: string, updates: Partial<StockMovement>) => Promise<void>;
+  deleteStockMovement: (id: string) => Promise<void>;
   getStockMovementsForDisplay: () => StockMovementForDisplay[];
 }
 
@@ -67,160 +69,224 @@ export const useStock = () => {
 };
 
 export const StockProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [ingredients, setIngredients] = useState<Ingredient[]>(() => {
-    const saved = localStorage.getItem('ingredients');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [packagingItems, setPackagingItems] = useState<PackagingItem[]>([]);
+  const [stockMovements, setStockMovements] = useState<StockMovement[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [packagingItems, setPackagingItems] = useState<PackagingItem[]>(() => {
-    const saved = localStorage.getItem('packagingItems');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [ingRes, packRes, movRes] = await Promise.all([
+        supabase.from('ingredients').select('*').order('name'),
+        supabase.from('packaging').select('*').order('name'),
+        supabase.from('stock_movements').select('*').order('date', { ascending: false })
+      ]);
 
-  const [stockMovements, setStockMovements] = useState<StockMovement[]>(() => {
-    const saved = localStorage.getItem('stockMovements');
-    return saved ? JSON.parse(saved) : [];
-  });
+      if (ingRes.data) {
+        setIngredients(ingRes.data.map(i => ({
+          id: i.id,
+          name: i.name,
+          unit: i.unit,
+          quantity: Number(i.quantity),
+          unitCost: Number(i.unit_cost),
+          minQuantity: i.min_quantity ? Number(i.min_quantity) : undefined,
+          category: i.category,
+          icon: i.icon,
+          status: i.status
+        })));
+      }
 
-  useEffect(() => {
-    localStorage.setItem('ingredients', JSON.stringify(ingredients));
-  }, [ingredients]);
+      if (packRes.data) {
+        setPackagingItems(packRes.data.map(p => ({
+          id: p.id,
+          name: p.name,
+          unit: p.unit,
+          quantity: Number(p.quantity),
+          unitCost: Number(p.unit_cost),
+          minQuantity: p.min_quantity ? Number(p.min_quantity) : undefined,
+          category: p.category,
+          icon: p.icon,
+          status: p.status
+        })));
+      }
 
-  useEffect(() => {
-    localStorage.setItem('packagingItems', JSON.stringify(packagingItems));
-  }, [packagingItems]);
-
-  useEffect(() => {
-    localStorage.setItem('stockMovements', JSON.stringify(stockMovements));
-  }, [stockMovements]);
-
-  const addIngredient = (ingredient: Ingredient) => {
-    setIngredients(prev => [...prev, ingredient]);
-  };
-
-  const addPackagingItem = (packagingItem: PackagingItem) => {
-    setPackagingItems(prev => [...prev, packagingItem]);
-  };
-
-  const updateIngredient = (id: string, updates: Partial<Ingredient>) => {
-    setIngredients(prev => prev.map(item =>
-      item.id === id ? { ...item, ...updates } : item
-    ));
-  };
-
-  const updatePackagingItem = (id: string, updates: Partial<PackagingItem>) => {
-    setPackagingItems(prev => prev.map(item =>
-      item.id === id ? { ...item, ...updates } : item
-    ));
-  };
-
-  const removeIngredient = (id: string) => {
-    setIngredients(prev => prev.filter(item => item.id !== id));
-  };
-
-  const removePackagingItem = (id: string) => {
-    setPackagingItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const addStockMovement = (movement: StockMovement) => {
-    if (movement.item_type === "ingredient") {
-      setIngredients(prev => prev.map(item => {
-        if (item.id === movement.item_id) {
-          const currentQuantity = item.quantity;
-          const currentTotalCost = currentQuantity * item.unitCost;
-          let newTotalCost = currentTotalCost;
-          let newQuantity = currentQuantity + movement.quantity;
-
-          if (movement.cost_type === "unitario") {
-            newTotalCost = currentTotalCost + (movement.quantity * movement.cost_value);
-          } else if (movement.cost_type === "pacote") {
-            newTotalCost = currentTotalCost + movement.cost_value;
-          }
-
-          const newUnitCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
-          let newStatus = "Em dia";
-          if (item.minQuantity && newQuantity <= item.minQuantity) newStatus = "Baixo";
-          if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) newStatus = "Crítico";
-
-          return { ...item, quantity: newQuantity, unitCost: newUnitCost, status: newStatus };
-        }
-        return item;
-      }));
-    } else {
-      setPackagingItems(prev => prev.map(item => {
-        if (item.id === movement.item_id) {
-          const currentQuantity = item.quantity;
-          const currentTotalCost = currentQuantity * item.unitCost;
-          let newTotalCost = currentTotalCost;
-          let newQuantity = currentQuantity + movement.quantity;
-
-          if (movement.cost_type === "unitario") {
-            newTotalCost = currentTotalCost + (movement.quantity * movement.cost_value);
-          } else if (movement.cost_type === "pacote") {
-            newTotalCost = currentTotalCost + movement.cost_value;
-          }
-
-          const newUnitCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
-          let newStatus = "Em dia";
-          if (item.minQuantity && newQuantity <= item.minQuantity) newStatus = "Baixo";
-          if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) newStatus = "Crítico";
-
-          return { ...item, quantity: newQuantity, unitCost: newUnitCost, status: newStatus };
-        }
-        return item;
-      }));
-    }
-    setStockMovements(prev => [...prev, movement]);
-  };
-
-  const updateStockMovement = (id: string, updates: Partial<StockMovement>) => {
-    const oldMovement = stockMovements.find(m => m.id === id);
-    if (oldMovement) {
-      deleteStockMovement(id);
-      const updatedMovement = { ...oldMovement, ...updates };
-      addStockMovement(updatedMovement);
+      if (movRes.data) {
+        setStockMovements(movRes.data.map(m => ({
+          id: m.id,
+          item_id: m.item_id,
+          item_type: m.item_type,
+          quantity: Number(m.quantity),
+          cost_type: m.cost_type,
+          cost_value: Number(m.cost_value),
+          description: m.description,
+          date: m.date
+        })));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados de estoque:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const deleteStockMovement = (id: string) => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const addIngredient = async (ingredient: Omit<Ingredient, 'id'>) => {
+    const { error } = await supabase.from('ingredients').insert([{
+      name: ingredient.name,
+      unit: ingredient.unit,
+      quantity: ingredient.quantity,
+      unit_cost: ingredient.unitCost,
+      min_quantity: ingredient.minQuantity,
+      category: ingredient.category,
+      icon: ingredient.icon,
+      status: ingredient.status
+    }]);
+    if (error) throw error;
+    await fetchData();
+  };
+
+  const addPackagingItem = async (packagingItem: Omit<PackagingItem, 'id'>) => {
+    const { error } = await supabase.from('packaging').insert([{
+      name: packagingItem.name,
+      unit: packagingItem.unit,
+      quantity: packagingItem.quantity,
+      unit_cost: packagingItem.unitCost,
+      min_quantity: packagingItem.minQuantity,
+      category: packagingItem.category,
+      icon: packagingItem.icon,
+      status: packagingItem.status
+    }]);
+    if (error) throw error;
+    await fetchData();
+  };
+
+  const updateIngredient = async (id: string, updates: Partial<Ingredient>) => {
+    const updateData: any = {};
+    if (updates.name !== undefined) updateData.name = updates.name;
+    if (updates.unit !== undefined) updateData.unit = updates.unit;
+    if (updates.quantity !== undefined) updateData.quantity = updates.quantity;
+    if (updates.unitCost !== undefined) updateData.unit_cost = updates.unitCost;
+    if (updates.minQuantity !== undefined) updateData.min_quantity = updates.minQuantity;
+    if (updates.status !== undefined) updateData.status = updates.status;
+
+    const { error } = await supabase.from('ingredients').update(updateData).eq('id', id);
+    if (error) throw error;
+    await fetchData();
+  };
+
+  const updatePackagingItem = async (id: string, updates: Partial<PackagingItem>) => {
+    const updateData: any = {};
+    if (updates.name !== undefined) updateData.name = updates.name;
+    if (updates.unit !== undefined) updateData.unit = updates.unit;
+    if (updates.quantity !== undefined) updateData.quantity = updates.quantity;
+    if (updates.unitCost !== undefined) updateData.unit_cost = updates.unitCost;
+    if (updates.minQuantity !== undefined) updateData.min_quantity = updates.minQuantity;
+    if (updates.status !== undefined) updateData.status = updates.status;
+
+    const { error } = await supabase.from('packaging').update(updateData).eq('id', id);
+    if (error) throw error;
+    await fetchData();
+  };
+
+  const removeIngredient = async (id: string) => {
+    const { error } = await supabase.from('ingredients').delete().eq('id', id);
+    if (error) throw error;
+    await fetchData();
+  };
+
+  const removePackagingItem = async (id: string) => {
+    const { error } = await supabase.from('packaging').delete().eq('id', id);
+    if (error) throw error;
+    await fetchData();
+  };
+
+  const addStockMovement = async (movement: Omit<StockMovement, 'id'>) => {
+    const { error } = await supabase.from('stock_movements').insert([{
+      item_id: movement.item_id,
+      item_type: movement.item_type,
+      quantity: movement.quantity,
+      cost_type: movement.cost_type,
+      cost_value: movement.cost_value,
+      description: movement.description,
+      date: movement.date
+    }]);
+    if (error) throw error;
+
+    // Atualizar o item correspondente
+    const table = movement.item_type === 'ingredient' ? 'ingredients' : 'packaging';
+    const items = movement.item_type === 'ingredient' ? ingredients : packagingItems;
+    const item = items.find(i => i.id === movement.item_id);
+
+    if (item) {
+      const currentQuantity = item.quantity;
+      const currentTotalCost = currentQuantity * item.unitCost;
+      let newTotalCost = currentTotalCost;
+      let newQuantity = currentQuantity + movement.quantity;
+
+      if (movement.cost_type === "unitario") {
+        newTotalCost = currentTotalCost + (movement.quantity * movement.cost_value);
+      } else if (movement.cost_type === "pacote") {
+        newTotalCost = currentTotalCost + movement.cost_value;
+      }
+
+      const newUnitCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
+      let newStatus = "Em dia";
+      if (item.minQuantity && newQuantity <= item.minQuantity) newStatus = "Baixo";
+      if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) newStatus = "Crítico";
+
+      await supabase.from(table).update({
+        quantity: newQuantity,
+        unit_cost: newUnitCost,
+        status: newStatus
+      }).eq('id', item.id);
+    }
+
+    await fetchData();
+  };
+
+  const updateStockMovement = async (id: string, updates: Partial<StockMovement>) => {
+    // Para simplificar, deletamos e adicionamos novamente para recalcular o estoque
+    const oldMov = stockMovements.find(m => m.id === id);
+    if (oldMov) {
+      await deleteStockMovement(id);
+      const newMov = { ...oldMov, ...updates };
+      await addStockMovement(newMov);
+    }
+  };
+
+  const deleteStockMovement = async (id: string) => {
     const movement = stockMovements.find(m => m.id === id);
     if (movement) {
-      if (movement.item_type === "ingredient") {
-        setIngredients(prev => prev.map(item => {
-          if (item.id === movement.item_id) {
-            const currentQuantity = item.quantity;
-            const currentTotalCost = currentQuantity * item.unitCost;
-            let totalCostToSubtract = movement.cost_type === "unitario" ? movement.quantity * movement.cost_value : movement.cost_value;
-            const newTotalCost = currentTotalCost - totalCostToSubtract;
-            const newQuantity = currentQuantity - movement.quantity;
-            const newUnitCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
-            let newStatus = "Em dia";
-            if (item.minQuantity && newQuantity <= item.minQuantity) newStatus = "Baixo";
-            if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) newStatus = "Crítico";
+      const table = movement.item_type === 'ingredient' ? 'ingredients' : 'packaging';
+      const items = movement.item_type === 'ingredient' ? ingredients : packagingItems;
+      const item = items.find(i => i.id === movement.item_id);
 
-            return { ...item, quantity: newQuantity, unitCost: newUnitCost, status: newStatus };
-          }
-          return item;
-        }));
-      } else {
-        setPackagingItems(prev => prev.map(item => {
-          if (item.id === movement.item_id) {
-            const currentQuantity = item.quantity;
-            const currentTotalCost = currentQuantity * item.unitCost;
-            let totalCostToSubtract = movement.cost_type === "unitario" ? movement.quantity * movement.cost_value : movement.cost_value;
-            const newTotalCost = currentTotalCost - totalCostToSubtract;
-            const newQuantity = currentQuantity - movement.quantity;
-            const newUnitCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
-            let newStatus = "Em dia";
-            if (item.minQuantity && newQuantity <= item.minQuantity) newStatus = "Baixo";
-            if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) newStatus = "Crítico";
+      if (item) {
+        const currentQuantity = item.quantity;
+        const currentTotalCost = currentQuantity * item.unitCost;
+        let totalCostToSubtract = movement.cost_type === "unitario" ? movement.quantity * movement.cost_value : movement.cost_value;
+        const newTotalCost = currentTotalCost - totalCostToSubtract;
+        const newQuantity = currentQuantity - movement.quantity;
+        const newUnitCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
+        
+        let newStatus = "Em dia";
+        if (item.minQuantity && newQuantity <= item.minQuantity) newStatus = "Baixo";
+        if (item.minQuantity && newQuantity <= (item.minQuantity * 0.5)) newStatus = "Crítico";
 
-            return { ...item, quantity: newQuantity, unitCost: newUnitCost, status: newStatus };
-          }
-          return item;
-        }));
+        await supabase.from(table).update({
+          quantity: newQuantity,
+          unit_cost: newUnitCost,
+          status: newStatus
+        }).eq('id', item.id);
       }
-      setStockMovements(prev => prev.filter(m => m.id !== id));
+
+      const { error } = await supabase.from('stock_movements').delete().eq('id', id);
+      if (error) throw error;
+      await fetchData();
     }
   };
 
@@ -237,6 +303,7 @@ export const StockProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       ingredients,
       packagingItems,
       stockMovements,
+      loading,
       addIngredient,
       addPackagingItem,
       updateIngredient,
