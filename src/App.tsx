@@ -13,8 +13,6 @@ import { ExpensesProvider } from './contexts/ExpensesProvider';
 import { EquipmentProvider } from './contexts/EquipmentContext';
 import { StoreProvider } from './contexts/StoreContext';
 import { UserProvider } from './contexts/UserContext';
-import { PromotionsProvider } from './contexts/PromotionsContext';
-import { MarketplacesProvider } from './contexts/MarketplacesContext';
 
 // Pages
 import Index from './pages/Index';
@@ -96,12 +94,12 @@ function App() {
                                 <MarketplacesProvider>
                                   <Routes>
                                     {/* Public Routes */}
-                                    <Route path="/" element={<Index />} />
                                     <Route path="/login" element={<Login />} />
                                     <Route path="/register" element={<Register />} />
-                                    <Route path="/product-details" element={<ProductDetails />} />
-
-                                    {/* Cliente Routes (Acessíveis por Cliente e Admin) */}
+                                      
+                                    {/* Protected Routes - Cliente */}
+                                    <Route path="/" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><Index /></ProtectedRoute>} />
+                                    <Route path="/product-details" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><ProductDetails /></ProtectedRoute>} />
                                     <Route path="/cart" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><Cart /></ProtectedRoute>} />
                                     <Route path="/checkout" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><Checkout /></ProtectedRoute>} />
                                     <Route path="/order-success" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><OrderSuccess /></ProtectedRoute>} />
