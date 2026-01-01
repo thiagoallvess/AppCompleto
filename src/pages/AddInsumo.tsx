@@ -48,13 +48,23 @@ const AddInsumo = () => {
         status: "Em dia"
       };
 
+      let result;
       if (formData.category === "Ingredientes") {
-        await addIngredient(newItem);
+        result = await addIngredient(newItem);
       } else {
-        await addPackagingItem(newItem);
+        result = await addPackagingItem(newItem);
       }
 
+      if (!result) throw new Error("Erro ao adicionar insumo.");
+
       showSuccess(`"${formData.name}" foi adicionado ao estoque!`);
+      setFormData({
+        name: "",
+        category: "",
+        quantity: "",
+        unit: "",
+        minQuantity: ""
+      });
       navigate("/gestao-estoque");
     } catch (error: any) {
       showError(error.message || "Erro ao adicionar insumo.");
@@ -74,7 +84,7 @@ const AddInsumo = () => {
             <ArrowLeft size={24} />
           </Link>
           <div className="flex flex-col">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Insumos</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Insumos</span>
             <h1 className="text-xl font-bold leading-tight tracking-tight">Adicionar Insumo</h1>
           </div>
         </div>
