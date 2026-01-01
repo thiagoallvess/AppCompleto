@@ -30,6 +30,8 @@ const AddInsumo = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("[AddInsumo] Iniciando submit com dados:", formData);
+
     if (!formData.name || !formData.category) {
       showError("Por favor, preencha o nome e a categoria do insumo.");
       return;
@@ -48,16 +50,29 @@ const AddInsumo = () => {
         status: "Em dia"
       };
 
+      console.log("[AddInsumo] Item a ser adicionado:", newItem);
+
       if (formData.category === "Ingredientes") {
+        console.log("[AddInsumo] Chamando addIngredient...");
         await addIngredient(newItem);
+        console.log("[AddInsumo] addIngredient concluído");
       } else {
+        console.log("[AddInsumo] Chamando addPackagingItem...");
         await addPackagingItem(newItem);
+        console.log("[AddInsumo] addPackagingItem concluído");
       }
 
+      console.log("[AddInsumo] Item adicionado com sucesso!");
       showSuccess(`"${formData.name}" foi adicionado ao estoque!`);
       navigate("/gestao-estoque");
     } catch (error: any) {
-      console.error("Erro ao salvar insumo:", error);
+      console.error("[AddInsumo] Erro ao salvar insumo:", error);
+      console.error("[AddInsumo] Detalhes do erro:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       showError(error.message || "Erro ao salvar insumo. Tente novamente.");
     } finally {
       setIsSubmitting(false);

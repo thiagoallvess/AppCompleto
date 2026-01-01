@@ -79,6 +79,7 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
+    console.log("[StockContext] Iniciando fetchData...");
     setLoading(true);
     try {
       const [ingRes, packRes, movRes] = await Promise.all([
@@ -87,7 +88,20 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
         supabase.from('stock_movements').select('*').order('date', { ascending: false })
       ]);
 
+      console.log("[StockContext] Resultados:", { ingRes, packRes, movRes });
+
+      if (ingRes.error) {
+        console.error("[StockContext] Erro ao buscar ingredientes:", ingRes.error);
+      }
+      if (packRes.error) {
+        console.error("[StockContext] Erro ao buscar embalagens:", packRes.error);
+      }
+      if (movRes.error) {
+        console.error("[StockContext] Erro ao buscar movimentações:", movRes.error);
+      }
+
       if (ingRes.data) {
+        console.log("[StockContext] Ingredientes carregados:", ingRes.data.length);
         setIngredients(ingRes.data.map(i => ({
           id: i.id,
           name: i.name,
@@ -102,6 +116,7 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
       }
 
       if (packRes.data) {
+        console.log("[StockContext] Embalagens carregadas:", packRes.data.length);
         setPackagingItems(packRes.data.map(p => ({
           id: p.id,
           name: p.name,
@@ -116,6 +131,7 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
       }
 
       if (movRes.data) {
+        console.log("[StockContext] Movimentações carregadas:", movRes.data.length);
         setStockMovements(movRes.data.map(m => ({
           id: m.id,
           item_id: m.item_id,
@@ -128,9 +144,10 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
         })));
       }
     } catch (error) {
-      console.error('Erro ao carregar dados de estoque:', error);
+      console.error('[StockContext] Erro ao carregar dados de estoque:', error);
     } finally {
       setLoading(false);
+      console.log("[StockContext] fetchData concluído");
     }
   };
 
@@ -139,8 +156,9 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
   }, []);
 
   const addIngredient = async (ingredient: Omit<Ingredient, 'id'>) => {
+    console.log("[StockContext] addIngredient chamado com:", ingredient);
     try {
-      const { error } = await supabase.from('ingredients').insert([{
+      const insertData = {
         name: ingredient.name,
         unit: ingredient.unit,
         quantity: ingredient.quantity,
@@ -149,18 +167,32 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
         category: ingredient.category,
         icon: ingredient.icon,
         status: ingredient.status
-      }]);
-      if (error) throw error;
+      };
+      
+      console.log("[StockContext] Dados a inserir:", insertData);
+      
+      const { data, error } = await supabase.from('ingredients').insert([insertData]).select();
+      
+      console.log("[StockContext] Resultado da inserção:", { data, error });
+      
+      if (error) {
+        console.error("[StockContext] Erro do Supabase:", error);
+        throw error;
+      }
+      
+      console.log("[StockContext] Ingrediente inserido com sucesso, chamando fetchData...");
       await fetchData();
+      console.log("[StockContext] fetchData concluído após inserção");
     } catch (error) {
-      console.error('Erro ao adicionar ingrediente:', error);
+      console.error('[StockContext] Erro ao adicionar ingrediente:', error);
       throw error;
     }
   };
 
   const addPackagingItem = async (packagingItem: Omit<PackagingItem, 'id'>) => {
+    console.log("[StockContext] addPackagingItem chamado com:", packagingItem);
     try {
-      const { error } = await supabase.from('packaging').insert([{
+      const insertData = {
         name: packagingItem.name,
         unit: packagingItem.unit,
         quantity: packagingItem.quantity,
@@ -169,11 +201,24 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
         category: packagingItem.category,
         icon: packagingItem.icon,
         status: packagingItem.status
-      }]);
-      if (error) throw error;
+      };
+      
+      console.log("[StockContext] Dados a inserir:", insertData);
+      
+      const { data, error } = await supabase.from('packaging').insert([insertData]).select();
+      
+      console.log("[StockContext] Resultado da inserção:", { data, error });
+      
+      if (error) {
+        console.error("[StockContext] Erro do Supabase:", error);
+        throw error;
+      }
+      
+      console.log("[StockContext] Embalagem inserida com sucesso, chamando fetchData...");
       await fetchData();
+      console.log("[StockContext] fetchData concluído após inserção");
     } catch (error) {
-      console.error('Erro ao adicionar embalagem:', error);
+      console.error('[StockContext] Erro ao adicionar embalagem:', error);
       throw error;
     }
   };
