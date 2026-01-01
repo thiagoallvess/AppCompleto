@@ -1,7 +1,7 @@
 "use client";
 
 import { Bell, MapPin, Clock, DollarSign, Bike } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useOrders } from "@/contexts/OrdersContext";
 import { useDrivers } from "@/contexts/DriversContext";
@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { showSuccess, showError } from "@/utils/toast";
 
 const PedidosEntrega = () => {
+  const navigate = useNavigate();
   const { orders, updateOrder } = useOrders();
   const { drivers } = useDrivers();
   const { profile } = useAuth();
@@ -28,9 +29,6 @@ const PedidosEntrega = () => {
       return;
     }
 
-    // Busca o perfil do entregador logado ou usa os dados do perfil do Auth
-    const currentDriver = drivers.find(d => d.id === profile?.id);
-    
     const driverId = profile?.id || "temp-id";
     const driverName = profile?.first_name || "Entregador";
 
@@ -44,6 +42,7 @@ const PedidosEntrega = () => {
     });
 
     showSuccess(`Pedido aceito! Você receberá R$ ${value.toFixed(2)}`);
+    navigate(`/entrega-andamento?id=${orderId.replace('#', '')}`);
   };
 
   const handleRejectOrder = (orderId: string) => {

@@ -76,6 +76,7 @@ import PerfilMotoboy from './pages/PerfilMotoboy';
 import CarteiraMotoboy from './pages/CarteiraMotoboy';
 import HistoricoEntregas from './pages/HistoricoEntregas';
 import DetalhesSaque from './pages/DetalhesSaque';
+import EntregaAndamento from './pages/EntregaAndamento';
 
 function App() {
   return (
@@ -157,6 +158,7 @@ function App() {
                                     <Route path="/carteira-motoboy" element={<ProtectedRoute allowedRoles={['motoboy', 'admin']}><CarteiraMotoboy /></ProtectedRoute>} />
                                     <Route path="/historico-entregas" element={<ProtectedRoute allowedRoles={['motoboy', 'admin']}><HistoricoEntregas /></ProtectedRoute>} />
                                     <Route path="/detalhes-saque" element={<ProtectedRoute allowedRoles={['motoboy', 'admin']}><DetalhesSaque /></ProtectedRoute>} />
+                                    <Route path="/entrega-andamento" element={<ProtectedRoute allowedRoles={['motoboy', 'admin']}><EntregaAndamento /></ProtectedRoute>} />
                                   </Routes>
                                 </MarketplacesProvider>
                               </PromotionsProvider>
