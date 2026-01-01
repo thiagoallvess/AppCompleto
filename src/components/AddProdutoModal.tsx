@@ -32,26 +32,30 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
   const { recipes } = useRecipes();
 
   useEffect(() => {
-    if (productToEdit) {
-      setProductName(productToEdit.name);
-      setDescription(productToEdit.description);
-      setPrice(productToEdit.price.toString());
-      setImageUrl(productToEdit.image);
-      setIsActive(productToEdit.isActive);
-      setRecipeId(productToEdit.recipeId || "");
-    } else {
-      setProductName("");
-      setDescription("");
-      setPrice("");
-      setIsPromotion(false);
-      setImageUrl("");
-      setRecipeId("");
-      setIsActive(true);
+    if (isOpen) {
+      if (productToEdit) {
+        setProductName(productToEdit.name || "");
+        setDescription(productToEdit.description || "");
+        setPrice(productToEdit.price?.toString() || "");
+        setImageUrl(productToEdit.image || "");
+        setIsActive(productToEdit.isActive ?? true);
+        setRecipeId(productToEdit.recipeId || "none");
+      } else {
+        setProductName("");
+        setDescription("");
+        setPrice("");
+        setIsPromotion(false);
+        setImageUrl("");
+        setRecipeId("none");
+        setIsActive(true);
+      }
     }
   }, [productToEdit, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setIsSubmitting(true);
     
     try {
@@ -61,7 +65,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
         image: imageUrl || "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=300",
         description: description,
         isActive: isActive,
-        recipeId: recipeId === "none" ? "" : recipeId,
+        recipeId: recipeId === "none" ? undefined : recipeId,
         rating: productToEdit?.rating || 5.0,
         reviews: productToEdit?.reviews || 0,
         stock: productToEdit?.stock || 0
@@ -77,14 +81,14 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
       onClose();
     } catch (error: any) {
       console.error("Erro ao salvar produto:", error);
-      showError("Erro ao salvar produto no banco de dados.");
+      showError("Erro ao salvar produto. Verifique os dados e tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !isSubmitting && onClose()}>
       <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-slate-200 dark:border-slate-800 p-0 max-h-[90vh] overflow-hidden">
         <DialogHeader className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3">
           <div className="flex items-center gap-3">
@@ -92,6 +96,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
               variant="ghost"
               size="sm"
               onClick={onClose}
+              disabled={isSubmitting}
               className="flex items-center justify-center size-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-0"
             >
               <ArrowLeft size={24} />
@@ -159,18 +164,6 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                   />
                 </div>
               </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shadow-sm">
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Produto em Promoção</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">Aplicar desconto promocional</span>
-                </div>
-                <Switch
-                  checked={isPromotion}
-                  onCheckedChange={setIsPromotion}
-                  disabled={isSubmitting}
-                />
-              </div>
             </div>
 
             <div className="h-px bg-slate-200 dark:bg-slate-800 w-full my-1"></div>
@@ -180,16 +173,14 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="product_image">
                   URL da Imagem <span className="text-xs font-normal text-slate-400">(Opcional)</span>
                 </label>
-                <div className="relative">
-                  <Input
-                    id="product_image"
-                    placeholder="https://..."
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-10"
-                    disabled={isSubmitting}
-                  />
-                </div>
+                <Input
+                  id="product_image"
+                  placeholder="https://..."
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
+                  disabled={isSubmitting}
+                />
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -198,7 +189,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                 </label>
                 <Select value={recipeId} onValueChange={setRecipeId} disabled={isSubmitting}>
                   <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
-                    <SelectValue placeholder={recipes.length > 0 ? "Selecione uma receita" : "Nenhuma receita cadastrada"} />
+                    <SelectValue placeholder="Selecione uma receita" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Nenhuma Receita</SelectItem>
@@ -230,13 +221,16 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
               className="mt-4 w-full bg-primary hover:bg-blue-700 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
-                <Loader2 className="animate-spin" size={20} />
-              ) : productToEdit ? (
-                <Save size={20} />
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  Salvando...
+                </>
               ) : (
-                <Plus size={20} />
+                <>
+                  {productToEdit ? <Save size={20} /> : <Plus size={20} />}
+                  {productToEdit ? "Salvar Alterações" : "Adicionar Produto"}
+                </>
               )}
-              {isSubmitting ? "Salvando..." : productToEdit ? "Salvar Alterações" : "Adicionar Produto"}
             </Button>
           </form>
         </div>
