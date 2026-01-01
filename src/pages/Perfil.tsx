@@ -1,26 +1,29 @@
-import { ArrowLeft, User, Bell, Shield, CreditCard, MapPin, HelpCircle, LogOut, Home, Search, Heart, DollarSign } from "lucide-react";
+import { ArrowLeft, User, Bell, Shield, CreditCard, MapPin, HelpCircle, LogOut, Home, Search, Heart, DollarSign, ChevronRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { showSuccess } from "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast";
 
 const Perfil = () => {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    try {
-      await signOut();
-      showSuccess("Sessão encerrada com sucesso.");
-      navigate("/login");
-    } catch (error) {
-      console.error("Erro ao sair:", error);
+    if (confirm("Deseja realmente sair da sua conta?")) {
+      try {
+        await signOut();
+        showSuccess("Sessão encerrada com sucesso.");
+        navigate("/login");
+      } catch (error: any) {
+        console.error("Erro ao sair:", error);
+        showError("Não foi possível encerrar a sessão.");
+      }
     }
   };
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-text-primary pb-24 min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center p-4 pb-2 justify-between max-w-md mx-auto lg:max-w-7xl lg:px-6 w-full">
           <Link
             to="/"
@@ -47,7 +50,7 @@ const Perfil = () => {
           </div>
           <div className="text-center">
             <h2 className="text-xl font-bold text-slate-900 dark:text-text-primary">
-              {profile ? `${profile.first_name} ${profile.last_name}` : "Carregando..."}
+              {profile ? `${profile.first_name} ${profile.last_name || ''}` : "Carregando..."}
             </h2>
             <p className="text-sm text-slate-500 dark:text-text-secondary capitalize">
               Membro {profile?.role || "Cliente"}
@@ -68,7 +71,7 @@ const Perfil = () => {
               <p className="text-base font-semibold leading-normal">Conta</p>
               <p className="text-xs text-gray-400 dark:text-text-secondary">Gerenciar dados pessoais</p>
             </div>
-            <ChevronRightIcon />
+            <ChevronRight className="text-gray-400" size={20} />
           </Link>
 
           <Link
@@ -82,7 +85,7 @@ const Perfil = () => {
               <p className="text-base font-semibold leading-normal">Endereços</p>
               <p className="text-xs text-gray-400 dark:text-text-secondary">Gerenciar locais de entrega</p>
             </div>
-            <ChevronRightIcon />
+            <ChevronRight className="text-gray-400" size={20} />
           </Link>
 
           <Link
@@ -96,7 +99,7 @@ const Perfil = () => {
               <p className="text-base font-semibold leading-normal">Pagamentos</p>
               <p className="text-xs text-gray-400 dark:text-text-secondary">Cartões e formas de pagamento</p>
             </div>
-            <ChevronRightIcon />
+            <ChevronRight className="text-gray-400" size={20} />
           </Link>
 
           <Link
@@ -110,7 +113,7 @@ const Perfil = () => {
               <p className="text-base font-semibold leading-normal">Privacidade</p>
               <p className="text-xs text-gray-400 dark:text-text-secondary">Segurança da conta</p>
             </div>
-            <ChevronRightIcon />
+            <ChevronRight className="text-gray-400" size={20} />
           </Link>
 
           <Link
@@ -124,23 +127,25 @@ const Perfil = () => {
               <p className="text-base font-semibold leading-normal">Ajuda</p>
               <p className="text-xs text-gray-400 dark:text-text-secondary">Suporte e FAQ</p>
             </div>
-            <ChevronRightIcon />
+            <ChevronRight className="text-gray-400" size={20} />
           </Link>
         </div>
 
         {/* Logout Button */}
         <div className="pt-4">
           <button 
+            type="button"
             onClick={handleLogout}
-            className="flex items-center gap-4 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 p-4 rounded-xl border border-red-200 dark:border-red-900/30 transition-colors group w-full"
+            className="flex items-center gap-4 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 p-4 rounded-xl border border-red-200 dark:border-red-900/30 transition-all group w-full active:scale-[0.98]"
           >
             <div className="flex items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 shrink-0 size-10 group-hover:scale-110 transition-transform">
               <LogOut size={20} />
             </div>
             <div className="flex flex-col items-start flex-1">
-              <p className="text-base font-semibold leading-normal text-red-700 dark:text-red-400">Sair da conta</p>
-              <p className="text-xs text-red-500 dark:text-red-500/70">Encerrar sessão atual</p>
+              <p className="text-base font-bold leading-normal text-red-700 dark:text-red-400">Sair da conta</p>
+              <p className="text-xs text-red-500 dark:text-red-500/70">Encerrar sessão atual com segurança</p>
             </div>
+            <ChevronRight className="text-red-300 dark:text-red-900" size={20} />
           </button>
         </div>
       </main>
@@ -173,13 +178,5 @@ const Perfil = () => {
     </div>
   );
 };
-
-const ChevronRightIcon = () => (
-  <div className="text-gray-400">
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-    </svg>
-  </div>
-);
 
 export default Perfil;
