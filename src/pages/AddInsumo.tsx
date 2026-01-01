@@ -18,7 +18,7 @@ const AddInsumo = () => {
     minQuantity: ""
   });
 
-  const { addIngredient, addPackagingItem, fetchProducts } = useStock();
+  const { addIngredient, addPackagingItem } = useStock();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -48,28 +48,17 @@ const AddInsumo = () => {
         status: "Em dia"
       };
 
-      let result;
       if (formData.category === "Ingredientes") {
-        result = await addIngredient(newItem);
+        await addIngredient(newItem);
       } else {
-        result = await addPackagingItem(newItem);
+        await addPackagingItem(newItem);
       }
 
-      if (!result) throw new Error("Erro ao adicionar insumo.");
-
       showSuccess(`"${formData.name}" foi adicionado ao estoque!`);
-      setFormData({
-        name: "",
-        category: "",
-        quantity: "",
-        unit: "",
-        minQuantity: ""
-      });
-      await fetchProducts(); // Fetch products after adding
       navigate("/gestao-estoque");
     } catch (error: any) {
-      console.error("Erro ao salvar produto:", error);
-      showError(error.message || "Erro ao salvar produto. Tente novamente.");
+      console.error("Erro ao salvar insumo:", error);
+      showError(error.message || "Erro ao salvar insumo. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
