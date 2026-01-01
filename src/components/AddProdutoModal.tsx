@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Plus, Save } from "lucide-react";
+import { ArrowLeft, Plus, Save, Loader2 } from "lucide-react";
 import { useProducts, Product } from "@/contexts/ProductsContext";
 import { useRecipes } from "@/contexts/RecipesContext";
-import { showSuccess } from "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast";
 
 interface AddProdutoModalProps {
   isOpen: boolean;
@@ -26,6 +26,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
   const [imageUrl, setImageUrl] = useState("");
   const [recipeId, setRecipeId] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { addProduct, updateProduct } = useProducts();
   const { recipes } = useRecipes();
@@ -49,34 +50,37 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
     }
   }, [productToEdit, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    const productData = {
-      name: productName,
-      price: parseFloat(price) || 0,
-      image: imageUrl || "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=300",
-      description: description,
-      isActive: isActive,
-      recipeId: recipeId === "none" ? "" : recipeId,
-    };
-
-    if (productToEdit) {
-      updateProduct(productToEdit.id, productData);
-      showSuccess(`${productName} atualizado com sucesso!`);
-    } else {
-      const newProduct = {
-        ...productData,
-        id: Date.now().toString(),
-        rating: 5.0,
-        reviews: 0,
-        stock: 0
+    try {
+      const productData = {
+        name: productName,
+        price: parseFloat(price) || 0,
+        image: imageUrl || "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=300",
+        description: description,
+        isActive: isActive,
+        recipeId: recipeId === "none" ? "" : recipeId,
+        rating: productToEdit?.rating || 5.0,
+        reviews: productToEdit?.reviews || 0,
+        stock: productToEdit?.stock || 0
       };
-      addProduct(newProduct as any);
-      showSuccess(`${productName} adicionado com sucesso!`);
+
+      if (productToEdit) {
+        await updateProduct(productToEdit.id, productData);
+        showSuccess(`${productName} atualizado com sucesso!`);
+      } else {
+        await addProduct(productData);
+        showSuccess(`${productName} adicionado com sucesso!`);
+      }
+      onClose();
+    } catch (error: any) {
+      console.error("Erro ao salvar produto:", error);
+      showError("Erro ao salvar produto no banco de dados.");
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    onClose();
   };
 
   return (
@@ -115,6 +119,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                   onChange={(e) => setProductName(e.target.value)}
                   className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -129,6 +134,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
                   className="bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 resize-none"
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -143,12 +149,13 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                   <Input
                     id="product_price"
                     placeholder="0,00"
-                    step="0.50"
+                    step="0.01"
                     type="number"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pl-10 font-medium"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -161,6 +168,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                 <Switch
                   checked={isPromotion}
                   onCheckedChange={setIsPromotion}
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -179,6 +187,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700 pr-10"
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -187,7 +196,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="product_recipe">
                   Vincular à Receita <span className="text-xs font-normal text-slate-400">(Opcional)</span>
                 </label>
-                <Select value={recipeId} onValueChange={setRecipeId}>
+                <Select value={recipeId} onValueChange={setRecipeId} disabled={isSubmitting}>
                   <SelectTrigger className="h-12 bg-white dark:bg-surface-dark border-slate-200 dark:border-slate-700">
                     <SelectValue placeholder={recipes.length > 0 ? "Selecione uma receita" : "Nenhuma receita cadastrada"} />
                   </SelectTrigger>
@@ -210,16 +219,24 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
                 <Switch
                   checked={isActive}
                   onCheckedChange={setIsActive}
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="mt-4 w-full bg-primary hover:bg-blue-700 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              {productToEdit ? <Save size={20} /> : <Plus size={20} />}
-              {productToEdit ? "Salvar Alterações" : "Adicionar Produto"}
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : productToEdit ? (
+                <Save size={20} />
+              ) : (
+                <Plus size={20} />
+              )}
+              {isSubmitting ? "Salvando..." : productToEdit ? "Salvar Alterações" : "Adicionar Produto"}
             </Button>
           </form>
         </div>
