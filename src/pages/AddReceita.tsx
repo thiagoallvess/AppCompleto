@@ -1,10 +1,10 @@
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { showSuccess } from "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useStock } from "@/contexts/StockContext";
 import { useEquipment } from "@/contexts/EquipmentContext";
@@ -22,6 +22,7 @@ const AddReceita = () => {
   const [laborTime, setLaborTime] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [linkedProduct, setLinkedProduct] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [ingredients, setIngredients] = useState<any[]>([]);
   const [selectedIngredient, setSelectedIngredient] = useState("");
@@ -107,27 +108,36 @@ const AddReceita = () => {
   const unitProfit = currentSellingPrice - unitCost;
   const margin = currentSellingPrice > 0 ? (unitProfit / currentSellingPrice) * 100 : 0;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!recipeName || !recipeYield) return;
+    if (!recipeName || !recipeYield) {
+      showError("Preencha o nome e o rendimento da receita.");
+      return;
+    }
 
-    const newRecipe = {
-      id: Date.now(),
-      name: recipeName,
-      image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=300",
-      time: `${laborTime || 0} min`,
-      quantity: parseInt(recipeYield),
-      cost: unitCost,
-      ingredientsList: ingredients,
-      packagingList: packaging,
-      equipmentList: equipment,
-      sellingPrice: currentSellingPrice,
-      linkedProductId: linkedProduct
-    };
+    setIsSubmitting(true);
+    try {
+      const newRecipe = {
+        name: recipeName,
+        image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=300",
+        time: `${laborTime || 0} min`,
+        quantity: parseInt(recipeYield),
+        cost: unitCost,
+        ingredientsList: ingredients,
+        packagingList: packaging,
+        equipmentList: equipment,
+        sellingPrice: currentSellingPrice,
+        linkedProductId: linkedProduct === "none" ? undefined : linkedProduct
+      };
 
-    addRecipe(newRecipe as any);
-    showSuccess("Receita salva com sucesso!");
-    navigate("/gestao-receitas");
+      await addRecipe(newRecipe);
+      showSuccess("Receita salva com sucesso!");
+      navigate("/gestao-receitas");
+    } catch (error: any) {
+      showError(error.message || "Erro ao salvar receita.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -143,8 +153,8 @@ const AddReceita = () => {
           </div>
         </div>
         <div className="flex items-center justify-end pr-4">
-          <Button onClick={handleSubmit} className="bg-primary hover:bg-primary/90 text-white font-bold px-4 py-2 rounded-full">
-            Salvar
+          <Button onClick={handleSubmit} disabled={isSubmitting} className="bg-primary hover:bg-primary/90 text-white font-bold px-4 py-2 rounded-full">
+            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Salvar"}
           </Button>
         </div>
       </header>
@@ -155,25 +165,25 @@ const AddReceita = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Nome da Receita</label>
-              <Input value={recipeName} onChange={(e) => setRecipeName(e.target.value)} placeholder="Ex: Geladinho de Morango" />
+              <Input value={recipeName} onChange={(e) => setRecipeName(e.target.value)} placeholder="Ex: Geladinho de Morango" disabled={isSubmitting} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Rendimento (unid)</label>
-                <Input type="number" value={recipeYield} onChange={(e) => setRecipeYield(e.target.value)} placeholder="0" />
+                <Input type="number" value={recipeYield} onChange={(e) => setRecipeYield(e.target.value)} placeholder="0" disabled={isSubmitting} />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Mão de Obra (min)</label>
-                <Input type="number" value={laborTime} onChange={(e) => setLaborTime(e.target.value)} placeholder="0" />
+                <Input type="number" value={laborTime} onChange={(e) => setLaborTime(e.target.value)} placeholder="0" disabled={isSubmitting} />
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Preço de Venda Unitário (R$)</label>
-              <Input type="number" step="0.01" value={sellingPrice} onChange={(e) => setSellingPrice(e.target.value)} placeholder="0,00" />
+              <Input type="number" step="0.01" value={sellingPrice} onChange={(e) => setSellingPrice(e.target.value)} placeholder="0,00" disabled={isSubmitting} />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Vincular a um Produto</label>
-              <Select value={linkedProduct} onValueChange={setLinkedProduct}>
+              <Select value={linkedProduct} onValueChange={setLinkedProduct} disabled={isSubmitting}>
                 <SelectTrigger><SelectValue placeholder="Nenhum Produto" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Nenhum Produto</SelectItem>
@@ -189,14 +199,14 @@ const AddReceita = () => {
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Ingredientes</h2>
           <div className="flex gap-2">
-            <Select value={selectedIngredient} onValueChange={setSelectedIngredient}>
+            <Select value={selectedIngredient} onValueChange={setSelectedIngredient} disabled={isSubmitting}>
               <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione..." /></SelectTrigger>
               <SelectContent>
                 {availableIngredients.map(i => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Input className="w-24" type="number" placeholder="Qtd" value={ingredientQuantity} onChange={(e) => setIngredientQuantity(e.target.value)} />
-            <Button type="button" onClick={addIngredient}><Plus size={20} /></Button>
+            <Input className="w-24" type="number" placeholder="Qtd" value={ingredientQuantity} onChange={(e) => setIngredientQuantity(e.target.value)} disabled={isSubmitting} />
+            <Button type="button" onClick={addIngredient} disabled={isSubmitting}><Plus size={20} /></Button>
           </div>
           <div className="space-y-2">
             {ingredients.map(i => (
@@ -204,7 +214,7 @@ const AddReceita = () => {
                 <span>{i.name} ({i.quantity} {i.unit})</span>
                 <div className="flex items-center gap-4">
                   <span className="font-medium">R$ {i.totalCost.toFixed(2)}</span>
-                  <button onClick={() => setIngredients(ingredients.filter(x => x.id !== i.id))} className="text-red-500"><Trash2 size={18} /></button>
+                  <button onClick={() => setIngredients(ingredients.filter(x => x.id !== i.id))} className="text-red-500" disabled={isSubmitting}><Trash2 size={18} /></button>
                 </div>
               </div>
             ))}
@@ -214,14 +224,14 @@ const AddReceita = () => {
         <section className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-lg font-bold">Embalagens</h2>
           <div className="flex gap-2">
-            <Select value={selectedPackaging} onValueChange={setSelectedPackaging}>
+            <Select value={selectedPackaging} onValueChange={setSelectedPackaging} disabled={isSubmitting}>
               <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione..." /></SelectTrigger>
               <SelectContent>
                 {availablePackagingItems.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Input className="w-24" type="number" placeholder="Qtd" value={packagingQuantity} onChange={(e) => setPackagingQuantity(e.target.value)} />
-            <Button type="button" onClick={addPackaging}><Plus size={20} /></Button>
+            <Input className="w-24" type="number" placeholder="Qtd" value={packagingQuantity} onChange={(e) => setPackagingQuantity(e.target.value)} disabled={isSubmitting} />
+            <Button type="button" onClick={addPackaging} disabled={isSubmitting}><Plus size={20} /></Button>
           </div>
           <div className="space-y-2">
             {packaging.map(p => (
@@ -229,7 +239,7 @@ const AddReceita = () => {
                 <span>{p.name} ({p.quantity} {p.unit})</span>
                 <div className="flex items-center gap-4">
                   <span className="font-medium">R$ {p.totalCost.toFixed(2)}</span>
-                  <button onClick={() => setPackaging(packaging.filter(x => x.id !== p.id))} className="text-red-500"><Trash2 size={18} /></button>
+                  <button onClick={() => setPackaging(packaging.filter(x => x.id !== p.id))} className="text-red-500" disabled={isSubmitting}><Trash2 size={18} /></button>
                 </div>
               </div>
             ))}
@@ -240,14 +250,14 @@ const AddReceita = () => {
           <h2 className="text-lg font-bold">Equipamentos</h2>
           <div className="flex flex-col gap-3">
             <div className="flex gap-2">
-              <Select value={selectedEquipment} onValueChange={setSelectedEquipment}>
+              <Select value={selectedEquipment} onValueChange={setSelectedEquipment} disabled={isSubmitting}>
                 <SelectTrigger className="flex-1"><SelectValue placeholder="Selecione..." /></SelectTrigger>
                 <SelectContent>
                   {availableEquipment.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Input className="w-24" type="number" placeholder="Min" value={equipmentMinTime} onChange={(e) => setEquipmentMinTime(e.target.value)} />
-              <Button type="button" onClick={addEquipment}><Plus size={20} /></Button>
+              <Input className="w-24" type="number" placeholder="Min" value={equipmentMinTime} onChange={(e) => setEquipmentMinTime(e.target.value)} disabled={isSubmitting} />
+              <Button type="button" onClick={addEquipment} disabled={isSubmitting}><Plus size={20} /></Button>
             </div>
             
             {currentSelectedEquip?.powerType === 'gas' && (
@@ -258,6 +268,7 @@ const AddReceita = () => {
                     <button
                       key={level}
                       type="button"
+                      disabled={isSubmitting}
                       onClick={() => setGasIntensity(level)}
                       className={`py-2 text-xs font-bold rounded-md border transition-all ${
                         gasIntensity === level 
@@ -285,7 +296,7 @@ const AddReceita = () => {
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="font-medium">R$ {e.totalCost.toFixed(2)}</span>
-                  <button onClick={() => setEquipment(equipment.filter(x => x.id !== e.id))} className="text-red-500"><Trash2 size={18} /></button>
+                  <button onClick={() => setEquipment(equipment.filter(x => x.id !== e.id))} className="text-red-500" disabled={isSubmitting}><Trash2 size={18} /></button>
                 </div>
               </div>
             ))}
