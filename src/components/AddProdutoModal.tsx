@@ -22,9 +22,8 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [isPromotion, setIsPromotion] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
-  const [recipeId, setRecipeId] = useState("");
+  const [recipeId, setRecipeId] = useState("none");
   const [isActive, setIsActive] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -44,24 +43,28 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
         setProductName("");
         setDescription("");
         setPrice("");
-        setIsPromotion(false);
         setImageUrl("");
         setRecipeId("none");
         setIsActive(true);
       }
+      setIsSubmitting(false);
     }
   }, [productToEdit, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    
+    if (!productName || !price) {
+      showError("Por favor, preencha o nome e o preço do produto.");
+      return;
+    }
 
     setIsSubmitting(true);
     
     try {
       const productData = {
         name: productName,
-        price: parseFloat(price) || 0,
+        price: parseFloat(price),
         image: imageUrl || "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=300",
         description: description,
         isActive: isActive,
@@ -78,17 +81,29 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
         await addProduct(productData);
         showSuccess(`${productName} adicionado com sucesso!`);
       }
+      
+      // Reset form and close
+      setProductName("");
+      setDescription("");
+      setPrice("");
+      setImageUrl("");
+      setRecipeId("none");
+      setIsActive(true);
       onClose();
     } catch (error: any) {
       console.error("Erro ao salvar produto:", error);
-      showError("Erro ao salvar produto. Verifique os dados e tente novamente.");
+      showError(error.message || "Erro ao salvar produto. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !isSubmitting && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open && !isSubmitting) {
+        onClose();
+      }
+    }}>
       <DialogContent className="max-w-md mx-auto bg-background-light dark:bg-background-dark border-slate-200 dark:border-slate-800 p-0 max-h-[90vh] overflow-hidden">
         <DialogHeader className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3">
           <div className="flex items-center gap-3">
@@ -111,7 +126,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent max-h-[calc(90vh-120px)]">
-          <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-5">
+          <form id="product-form" onSubmit={handleSubmit} className="p-4 flex flex-col gap-5">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="product_name">
@@ -218,7 +233,7 @@ const AddProdutoModal = ({ isOpen, onClose, productToEdit }: AddProdutoModalProp
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="mt-4 w-full bg-primary hover:bg-blue-700 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              className="mt-4 w-full bg-primary hover:bg-blue-700 text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
