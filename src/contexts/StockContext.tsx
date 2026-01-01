@@ -72,6 +72,15 @@ interface StockProviderProps {
   children: ReactNode;
 }
 
+// Helper function to generate UUID
+const generateUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
 export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [packagingItems, setPackagingItems] = useState<PackagingItem[]>([]);
@@ -159,6 +168,7 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
     console.log("[StockContext] addIngredient chamado com:", ingredient);
     try {
       const insertData = {
+        id: generateUUID(),
         name: ingredient.name,
         unit: ingredient.unit,
         quantity: ingredient.quantity,
@@ -193,6 +203,7 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
     console.log("[StockContext] addPackagingItem chamado com:", packagingItem);
     try {
       const insertData = {
+        id: generateUUID(),
         name: packagingItem.name,
         unit: packagingItem.unit,
         quantity: packagingItem.quantity,
@@ -265,6 +276,7 @@ export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
 
   const addStockMovement = async (movement: Omit<StockMovement, 'id'>) => {
     const { error } = await supabase.from('stock_movements').insert([{
+      id: generateUUID(),
       item_id: movement.item_id,
       item_type: movement.item_type,
       quantity: movement.quantity,
