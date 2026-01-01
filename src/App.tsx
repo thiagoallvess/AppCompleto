@@ -13,6 +13,8 @@ import { ExpensesProvider } from './contexts/ExpensesProvider';
 import { EquipmentProvider } from './contexts/EquipmentContext';
 import { StoreProvider } from './contexts/StoreContext';
 import { UserProvider } from './contexts/UserContext';
+import { PromotionsProvider } from './contexts/PromotionsContext';
+import { MarketplacesProvider } from './contexts/MarketplacesContext';
 
 // Pages
 import Index from './pages/Index';
