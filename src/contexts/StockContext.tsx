@@ -68,7 +68,11 @@ export const useStock = () => {
   return context;
 };
 
-export const StockProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+interface StockProviderProps {
+  children: ReactNode;
+}
+
+export const StockProvider: React.FC<StockProviderProps> = ({ children }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [packagingItems, setPackagingItems] = useState<PackagingItem[]>([]);
   const [stockMovements, setStockMovements] = useState<StockMovement[]>([]);
@@ -135,33 +139,43 @@ export const StockProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, []);
 
   const addIngredient = async (ingredient: Omit<Ingredient, 'id'>) => {
-    const { error } = await supabase.from('ingredients').insert([{
-      name: ingredient.name,
-      unit: ingredient.unit,
-      quantity: ingredient.quantity,
-      unit_cost: ingredient.unitCost,
-      min_quantity: ingredient.minQuantity,
-      category: ingredient.category,
-      icon: ingredient.icon,
-      status: ingredient.status
-    }]);
-    if (error) throw error;
-    await fetchData();
+    try {
+      const { error } = await supabase.from('ingredients').insert([{
+        name: ingredient.name,
+        unit: ingredient.unit,
+        quantity: ingredient.quantity,
+        unit_cost: ingredient.unitCost,
+        min_quantity: ingredient.minQuantity,
+        category: ingredient.category,
+        icon: ingredient.icon,
+        status: ingredient.status
+      }]);
+      if (error) throw error;
+      await fetchData();
+    } catch (error) {
+      console.error('Erro ao adicionar ingrediente:', error);
+      throw error;
+    }
   };
 
   const addPackagingItem = async (packagingItem: Omit<PackagingItem, 'id'>) => {
-    const { error } = await supabase.from('packaging').insert([{
-      name: packagingItem.name,
-      unit: packagingItem.unit,
-      quantity: packagingItem.quantity,
-      unit_cost: packagingItem.unitCost,
-      min_quantity: packagingItem.minQuantity,
-      category: packagingItem.category,
-      icon: packagingItem.icon,
-      status: packagingItem.status
-    }]);
-    if (error) throw error;
-    await fetchData();
+    try {
+      const { error } = await supabase.from('packaging').insert([{
+        name: packagingItem.name,
+        unit: packagingItem.unit,
+        quantity: packagingItem.quantity,
+        unit_cost: packagingItem.unitCost,
+        min_quantity: packagingItem.minQuantity,
+        category: packagingItem.category,
+        icon: packagingItem.icon,
+        status: packagingItem.status
+      }]);
+      if (error) throw error;
+      await fetchData();
+    } catch (error) {
+      console.error('Erro ao adicionar embalagem:', error);
+      throw error;
+    }
   };
 
   const updateIngredient = async (id: string, updates: Partial<Ingredient>) => {

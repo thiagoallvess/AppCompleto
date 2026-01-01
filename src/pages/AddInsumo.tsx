@@ -65,7 +65,7 @@ const AddInsumo = () => {
         unit: "",
         minQuantity: ""
       });
-      // await fetchProducts(); // Fetch products after adding
+      await fetchProducts(); // Fetch products after adding
       navigate("/gestao-estoque");
     } catch (error: any) {
       console.error("Erro ao salvar produto:", error);
