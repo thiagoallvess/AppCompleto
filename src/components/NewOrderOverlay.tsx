@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client'; // import supabase client
-import NotificationsIcon from "@lucide-react/icons/notifications"; // import notifications icon
+import { supabase } from '@/integrations/supabase/client';
+import NotificationsIcon from "@lucide-react/icons/notifications";
 
-const NewOrderOverlay = () => {
+// Import required modules for supabase
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+
+const NewOrderOverlay: React.FC = () => {
 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -21,9 +24,9 @@ const NewOrderOverlay = () => {
       .order('created_at', { ascending: false })
       .limit(1);
 
-    if(error) {
+    if (error) {
       console.error("Error fetching orders:", error);
-    } else if(orders.length > 0) {
+    } else if (orders.length > 0) {
       setMessage(`Nova entrega para o pedido ${orders[0].name}!`);
       setOpen(true);
     }
@@ -35,66 +38,36 @@ const NewOrderOverlay = () => {
 
   return (
     <>
-    {open && (
-      <div
-        className="
-        justify-center
-        items-center
-        fixed
-        inset-0
-        z-50
-        bg-black bg-opacity-50
-        "
-      >
+      {open && (
         <div
           className="
-          bg-white
-          text-black
-          p-4
-          rounded
-          text-center
-          m-4
-          "
+            justify-center
+            items-center
+            fixed
+            bottom-4
+            left-1/2
+            transform
+            -translate-x-1/2
+            z-50
+            bg-white
+            bg-opacity-50
+            p-4
+            rounded
+            text-center
+            m-4
+            shadow-md
+            max-w-md
+            "
         >
           <NotificationsIcon size={48} />
-          <h2 className="text-xl mb-2">{message}</h2>
-          <button onClick={handleDismiss}>
+          <h2 className="text-xl font-bold mb-2">{message}</h2>
+          <button onClick={handleDismiss} className="text-primary mt-2">
             Fechar
           </button>
         </div>
-      </div>
       )}
     </>
   );
 };
 
 export default NewOrderOverlay;
-
-<dyad-write path="src/pages/MinhaTela.tsx" description="Updating MinhaTela component to use NewOrderOverlay and manage its state.">
-"use client";
-
-import React, { useRef } from 'react';
-// ... other imports
-
-const MinhaTela = () => {
-  // ... other states
-
-  const [newOrder, setNewOrder] = useState(false); // new state to handle order creation
-
-  const createOrder = async () => {
-    // ... existing createOrder logic
-
-    if(!error) {
-      setNewOrder(true); // set new order to true when order is created
-    }
-  };
-
-  return (
-    <>
-    {/* ... other components */}
-    <NewOrderOverlay /> // include NewOrderOverlay component
-    </>
-  );
-};
-
-export default MinhaTela;
