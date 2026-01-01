@@ -1,4 +1,4 @@
-import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Receipt, ChefHat, Factory, AlertTriangle as AlertTriangleIcon, ShoppingCart, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, Ticket, Store, PlusCircle, Link as LinkIcon, Wallet } from "lucide-react";
+import { Menu, Home, ShoppingBag, Users, Settings, BarChart, Package, FileText, LogOut, DollarSign, User, Receipt, ChefHat, Factory, AlertTriangle as AlertTriangleIcon, ShoppingCart, Truck, Map, Gift, Bike, TrendingUp, History, UserPlus, Ticket, Store, PlusCircle, Link as LinkIcon, Wallet, Navigation } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
@@ -46,6 +46,7 @@ const MainDrawer = () => {
 
   const deliveryMenuItems = [
     { icon: Bike, label: "Pedidos Disponíveis", path: "/pedidos-entrega" },
+    { icon: Navigation, label: "Entrega em Andamento", path: "/entrega-andamento" },
     { icon: History, label: "Histórico Entregas", path: "/historico-entregas" },
     { icon: Wallet, label: "Carteira", path: "/carteira-motoboy" },
     { icon: User, label: "Perfil", path: "/perfil-motoboy" },
