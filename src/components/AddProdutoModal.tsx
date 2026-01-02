@@ -34,7 +34,7 @@ const Field = ({ label, optional, ...props }: any) => (
     <label className="text-sm font-semibold">
       {label}
       {optional && (
-        <span className="text-xs font-normal text-slate-400"> (Opcional)</span>
+        <span className="text-xs text-slate-400">(Opcional)</span>
       )}
     </label>
     <Input {...props} className="h-12" />
