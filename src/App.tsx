@@ -69,6 +69,7 @@ import EstoqueCritico from './pages/EstoqueCritico';
 import ListaCompras from './pages/ListaCompras';
 import Vinculos from './pages/Vinculos';
 import PainelRepasses from './pages/PainelRepasses';
+import GestaoDespesas from './pages/GestaoDespesas';
 
 // Motoboy Pages
 import PedidosEntrega from './pages/PedidosEntrega';
@@ -159,6 +160,7 @@ function App() {
                                     <Route path="/historico-entregas" element={<ProtectedRoute allowedRoles={['motoboy', 'admin']}><HistoricoEntregas /></ProtectedRoute>} />
                                     <Route path="/detalhes-saque" element={<ProtectedRoute allowedRoles={['motoboy', 'admin']}><DetalhesSaque /></ProtectedRoute>} />
                                     <Route path="/entrega-andamento" element={<ProtectedRoute allowedRoles={['motoboy', 'admin']}><EntregaAndamento /></ProtectedRoute>} />
+                                    <Route path="/gestao-despesas" element={<ProtectedRoute allowedRoles={['admin']}><GestaoDespesas /></ProtectedRoute>} />
                                   </Routes>
                                 </MarketplacesProvider>
                               </PromotionsProvider>
