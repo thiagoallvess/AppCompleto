@@ -100,18 +100,18 @@ function App() {
                                     <Route path="/login" element={<Login />} />
                                     <Route path="/register" element={<Register />} />
                                       
-                                    {/* Protected Routes - Cliente */}
+                                    {/* Public Routes - Accessible without login */}
                                     <Route path="/" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><Index /></ProtectedRoute>} />
-                                    <Route path="/product-details" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><ProductDetails /></ProtectedRoute>} />
+                                    <Route path="/meus-pedidos" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><MeusPedidos /></ProtectedRoute>} />
+                                    <Route path="/perfil" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><Perfil /></ProtectedRoute>} />
+                                    <Route path="/indicacao" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><Indicacao /></ProtectedRoute>} />
+                                    <Route path="/cashback" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><Cashback /></ProtectedRoute>} />
                                     <Route path="/cart" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><Cart /></ProtectedRoute>} />
+                                    <Route path="/product-details" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><ProductDetails /></ProtectedRoute>} />
                                     <Route path="/checkout" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><Checkout /></ProtectedRoute>} />
                                     <Route path="/order-success" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><OrderSuccess /></ProtectedRoute>} />
-                                    <Route path="/perfil" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><Perfil /></ProtectedRoute>} />
                                     <Route path="/enderecos" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><Enderecos /></ProtectedRoute>} />
-                                    <Route path="/meus-pedidos" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><MeusPedidos /></ProtectedRoute>} />
-                                    <Route path="/detalhes-pedido-cliente" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><DetalhesPedidoCliente /></ProtectedRoute>} />
-                                    <Route path="/cashback" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><Cashback /></ProtectedRoute>} />
-                                    <Route path="/indicacao" element={<ProtectedRoute allowedRoles={['cliente', 'admin']}><Indicacao /></ProtectedRoute>} />
+                                    <Route path="/detalhes-pedido-cliente" element={<ProtectedRoute allowedRoles={['cliente', 'admin', 'motoboy']}><DetalhesPedidoCliente /></ProtectedRoute>} />
 
                                     {/* Admin Routes (Acessíveis APENAS por Admin) */}
                                     <Route path="/visao-geral" element={<ProtectedRoute allowedRoles={['admin']}><VisaoGeral /></ProtectedRoute>} />
