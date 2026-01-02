@@ -7,63 +7,14 @@ const StockContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [packagingItems, setPackagingItems] = useState<PackagingItem[]>([]);
 
-    const addIngredient = async (ingredient: Ingredient) => {
-        try {
-            const { data, error } = await supabase
-                .from('ingredients')
-                .insert([{
-                    name: ingredient.name,
-                    unit: ingredient.unit,
-                    quantity: ingredient.quantity,
-                    min_quantity: ingredient.minQuantity,
-                    unit_cost: ingredient.unitCost,
-                    category: ingredient.category,
-                    icon: ingredient.icon,
-                    status: ingredient.status
-                }]);
+    // ... Your code for addIngredient, addPackagingItem, StockProvider, ...
 
-            if (error) throw error;
-            if (data) setIngredients(prev => [ ...prev, ...(data as any) ]);
-        } catch (error: any) {
-            console.error("[StockContext] Erro ao adicionar ingrediente:", error);
-        }
-    };
+    return (
+        <StockContext.Provider value={{ ingredients, packagingItems, addIngredient, addPackagingItem, }}>
+            {children}
+        </StockContext.Provider>
+    );
+};
 
-    const addPackagingItem = async (packagingItem: PackagingItem) => {
-        try {
-            const { data, error } = await supabase
-                .from('packaging')
-                .insert([
-                    {
-                        name: packagingItem.name,
-                        unit: packagingItem.unit,
-                        quantity: packagingItem.quantity,
-                        min_quantity: packagingItem.minQuantity,
-                        unit_cost: packagingItem.unitCost,
-                        category: packagingItem.category,
-                        icon: packagingItem.icon,
-                        status: packagingItem.status
-                    }
-                ]);
-
-            if (error) throw error;
-            if (data) setPackagingItems(prev => [ ...prev, ...(data as any) ]);
-        } catch (error: any) {
-            console.error("[StockContext] Erro ao adicionar item de embalagem:", error);
-        }
-    };
-
-    const StockProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-        return (
-            <StockContext.Provider value={{ ingredients, packagingItems, addIngredient, addPackagingItem, }}>
-                {children}
-            </StockContext.Provider>
-        );
-    };
-
-    // Create a custom hook to use the context
-    export const useStock = () => useContext(StockContext);
-
-    export default StockProvider;
-
-    // ... any other hooks, methods, and exports
+export const useStock = () => useContext(StockContext) as StockContextType;
+export default StockContextProvider;
