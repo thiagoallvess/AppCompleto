@@ -49,8 +49,11 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
         .order('name', { ascending: true });
 
       if (error) {
-        console.error('Erro ao buscar equipamentos:', error);
-      } else if (data) {
+        console.error('[EquipmentContext] Erro ao buscar equipamentos:', error);
+        throw new Error(`Erro ao buscar equipamentos: ${error.message}`);
+      }
+      
+      if (data) {
         const formattedEquipment: Equipment[] = data.map(item => ({
           id: item.id,
           name: item.name,
@@ -64,8 +67,8 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
         }));
         setEquipment(formattedEquipment);
       }
-    } catch (error) {
-      console.error('Erro ao buscar equipamentos:', error);
+    } catch (error: any) {
+      console.error('[EquipmentContext] Erro crítico ao buscar equipamentos:', error);
     } finally {
       setLoading(false);
     }
@@ -89,34 +92,49 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
 
   const addEquipment = async (newEquipment: Omit<Equipment, 'id' | 'costPerHour'>) => {
     try {
+      console.log('[EquipmentContext] Adicionando equipamento:', newEquipment);
+      
       const costPerHour = calculateCostPerHour(newEquipment);
       
+      const insertData = {
+        name: newEquipment.name,
+        power_type: newEquipment.powerType,
+        power_value: newEquipment.powerValue || null,
+        gas_consumption_low: newEquipment.gasConsumptionLow || null,
+        gas_consumption_medium: newEquipment.gasConsumptionMedium || null,
+        gas_consumption_high: newEquipment.gasConsumptionHigh || null,
+        cost_per_hour: costPerHour
+      };
+
+      console.log('[EquipmentContext] Dados a inserir:', insertData);
+
       const { data, error } = await supabase
         .from('equipment')
-        .insert([{
-          name: newEquipment.name,
-          power_type: newEquipment.powerType,
-          power_value: newEquipment.powerValue,
-          gas_consumption_low: newEquipment.gasConsumptionLow,
-          gas_consumption_medium: newEquipment.gasConsumptionMedium,
-          gas_consumption_high: newEquipment.gasConsumptionHigh,
-          cost_per_hour: costPerHour
-        }])
+        .insert([insertData])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[EquipmentContext] Erro do Supabase ao inserir:', error);
+        throw new Error(`Erro ao adicionar equipamento: ${error.message}`);
+      }
+
+      console.log('[EquipmentContext] Equipamento adicionado com sucesso:', data);
       await fetchEquipment();
     } catch (error: any) {
-      console.error('Erro ao adicionar equipamento:', error);
-      throw error;
+      console.error('[EquipmentContext] Erro ao adicionar equipamento:', error);
+      throw new Error(error.message || 'Erro desconhecido ao adicionar equipamento');
     }
   };
 
   const updateEquipment = async (id: string, updates: Partial<Equipment>) => {
     try {
+      console.log('[EquipmentContext] Atualizando equipamento:', id, updates);
+      
       const currentItem = equipment.find(e => e.id === id);
-      if (!currentItem) return;
+      if (!currentItem) {
+        throw new Error('Equipamento não encontrado');
+      }
 
       const updatedItem = { ...currentItem, ...updates };
       const costPerHour = calculateCostPerHour(updatedItem);
@@ -124,37 +142,51 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
       const updateData: any = {};
       if (updates.name !== undefined) updateData.name = updates.name;
       if (updates.powerType !== undefined) updateData.power_type = updates.powerType;
-      if (updates.powerValue !== undefined) updateData.power_value = updates.powerValue;
-      if (updates.gasConsumptionLow !== undefined) updateData.gas_consumption_low = updates.gasConsumptionLow;
-      if (updates.gasConsumptionMedium !== undefined) updateData.gas_consumption_medium = updates.gasConsumptionMedium;
-      if (updates.gasConsumptionHigh !== undefined) updateData.gas_consumption_high = updates.gasConsumptionHigh;
+      if (updates.powerValue !== undefined) updateData.power_value = updates.powerValue || null;
+      if (updates.gasConsumptionLow !== undefined) updateData.gas_consumption_low = updates.gasConsumptionLow || null;
+      if (updates.gasConsumptionMedium !== undefined) updateData.gas_consumption_medium = updates.gasConsumptionMedium || null;
+      if (updates.gasConsumptionHigh !== undefined) updateData.gas_consumption_high = updates.gasConsumptionHigh || null;
       updateData.cost_per_hour = costPerHour;
+
+      console.log('[EquipmentContext] Dados a atualizar:', updateData);
 
       const { error } = await supabase
         .from('equipment')
         .update(updateData)
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('[EquipmentContext] Erro do Supabase ao atualizar:', error);
+        throw new Error(`Erro ao atualizar equipamento: ${error.message}`);
+      }
+
+      console.log('[EquipmentContext] Equipamento atualizado com sucesso');
       await fetchEquipment();
     } catch (error: any) {
-      console.error('Erro ao atualizar equipamento:', error);
-      throw error;
+      console.error('[EquipmentContext] Erro ao atualizar equipamento:', error);
+      throw new Error(error.message || 'Erro desconhecido ao atualizar equipamento');
     }
   };
 
   const removeEquipment = async (id: string) => {
     try {
+      console.log('[EquipmentContext] Removendo equipamento:', id);
+      
       const { error } = await supabase
         .from('equipment')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('[EquipmentContext] Erro do Supabase ao remover:', error);
+        throw new Error(`Erro ao remover equipamento: ${error.message}`);
+      }
+
+      console.log('[EquipmentContext] Equipamento removido com sucesso');
       await fetchEquipment();
     } catch (error: any) {
-      console.error('Erro ao remover equipamento:', error);
-      throw error;
+      console.error('[EquipmentContext] Erro ao remover equipamento:', error);
+      throw new Error(error.message || 'Erro desconhecido ao remover equipamento');
     }
   };
 

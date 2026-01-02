@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ArrowLeft, Plus, Edit, Trash2, Bolt, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ const GestaoEquipamentos = () => {
   const [gasMedium, setGasMedium] = useState("");
   const [gasHigh, setGasHigh] = useState("");
   const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddOrUpdateEquipment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +38,8 @@ const GestaoEquipamentos = () => {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       const equipmentData = {
         name: newEquipmentName,
@@ -48,18 +51,22 @@ const GestaoEquipamentos = () => {
         icon: getIconName(newEquipmentName)
       };
 
+      console.log('[GestaoEquipamentos] Salvando equipamento:', equipmentData);
+
       if (editingEquipment) {
-        updateEquipment(editingEquipment.id, equipmentData);
+        await updateEquipment(editingEquipment.id, equipmentData);
         showSuccess(`Equipamento "${newEquipmentName}" atualizado!`);
       } else {
-        addEquipment(equipmentData);
+        await addEquipment(equipmentData);
         showSuccess(`Equipamento "${newEquipmentName}" adicionado!`);
       }
 
       resetForm();
     } catch (error: any) {
-      console.error('Erro ao salvar equipamento:', error);
-      showError(error.message || 'Erro ao salvar equipamento.');
+      console.error('[GestaoEquipamentos] Erro ao salvar equipamento:', error);
+      showError(error.message || 'Erro ao salvar equipamento. Verifique os dados e tente novamente.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -83,14 +90,14 @@ const GestaoEquipamentos = () => {
     setGasHigh(item.gasConsumptionHigh?.toString() || "");
   };
 
-  const handleDeleteEquipment = (id: string, name: string) => {
+  const handleDeleteEquipment = async (id: string, name: string) => {
     if (confirm(`Tem certeza que deseja remover o equipamento "${name}"?`)) {
       try {
-        removeEquipment(id);
+        await removeEquipment(id);
         showSuccess(`Equipamento "${name}" removido.`);
       } catch (error: any) {
-        console.error('Erro ao remover equipamento:', error);
-        showError('Erro ao remover equipamento.');
+        console.error('[GestaoEquipamentos] Erro ao remover equipamento:', error);
+        showError(error.message || 'Erro ao remover equipamento.');
       }
     }
   };
@@ -136,6 +143,7 @@ const GestaoEquipamentos = () => {
                 onChange={(e) => setNewEquipmentName(e.target.value)}
                 className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
                 required
+                disabled={isSubmitting}
               />
             </div>
 
@@ -150,6 +158,7 @@ const GestaoEquipamentos = () => {
                     checked={newPowerType === 'eletrico'}
                     onChange={() => setNewPowerType('eletrico')}
                     className="peer sr-only"
+                    disabled={isSubmitting}
                   />
                   <div className="flex items-center gap-2">
                     <Bolt size={18} className={newPowerType === 'eletrico' ? 'text-primary' : 'text-slate-500'} />
@@ -164,6 +173,7 @@ const GestaoEquipamentos = () => {
                     checked={newPowerType === 'gas'}
                     onChange={() => setNewPowerType('gas')}
                     className="peer sr-only"
+                    disabled={isSubmitting}
                   />
                   <div className="flex items-center gap-2">
                     <Flame size={18} className={newPowerType === 'gas' ? 'text-orange-500' : 'text-slate-500'} />
@@ -184,6 +194,7 @@ const GestaoEquipamentos = () => {
                     onChange={(e) => setNewPowerValue(e.target.value)}
                     className="h-12 px-3 pr-10 rounded-lg bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
                     required
+                    disabled={isSubmitting}
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">W</span>
                 </div>
@@ -211,6 +222,7 @@ const GestaoEquipamentos = () => {
                       onChange={(e) => setGasLow(e.target.value)}
                       className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -223,6 +235,7 @@ const GestaoEquipamentos = () => {
                       onChange={(e) => setGasMedium(e.target.value)}
                       className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -235,6 +248,7 @@ const GestaoEquipamentos = () => {
                       onChange={(e) => setGasHigh(e.target.value)}
                       className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                 </div>
@@ -248,6 +262,7 @@ const GestaoEquipamentos = () => {
                   variant="outline"
                   onClick={resetForm}
                   className="flex-1 h-12 border-slate-200 dark:border-slate-700"
+                  disabled={isSubmitting}
                 >
                   Cancelar
                 </Button>
@@ -255,16 +270,17 @@ const GestaoEquipamentos = () => {
               <Button 
                 type="submit" 
                 className="flex-1 bg-primary hover:bg-blue-600 text-white font-bold h-12 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                disabled={isSubmitting}
               >
                 {editingEquipment ? (
                   <>
                     <Edit size={20} />
-                    Salvar Alterações
+                    {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
                   </>
                 ) : (
                   <>
                     <Plus size={20} />
-                    Adicionar Equipamento
+                    {isSubmitting ? 'Adicionando...' : 'Adicionar Equipamento'}
                   </>
                 )}
               </Button>
@@ -318,12 +334,14 @@ const GestaoEquipamentos = () => {
                   </div>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
+                      type="button"
                       onClick={() => handleEditClick(item)}
                       className="flex items-center justify-center size-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors"
                     >
                       <Edit size={18} />
                     </button>
                     <button
+                      type="button"
                       onClick={() => handleDeleteEquipment(item.id, item.name)}
                       className="flex items-center justify-center size-9 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                     >
