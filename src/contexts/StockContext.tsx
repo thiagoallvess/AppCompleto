@@ -16,5 +16,6 @@ const StockContextProvider = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-export const useStock = () => useContext(StockContext) as StockContextType;
+export const useStock = () => useContext(StockContext);
+
 export default StockContextProvider;
