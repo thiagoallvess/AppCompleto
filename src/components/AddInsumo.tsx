@@ -1,61 +1,77 @@
+import { ArrowLeft, Plus, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { showSuccess, showError } from "@/utils/toast";
 import { useStock } from "@/contexts/StockContext";
 
 const AddInsumo = () => {
   const navigate = useNavigate();
-  const { addIngredient, addPackagingItem } = useStock();
-
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
     name: "",
     category: "",
     quantity: "",
-    unit: "un",
-    minQuantity: "",
+    unit: "",
+    minQuantity: ""
   });
 
-  const setField = (k: string, v: string) =>
-    setForm((f) => ({ ...f, [k]: v }));
+  const { addIngredient, addPackagingItem } = useStock();
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("[AddInsumo] handleSubmit triggered"); // Add this line
+    if (!formData.name || !formData.category) {
+      showError("Por favor, preencha o nome e a categoria do insumo.");
+      return;
+    }
 
-    const qty = Number(form.quantity);
-    if (!form.name || !form.category)
-      return showError("Preencha nome e categoria.");
-    if (qty <= 0) return showError("Quantidade inválida.");
+    const parsedQuantity = parseFloat(formData.quantity);
+    if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+      showError("Por favor, insira uma quantidade válida (maior que zero).");
+      return;
+    }
 
-    setLoading(true);
+    setIsSubmitting(true);
     try {
-      const item = {
-        name: form.name,
-        category: form.category,
-        quantity: qty,
-        unit: form.unit,
+      const newItem = {
+        name: formData.name,
+        unit: formData.unit || "un",
+        quantity: parsedQuantity,
         unitCost: 0,
-        minQuantity: form.minQuantity ? Number(form.minQuantity) : undefined,
-        icon: form.category === "Ingredientes" ? "Cookie" : "Package",
-        status: "Em dia",
+        minQuantity: formData.minQuantity ? parseFloat(formData.minQuantity) : undefined,
+        category: formData.category,
+        icon: formData.category === "Ingredientes" ? "Cookie" : "Package",
+        status: "Em dia"
       };
 
-      await (form.category === "Ingredientes"
-        ? addIngredient(item)
-        : addPackagingItem(item));
+      if (formData.category === "Ingredientes") {
+        await addIngredient(newItem);
+      } else {
+        await addPackagingItem(newItem);
+      }
 
-      showSuccess(`"${form.name}" adicionado ao estoque!`);
+      showSuccess(`"${formData.name}" foi adicionado ao estoque!`);
       navigate("/gestao-estoque");
-    } catch (err: any) {
-      console.error(err);
-      showError(err.message || "Erro ao salvar insumo.");
+    } catch (error: any) {
+      console.error("[AddInsumo] Erro ao salvar insumo:", error);
+      showError(error.message || "Erro ao salvar insumo. Tente novamente.");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    // JSX permanece igual
+    // ... (rest of the component)
   );
 };
 
