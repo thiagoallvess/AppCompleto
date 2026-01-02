@@ -1,22 +1,24 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Equipment {
   id: string;
   name: string;
   powerType: 'eletrico' | 'gas';
-  powerValue: number; // Watts for electric
-  gasConsumptionLow?: number; // kg/h
-  gasConsumptionMedium?: number; // kg/h
-  gasConsumptionHigh?: number; // kg/h
-  icon: string; // Material Symbols icon name
-  costPerHour: number; // Calculated cost per hour based on admin settings
+  powerValue: number;
+  gasConsumptionLow?: number;
+  gasConsumptionMedium?: number;
+  gasConsumptionHigh?: number;
+  icon: string;
+  costPerHour: number;
 }
 
 interface EquipmentContextType {
   equipment: Equipment[];
-  addEquipment: (equipment: Omit<Equipment, 'id' | 'costPerHour'>) => void;
-  updateEquipment: (id: string, updates: Partial<Equipment>) => void;
-  removeEquipment: (id: string) => void;
+  loading: boolean;
+  addEquipment: (equipment: Omit<Equipment, 'id' | 'costPerHour'>) => Promise<void>;
+  updateEquipment: (id: string, updates: Partial<Equipment>) => Promise<void>;
+  removeEquipment: (id: string) => Promise<void>;
   getEquipmentById: (id: string) => Equipment | undefined;
 }
 
@@ -36,27 +38,42 @@ interface EquipmentProviderProps {
 
 export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }) => {
   const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadEquipmentData = () => {
-      try {
-        const storedEquipment = localStorage.getItem('equipment');
-        if (storedEquipment) {
-          setEquipment(JSON.parse(storedEquipment));
-        } else {
-          setEquipment([]);
-        }
-      } catch (error) {
-        console.error('Error loading equipment data:', error);
-        setEquipment([]);
+  const fetchEquipment = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('equipment')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.error('Erro ao buscar equipamentos:', error);
+      } else if (data) {
+        const formattedEquipment: Equipment[] = data.map(item => ({
+          id: item.id,
+          name: item.name,
+          powerType: item.power_type as 'eletrico' | 'gas',
+          powerValue: Number(item.power_value || 0),
+          gasConsumptionLow: item.gas_consumption_low ? Number(item.gas_consumption_low) : undefined,
+          gasConsumptionMedium: item.gas_consumption_medium ? Number(item.gas_consumption_medium) : undefined,
+          gasConsumptionHigh: item.gas_consumption_high ? Number(item.gas_consumption_high) : undefined,
+          icon: 'kitchen',
+          costPerHour: Number(item.cost_per_hour || 0)
+        }));
+        setEquipment(formattedEquipment);
       }
-    };
-    loadEquipmentData();
-  }, []);
+    } catch (error) {
+      console.error('Erro ao buscar equipamentos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem('equipment', JSON.stringify(equipment));
-  }, [equipment]);
+    fetchEquipment();
+  }, []);
 
   const calculateCostPerHour = (item: Omit<Equipment, 'id' | 'costPerHour'> | Partial<Equipment>): number => {
     if (item.powerType === 'eletrico') {
@@ -65,36 +82,80 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
       return powerInKW * energyCostPerKWh;
     }
     
-    // Para gás, usamos o consumo médio como base para o custo/h padrão
-    // Preço do botijão (13kg) = R$ 120,00 -> R$ 9,23 por kg
     const gasPricePerKg = 120 / 13;
     const mediumCons = item.gasConsumptionMedium || 0;
     return mediumCons * gasPricePerKg;
   };
 
-  const addEquipment = (newEquipment: Omit<Equipment, 'id' | 'costPerHour'>) => {
-    const costPerHour = calculateCostPerHour(newEquipment);
-    const equipmentToAdd: Equipment = {
-      ...newEquipment,
-      id: Date.now().toString(),
-      costPerHour,
-    };
-    setEquipment(prev => [...prev, equipmentToAdd]);
+  const addEquipment = async (newEquipment: Omit<Equipment, 'id' | 'costPerHour'>) => {
+    try {
+      const costPerHour = calculateCostPerHour(newEquipment);
+      
+      const { data, error } = await supabase
+        .from('equipment')
+        .insert([{
+          name: newEquipment.name,
+          power_type: newEquipment.powerType,
+          power_value: newEquipment.powerValue,
+          gas_consumption_low: newEquipment.gasConsumptionLow,
+          gas_consumption_medium: newEquipment.gasConsumptionMedium,
+          gas_consumption_high: newEquipment.gasConsumptionHigh,
+          cost_per_hour: costPerHour
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      await fetchEquipment();
+    } catch (error: any) {
+      console.error('Erro ao adicionar equipamento:', error);
+      throw error;
+    }
   };
 
-  const updateEquipment = (id: string, updates: Partial<Equipment>) => {
-    setEquipment(prev => prev.map(item => {
-      if (item.id === id) {
-        const updatedItem = { ...item, ...updates };
-        updatedItem.costPerHour = calculateCostPerHour(updatedItem);
-        return updatedItem;
-      }
-      return item;
-    }));
+  const updateEquipment = async (id: string, updates: Partial<Equipment>) => {
+    try {
+      const currentItem = equipment.find(e => e.id === id);
+      if (!currentItem) return;
+
+      const updatedItem = { ...currentItem, ...updates };
+      const costPerHour = calculateCostPerHour(updatedItem);
+
+      const updateData: any = {};
+      if (updates.name !== undefined) updateData.name = updates.name;
+      if (updates.powerType !== undefined) updateData.power_type = updates.powerType;
+      if (updates.powerValue !== undefined) updateData.power_value = updates.powerValue;
+      if (updates.gasConsumptionLow !== undefined) updateData.gas_consumption_low = updates.gasConsumptionLow;
+      if (updates.gasConsumptionMedium !== undefined) updateData.gas_consumption_medium = updates.gasConsumptionMedium;
+      if (updates.gasConsumptionHigh !== undefined) updateData.gas_consumption_high = updates.gasConsumptionHigh;
+      updateData.cost_per_hour = costPerHour;
+
+      const { error } = await supabase
+        .from('equipment')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
+      await fetchEquipment();
+    } catch (error: any) {
+      console.error('Erro ao atualizar equipamento:', error);
+      throw error;
+    }
   };
 
-  const removeEquipment = (id: string) => {
-    setEquipment(prev => prev.filter(item => item.id !== id));
+  const removeEquipment = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('equipment')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      await fetchEquipment();
+    } catch (error: any) {
+      console.error('Erro ao remover equipamento:', error);
+      throw error;
+    }
   };
 
   const getEquipmentById = (id: string) => {
@@ -104,6 +165,7 @@ export const EquipmentProvider: React.FC<EquipmentProviderProps> = ({ children }
   return (
     <EquipmentContext.Provider value={{
       equipment,
+      loading,
       addEquipment,
       updateEquipment,
       removeEquipment,

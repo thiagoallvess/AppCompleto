@@ -1,15 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowLeft, Plus, Save, Edit, Trash2, Bolt } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Bolt, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEquipment, Equipment } from "@/contexts/EquipmentContext";
 import { showSuccess, showError } from "@/utils/toast";
-import { supabase } from "@/integrations/supabase/client";
 
 const GestaoEquipamentos = () => {
+  const { equipment, addEquipment, updateEquipment, removeEquipment } = useEquipment();
+  
   const [newEquipmentName, setNewEquipmentName] = useState("");
   const [newPowerType, setNewPowerType] = useState<'eletrico' | 'gas'>('eletrico');
   const [newPowerValue, setNewPowerValue] = useState("");
@@ -17,27 +18,6 @@ const GestaoEquipamentos = () => {
   const [gasMedium, setGasMedium] = useState("");
   const [gasHigh, setGasHigh] = useState("");
   const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(null);
-  const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
-
-  useEffect(() => {
-    fetchEquipment();
-  }, []);
-
-  const fetchEquipment = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('equipment')
-        .select('*');
-
-      if (error) {
-        console.error('Erro ao buscar equipamentos:', error);
-      } else if (data) {
-        setEquipmentList(data);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar equipamentos:', error);
-    }
-  };
 
   const handleAddOrUpdateEquipment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,44 +27,40 @@ const GestaoEquipamentos = () => {
       return;
     }
 
-    const data = {
-      name: newEquipmentName,
-      power_type: newPowerType,
-      power_value: newPowerType === 'eletrico' ? (parseFloat(newPowerValue) || 0) : 0,
-      gas_consumption_low: newPowerType === 'gas' ? (parseFloat(gasLow) || 0) : null,
-      gas_consumption_medium: newPowerType === 'gas' ? (parseFloat(gasMedium) || 0) : null,
-      gas_consumption_high: newPowerType === 'gas' ? (parseFloat(gasHigh) || 0) : null,
-    };
-
-    try {
-      if (editingEquipment) {
-        await supabase
-          .from('equipment')
-          .update(data)
-          .eq('id', editingEquipment.id);
-        showSuccess(`Equipamento "${newEquipmentName}" atualizado!`);
-      } else {
-        await supabase
-          .from('equipment')
-          .insert([
-            {
-              name: newEquipmentName,
-              power_type: newPowerType,
-              power_value: newPowerType === 'eletrico' ? (parseFloat(newPowerValue) || 0) : 0,
-              gas_consumption_low: newPowerType === 'gas' ? (parseFloat(gasLow) || 0) : null,
-              gas_consumption_medium: newPowerType === 'gas' ? (parseFloat(gasMedium) || 0) : null,
-              gas_consumption_high: newPowerType === 'gas' ? (parseFloat(gasHigh) || 0) : null,
-            }
-          ]);
-        showSuccess(`Equipamento "${newEquipmentName}" adicionado!`);
-      }
-      fetchEquipment();
-    } catch (error) {
-      console.error('Erro ao adicionar/atualizar equipamento:', error);
-      showError('Erro ao adicionar/atualizar equipamento.');
+    if (newPowerType === 'eletrico' && !newPowerValue) {
+      showError("A potência é obrigatória para equipamentos elétricos.");
+      return;
     }
 
-    resetForm();
+    if (newPowerType === 'gas' && (!gasLow || !gasMedium || !gasHigh)) {
+      showError("Preencha todos os níveis de consumo de gás.");
+      return;
+    }
+
+    try {
+      const equipmentData = {
+        name: newEquipmentName,
+        powerType: newPowerType,
+        powerValue: newPowerType === 'eletrico' ? parseFloat(newPowerValue) : 0,
+        gasConsumptionLow: newPowerType === 'gas' ? parseFloat(gasLow) : undefined,
+        gasConsumptionMedium: newPowerType === 'gas' ? parseFloat(gasMedium) : undefined,
+        gasConsumptionHigh: newPowerType === 'gas' ? parseFloat(gasHigh) : undefined,
+        icon: getIconName(newEquipmentName)
+      };
+
+      if (editingEquipment) {
+        updateEquipment(editingEquipment.id, equipmentData);
+        showSuccess(`Equipamento "${newEquipmentName}" atualizado!`);
+      } else {
+        addEquipment(equipmentData);
+        showSuccess(`Equipamento "${newEquipmentName}" adicionado!`);
+      }
+
+      resetForm();
+    } catch (error: any) {
+      console.error('Erro ao salvar equipamento:', error);
+      showError(error.message || 'Erro ao salvar equipamento.');
+    }
   };
 
   const resetForm = () => {
@@ -107,16 +83,12 @@ const GestaoEquipamentos = () => {
     setGasHigh(item.gasConsumptionHigh?.toString() || "");
   };
 
-  const handleDeleteEquipment = async (id: string, name: string) => {
+  const handleDeleteEquipment = (id: string, name: string) => {
     if (confirm(`Tem certeza que deseja remover o equipamento "${name}"?`)) {
       try {
-        await supabase
-          .from('equipment')
-          .delete()
-          .eq('id', id);
+        removeEquipment(id);
         showSuccess(`Equipamento "${name}" removido.`);
-        fetchEquipment();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Erro ao remover equipamento:', error);
         showError('Erro ao remover equipamento.');
       }
@@ -144,11 +116,12 @@ const GestaoEquipamentos = () => {
         <div className="size-10"></div>
       </header>
 
-      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-6">
-        <section className="space-y-6">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-6 space-y-8">
+        {/* Form Section */}
+        <section className="space-y-4">
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">{editingEquipment ? 'edit' : 'add_circle'}</span>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">{editingEquipment ? 'Editar Equipamento' : 'Novo Registro'}</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">{editingEquipment ? 'Editar Equipamento' : 'Novo Equipamento'}</h2>
           </div>
           <form onSubmit={handleAddOrUpdateEquipment} className="flex flex-col gap-4 rounded-2xl bg-white dark:bg-surface-dark p-5 shadow-sm border border-slate-200 dark:border-slate-800">
             <div className="flex flex-col gap-1.5">
@@ -162,13 +135,14 @@ const GestaoEquipamentos = () => {
                 value={newEquipmentName}
                 onChange={(e) => setNewEquipmentName(e.target.value)}
                 className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
+                required
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tipo de Alimentação</label>
               <div className="grid grid-cols-2 p-1 bg-gray-100 dark:bg-neutral-800 rounded-xl">
-                <label className="group flex cursor-pointer items-center justify-center rounded-lg p-2 transition-all">
+                <label className={`group flex cursor-pointer items-center justify-center rounded-lg p-2 transition-all ${newPowerType === 'eletrico' ? 'bg-white dark:bg-background-dark shadow-sm' : ''}`}>
                   <input
                     type="radio"
                     name="power_type"
@@ -178,11 +152,11 @@ const GestaoEquipamentos = () => {
                     className="peer sr-only"
                   />
                   <div className="flex items-center gap-2">
-                    <Bolt size={18} className="text-primary" />
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 group-has-[:checked]:text-primary">Elétrico</span>
+                    <Bolt size={18} className={newPowerType === 'eletrico' ? 'text-primary' : 'text-slate-500'} />
+                    <span className={`text-sm font-medium ${newPowerType === 'eletrico' ? 'text-primary' : 'text-slate-700 dark:text-slate-300'}`}>Elétrico</span>
                   </div>
                 </label>
-                <label className="group flex cursor-pointer items-center justify-center rounded-lg p-2 transition-all">
+                <label className={`group flex cursor-pointer items-center justify-center rounded-lg p-2 transition-all ${newPowerType === 'gas' ? 'bg-white dark:bg-background-dark shadow-sm' : ''}`}>
                   <input
                     type="radio"
                     name="power_type"
@@ -192,8 +166,8 @@ const GestaoEquipamentos = () => {
                     className="peer sr-only"
                   />
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px] text-orange-500">propane</span>
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 group-has-[:checked]:text-primary">A Gás</span>
+                    <Flame size={18} className={newPowerType === 'gas' ? 'text-orange-500' : 'text-slate-500'} />
+                    <span className={`text-sm font-medium ${newPowerType === 'gas' ? 'text-primary' : 'text-slate-700 dark:text-slate-300'}`}>A Gás</span>
                   </div>
                 </label>
               </div>
@@ -209,76 +183,157 @@ const GestaoEquipamentos = () => {
                     value={newPowerValue}
                     onChange={(e) => setNewPowerValue(e.target.value)}
                     className="h-12 px-3 pr-10 rounded-lg bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
+                    required
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">W</span>
                 </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Potência em Watts do equipamento
+                </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Consumo Baixo (kg/h)</label>
-                  <Input
-                    type="number"
-                    step="0.001"
-                    placeholder="0.000"
-                    value={gasLow}
-                    onChange={(e) => setGasLow(e.target.value)}
-                    className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
-                  />
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-100 dark:border-orange-800">
+                  <Flame className="text-orange-500" size={20} />
+                  <p className="text-xs text-orange-700 dark:text-orange-400 font-medium">
+                    Configure o consumo de gás para cada intensidade de chama
+                  </p>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Consumo Médio (kg/h)</label>
-                  <Input
-                    type="number"
-                    step="0.001"
-                    placeholder="0.000"
-                    value={gasMedium}
-                    onChange={(e) => setGasMedium(e.target.value)}
-                    className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Consumo Alto (kg/h)</label>
-                  <Input
-                    type="number"
-                    step="0.001"
-                    placeholder="0.000"
-                    value={gasHigh}
-                    onChange={(e) => setGasHigh(e.target.value)}
-                    className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
-                  />
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Consumo Baixo (kg/h)</label>
+                    <Input
+                      type="number"
+                      step="0.001"
+                      placeholder="0.000"
+                      value={gasLow}
+                      onChange={(e) => setGasLow(e.target.value)}
+                      className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Consumo Médio (kg/h)</label>
+                    <Input
+                      type="number"
+                      step="0.001"
+                      placeholder="0.000"
+                      value={gasMedium}
+                      onChange={(e) => setGasMedium(e.target.value)}
+                      className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Consumo Alto (kg/h)</label>
+                    <Input
+                      type="number"
+                      step="0.001"
+                      placeholder="0.000"
+                      value={gasHigh}
+                      onChange={(e) => setGasHigh(e.target.value)}
+                      className="h-12 bg-gray-50 dark:bg-neutral-900 border border-slate-300 dark:border-slate-700"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
             )}
 
             <div className="pt-4 flex gap-3">
-              <Button type="submit" className="w-full bg-primary hover:bg-blue-600 text-white font-bold h-12 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]">
-                {editingEquipment ? <Edit size={20} /> : <Plus size={20} />}
-                {editingEquipment ? 'Salvar Alterações' : 'Adicionar Equipamento'}
+              {editingEquipment && (
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={resetForm}
+                  className="flex-1 h-12 border-slate-200 dark:border-slate-700"
+                >
+                  Cancelar
+                </Button>
+              )}
+              <Button 
+                type="submit" 
+                className="flex-1 bg-primary hover:bg-blue-600 text-white font-bold h-12 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              >
+                {editingEquipment ? (
+                  <>
+                    <Edit size={20} />
+                    Salvar Alterações
+                  </>
+                ) : (
+                  <>
+                    <Plus size={20} />
+                    Adicionar Equipamento
+                  </>
+                )}
               </Button>
             </div>
           </form>
         </section>
 
+        {/* Equipment List */}
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-slate-900 dark:text-white text-lg font-bold">Equipamentos</h3>
+            <h3 className="text-slate-900 dark:text-white text-lg font-bold">Equipamentos Cadastrados</h3>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              {equipment.length} {equipment.length === 1 ? 'item' : 'itens'}
+            </span>
           </div>
-          <div className="flex flex-col gap-3">
-            {equipmentList.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-slate-800">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-500 font-bold text-lg">
-                  <span className="material-symbols-outlined">kitchen</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-slate-900 dark:text-white font-semibold truncate pr-2">{item.name}</h4>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    {item.powerType === 'eletrico' ? `Elétrico - ${item.powerValue}W` : `Gás - Médio: ${item.gasConsumptionMedium} kg/h`}
-                  </p>
-                </div>
+          
+          {equipment.length === 0 ? (
+            <div className="text-center py-12 bg-white dark:bg-surface-dark rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+              <div className="flex items-center justify-center size-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-4 mx-auto">
+                <span className="material-symbols-outlined text-slate-400 text-[32px]">kitchen</span>
               </div>
-            ))}
-          </div>
+              <p className="text-slate-500 dark:text-slate-400 mb-2">Nenhum equipamento cadastrado</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500">Adicione seu primeiro equipamento acima</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {equipment.map((item) => (
+                <div key={item.id} className="flex items-center gap-4 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-slate-800 group hover:border-primary/50 transition-all">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <span className="material-symbols-outlined text-[24px]">{item.icon}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-slate-900 dark:text-white font-semibold truncate pr-2">{item.name}</h4>
+                    <div className="flex items-center gap-2 mt-1">
+                      {item.powerType === 'eletrico' ? (
+                        <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                          <Bolt size={14} className="text-primary" />
+                          <span>{item.powerValue}W</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                          <Flame size={14} className="text-orange-500" />
+                          <span>Gás: {item.gasConsumptionMedium} kg/h (médio)</span>
+                        </div>
+                      )}
+                      <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                        R$ {item.costPerHour.toFixed(2)}/h
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => handleEditClick(item)}
+                      className="flex items-center justify-center size-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors"
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteEquipment(item.id, item.name)}
+                      className="flex items-center justify-center size-9 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>
